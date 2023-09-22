@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest
-public class ProfessorTests {
+public class ProfessorControllerTests {
 
     @Autowired
     MockMvc mockMvc;
@@ -49,8 +49,8 @@ public class ProfessorTests {
     @WithMockUser
     void testGetAllProfessorsReturnArrayOfProfessors() throws Exception {
         List<Professor> professors = new ArrayList<Professor>();
-        professors.add(new Professor(1L, "John", "Doe"));
-        professors.add(new Professor(2L, "Jane", "Doe"));
+        professors.add(new Professor("John", "Doe"));
+        professors.add(new Professor("Jane", "Doe"));
         when(professorService.getAllProfessors()).thenReturn(professors);
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/professor"))
