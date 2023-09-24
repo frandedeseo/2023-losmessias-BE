@@ -56,10 +56,27 @@ public class ProfessorControllerTests {
                         .get("/api/professor"))
                 .andExpect(result -> {
                     String json = result.getResponse().getContentAsString();
-                    System.out.println(json);
+//                    System.out.println(json);
                     assert (json.contains("John"));
                     assert (json.contains("Jane"));
                 })
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    void testSaveAProfessorReturnsOk() throws Exception {
+        Professor professor = new Professor("John", "Doe");
+        when(professorService.saveProfessor(professor)).thenReturn(professor);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/professor/register")
+                        .content(String.valueOf(professor)))
+//                .andExpect(result -> {
+//                    String json = result.getResponse().getContentAsString();
+//                    System.out.println("HOLA-"+json);
+////                    assert (json.contains("John"));
+////                    assert (json.contains("Doe"));
+//                })
                 .andExpect(status().isOk());
     }
 }
