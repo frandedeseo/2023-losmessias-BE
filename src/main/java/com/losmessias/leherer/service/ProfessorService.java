@@ -26,4 +26,19 @@ public class ProfessorService {
     public Professor saveProfessor(Professor professor) {
         return professorRepository.save(professor);
     }
+
+    public Professor getProfessorById(Long id) {
+        return professorRepository.findById(id).orElse(null);
+    }
+
+    public Professor updateProfessor(Long id, Professor professor) {
+        Professor professorToUpdate = professorRepository.findById(id).orElse(null);
+        if (professorToUpdate == null) {
+            return null;
+        }
+        professorToUpdate.setFirstName(professor.getFirstName() != null ? professor.getFirstName() : professorToUpdate.getFirstName());
+        professorToUpdate.setLastName(professor.getLastName() != null ? professor.getLastName() : professorToUpdate.getLastName());
+//        professorToUpdate.setSubjects(professor.getSubjects() != null ? professor.getSubjects() : professorToUpdate.getSubjects());
+        return professorRepository.save(professorToUpdate);
+    }
 }

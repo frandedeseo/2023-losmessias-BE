@@ -3,6 +3,8 @@ package com.losmessias.leherer.controller;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.service.ProfessorService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,8 +22,25 @@ public class ProfessorController {
     }
 
     @PostMapping("/register")
-    public Professor registerProfessor(@RequestBody Professor professor) {
-        System.out.println("Professor: " + professor.toString());
-        return professorService.saveProfessor(professor);
+    public ResponseEntity<String> registerProfessor(@RequestBody Professor professor) {
+        if (professor.getId() != null) {
+            return new ResponseEntity<>("Professor already registered", org.springframework.http.HttpStatus.BAD_REQUEST);
+        }
+        professorService.saveProfessor(professor);
+        String response = "Professor " + professor.getFirstName() + " " + professor.getLastName() + " registered";
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<String> updateProfessor(@PathVariable Long id, @RequestBody Professor professor) {
+        if (professor.getId() == null) {
+            return new ResponseEntity<>("Professor not registered", org.springframework.http.HttpStatus.BAD_REQUEST);
+        } else if (professorService.getProfessorById(id) == null) {
+            return new ResponseEntity<>("Professor not found", org.springframework.http.HttpStatus.NOT_FOUND);
+        }
+
+        professorService.updateProfessor(id, professor);
+        String response = "Professor updated";
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
