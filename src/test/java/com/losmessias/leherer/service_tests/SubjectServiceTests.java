@@ -49,4 +49,11 @@ public class SubjectServiceTests {
         assertEquals(subjectService.create(subject), subject);
     }
 
+    @Test
+    void testFindSubjectById() {
+        Subject subject = new Subject("Math");
+        when(subjectRepository.findById(1L)).thenReturn(java.util.Optional.of(subject));
+        assertEquals(subjectService.getSubjectById(1L), subject);
+    }
+
 }
