@@ -16,6 +16,7 @@ public class ProfessorSubject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
+    @Column
     private Long id;
 
     @ManyToOne
