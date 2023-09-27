@@ -95,7 +95,7 @@ public class ClassReservationcontrollerTests {
         ProfessorSubject professorSubject = new ProfessorSubject();
         professorSubject.setId(1L);
         when(professorSubjectRepository.findById(1L)).thenReturn(java.util.Optional.of(professorSubject));
-        when(classReservationService.createReservationFrom(professorSubject, null, null, null, null)).thenReturn(classReservationTest);
+        when(classReservationService.createReservationFrom(professorSubject, null, null, null, null, 100)).thenReturn(classReservationTest);
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/reservation/create")
                         .contentType("application/json")

@@ -46,6 +46,7 @@ public class ClassReservationController {
                 student,
                 classReservationDto.getDay(),
                 classReservationDto.getStartingTime(),
-                classReservationDto.getEndingTime());
+                classReservationDto.getEndingTime(),
+                classReservationDto.getPrice());
     }
 }

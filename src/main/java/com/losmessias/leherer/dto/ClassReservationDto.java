@@ -17,4 +17,5 @@ public class ClassReservationDto {
     private LocalDate day;
     private LocalTime startingTime;
     private LocalTime endingTime;
+    private Integer price;
 }

@@ -60,7 +60,8 @@ public class ClassReservationServiceTests {
                 student,
                 LocalDate.of(2023, 1, 1),
                 LocalTime.of(12, 0),
-                LocalTime.of(13, 0));
+                LocalTime.of(13, 0),
+                100);
         when(classReservationRepository.save(any())).thenReturn(classReservation);
 
         assertEquals(classReservation, classReservationService.createReservationFrom(
@@ -68,7 +69,8 @@ public class ClassReservationServiceTests {
                 student,
                 LocalDate.of(2023, 1, 1),
                 LocalTime.of(12, 0),
-                LocalTime.of(13, 0)));
+                LocalTime.of(13, 0),
+                100));
     }
 
     @Test
@@ -83,7 +85,8 @@ public class ClassReservationServiceTests {
                 student,
                 LocalDate.of(2023, 1, 1),
                 LocalTime.of(12, 0),
-                LocalTime.of(13, 0));
+                LocalTime.of(13, 0),
+                100);
 
         when(classReservationRepository.save(any())).thenReturn(classReservation);
         assertEquals(classReservation, classReservationService.createReservation(
@@ -92,12 +95,13 @@ public class ClassReservationServiceTests {
                 student,
                 LocalDate.of(2023, 1, 1),
                 LocalTime.of(12, 0),
-                LocalTime.of(13, 0)));
+                LocalTime.of(13, 0),
+                100));
     }
 
     @Test
     @DisplayName("Find reservation by professor id")
-    void testFindReservationByProfessorId(){
+    void testFindReservationByProfessorId() {
         Professor professor = new Professor();
         List<ClassReservation> classReservations = new ArrayList<>();
         classReservations.add(new ClassReservation());
@@ -108,7 +112,7 @@ public class ClassReservationServiceTests {
 
     @Test
     @DisplayName("Find reservation by student id")
-    void testFindReservationByStudentId(){
+    void testFindReservationByStudentId() {
         List<ClassReservation> classReservations = new ArrayList<>();
         classReservations.add(new ClassReservation());
         classReservations.add(new ClassReservation());
@@ -118,7 +122,7 @@ public class ClassReservationServiceTests {
 
     @Test
     @DisplayName("Find reservation by subject id")
-    void testFindReservationBySubjectId(){
+    void testFindReservationBySubjectId() {
         List<ClassReservation> classReservations = new ArrayList<>();
         classReservations.add(new ClassReservation());
         classReservations.add(new ClassReservation());
