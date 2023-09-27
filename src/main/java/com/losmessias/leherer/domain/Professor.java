@@ -2,6 +2,7 @@ package com.losmessias.leherer.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.WhereJoinTable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -41,6 +42,7 @@ public class Professor {
             joinColumns = @JoinColumn(name = "professor_id"),
             inverseJoinColumns = @JoinColumn(name = "subject_id")
     )
+    @WhereJoinTable(clause = "status = 1")
     private Set<Subject> subjects;
 
     public Professor(String firstName, String lastName, String email, String location, String phone) {
