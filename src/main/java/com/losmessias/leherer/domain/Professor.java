@@ -11,6 +11,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "professor")
 public class Professor {
 
@@ -25,6 +26,12 @@ public class Professor {
 
     @Column
     private String lastName;
+    @Column
+    private String email;
+    @Column
+    private String ubication;
+    @Column
+    private String phone;
 
     @ManyToMany(
             fetch = FetchType.LAZY
@@ -36,9 +43,12 @@ public class Professor {
     )
     private Set<Subject> subjects;
 
-    public Professor(String firstName, String lastName) {
+    public Professor(String firstName, String lastName, String email, String ubication, String phone) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
+        this.ubication = ubication;
+        this.phone = phone;
         this.subjects = new HashSet<>();
     }
 

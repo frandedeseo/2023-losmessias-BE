@@ -57,7 +57,7 @@ public class ProfessorSubjectServiceTests {
 
     @Test
     void testCreatingAnAssociationBetweenProfessorAndSubject() {
-        Professor professor = new Professor("John", "Doe");
+        Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone");
         Subject subject = new Subject("Math");
         ProfessorSubject professorSubject = new ProfessorSubject(professor, subject);
 
@@ -67,7 +67,7 @@ public class ProfessorSubjectServiceTests {
 
     @Test
     void testChangingStatusOfProfessorSubjectFromPendingToApproved() {
-        Professor professor = new Professor("John", "Doe");
+        Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone");
         Subject subject = new Subject("Math");
         ProfessorSubject professorSubject = new ProfessorSubject(professor, subject);
 
@@ -82,7 +82,7 @@ public class ProfessorSubjectServiceTests {
 
     @Test
     void testChangingStatusOfProfessorSubjectFromPendingToRejected() {
-        Professor professor = new Professor("John", "Doe");
+        Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone");
         Subject subject = new Subject("Math");
         ProfessorSubject professorSubject = new ProfessorSubject(professor, subject);
 
@@ -97,7 +97,7 @@ public class ProfessorSubjectServiceTests {
 
     @Test
     void testFindSubjectByProfessor(){
-        Professor professor1 = new Professor("John", "Doe");
+        Professor professor1 = new Professor("John", "Doe", "mail", "ubication", "phone");
         Subject subject1 = new Subject("Math");
         ProfessorSubject professorSubject1 = new ProfessorSubject(professor1, subject1);
 
@@ -113,12 +113,28 @@ public class ProfessorSubjectServiceTests {
 
     @Test
     void testFindByProfessorAndSubject(){
-        Professor professor1 = new Professor("John", "Doe");
+        Professor professor1 = new Professor("John", "Doe", "mail", "ubication", "phone");
         Subject subject1 = new Subject("Math");
         ProfessorSubject professorSubject = new ProfessorSubject(professor1, subject1);
 
         when(professorSubjectRepository.findByProfessorIdAndSubject_Id(any(), any())).thenReturn(professorSubject);
         assertEquals(professorSubject, professorSubjectService.findByProfessorAndSubject(professor1, subject1));
+    }
+
+    @Test
+    void testFindByPendingStatus(){
+        Professor professor1 = new Professor("John", "Doe", "mail", "ubication", "phone");
+        Subject subject1 = new Subject("Math");
+        ProfessorSubject professorSubject1 = new ProfessorSubject(professor1, subject1);
+
+        Subject subject2 = new Subject("Math");
+        ProfessorSubject professorSubject2 = new ProfessorSubject(professor1, subject2);
+        List<ProfessorSubject> professorSubjects = new ArrayList<>();
+        professorSubjects.add(professorSubject1);
+        professorSubjects.add(professorSubject2);
+
+        when(professorSubjectRepository.findByStatus(any())).thenReturn(professorSubjects);
+        assertEquals(professorSubjects, professorSubjectService.findByStatus(SubjectStatus.PENDING));
     }
 
 }

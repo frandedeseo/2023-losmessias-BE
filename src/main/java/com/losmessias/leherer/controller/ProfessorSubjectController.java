@@ -38,9 +38,8 @@ public class ProfessorSubjectController {
         return professorSubjectService.createAssociation(professor, subject);
     }
 
-    @PostMapping("/approve")
+    @PostMapping("/approve") //refactor this to a single method
     public List<ProfessorSubject> approve(@RequestBody SubjectRequestDto subjectRequestDto) {
-        System.out.println("subjectRequestDto: " + subjectRequestDto);
         List<ProfessorSubject> approvedProfessorSubjects = new ArrayList<>();
         Professor professor = professorService.getProfessorById(subjectRequestDto.getProfessorId());
         for (Long subjectId : subjectRequestDto.getSubjectIds()) {
@@ -54,5 +53,33 @@ public class ProfessorSubjectController {
         }
         return approvedProfessorSubjects;
     }
+
+    @PostMapping("/reject")
+    public List<ProfessorSubject> reject(@RequestBody SubjectRequestDto subjectRequestDto) {
+        List<ProfessorSubject> rejectedProfessorSubjects = new ArrayList<>();
+        Professor professor = professorService.getProfessorById(subjectRequestDto.getProfessorId());
+        for (Long subjectId : subjectRequestDto.getSubjectIds()) {
+            Subject subject = subjectService.getSubjectById(subjectId);
+            ProfessorSubject professorSubject = professorSubjectService.findByProfessorAndSubject(professor, subject);
+            ProfessorSubject rejectedSubject = professorSubjectService
+                    .changeStatusOf(
+                            professorSubject.getId(),
+                            SubjectStatus.REJECTED);
+            rejectedProfessorSubjects.add(rejectedSubject);
+        }
+        return rejectedProfessorSubjects;
+    }
+
+    @GetMapping("/findByProfessor")
+    public List<ProfessorSubject> findByProfessor(Long professorId) {
+        Professor professor = professorService.getProfessorById(professorId);
+        return professorSubjectService.findByProfessor(professor);
+    }
+
+    @GetMapping("/findByStatus")
+    public List<ProfessorSubject> findPendingValidation(SubjectStatus status){
+        return professorSubjectService.findByStatus(status);
+    }
+
 
 }

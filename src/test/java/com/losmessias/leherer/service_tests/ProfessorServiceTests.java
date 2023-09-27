@@ -28,8 +28,8 @@ public class ProfessorServiceTests {
     @Test
     void testGetAllProfessors() {
         List<Professor> professors = new ArrayList<Professor>();
-        professors.add(new Professor("John", "Doe"));
-        professors.add(new Professor("Jane", "Doe"));
+        professors.add(new Professor("John", "Doe", "mail", "ubication", "phone"));
+        professors.add(new Professor("Jane", "Doe", "mail", "ubication", "phone"));
         when(professorRepository.findAll()).thenReturn(professors);
 
         assertEquals(professors, professorService.getAllProfessors());
@@ -44,7 +44,7 @@ public class ProfessorServiceTests {
 
     @Test
     void testGetProfessorSubjects() {
-        Professor professor = new Professor("John", "Doe");
+        Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone");
         Subject subject = new Subject( "Math");
         professor.addSubject(subject);
 
@@ -55,7 +55,7 @@ public class ProfessorServiceTests {
 
     @Test
     void testFindProfessorById() {
-        Professor professor = new Professor("John", "Doe");
+        Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone");
         when(professorRepository.findById(1L)).thenReturn(java.util.Optional.of(professor));
         assertEquals(professorService.getProfessorById(1L), professor);
     }

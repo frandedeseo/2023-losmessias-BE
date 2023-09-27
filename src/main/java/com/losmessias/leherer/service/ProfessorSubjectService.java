@@ -41,4 +41,8 @@ public class ProfessorSubjectService {
     public ProfessorSubject findByProfessorAndSubject(Professor professor, Subject subject){
         return professorSubjectRepository.findByProfessorIdAndSubject_Id(professor.getId(), subject.getId());
     }
+
+    public List<ProfessorSubject> findByStatus(SubjectStatus status) {
+        return professorSubjectRepository.findByStatus(status);
+    }
 }

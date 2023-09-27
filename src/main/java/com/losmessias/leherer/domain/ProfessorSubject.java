@@ -2,15 +2,13 @@ package com.losmessias.leherer.domain;
 
 import com.losmessias.leherer.domain.enumeration.SubjectStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "professor_subject")
 public class ProfessorSubject {
     @Id
