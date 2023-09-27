@@ -10,6 +10,7 @@ import com.losmessias.leherer.repository.SubjectRepository;
 import com.losmessias.leherer.service.ProfessorService;
 import com.losmessias.leherer.service.ProfessorSubjectService;
 import com.losmessias.leherer.service.SubjectService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,6 +33,7 @@ public class ProfessorSubjectServiceTests {
     private ProfessorSubjectService professorSubjectService;
 
     @Test
+    @DisplayName("Get all professor subjects")
     void testGetAllProfessorSubjects() {
         List<ProfessorSubject> professorSubjects = new ArrayList<>();
         professorSubjects.add(new ProfessorSubject());
@@ -41,13 +43,15 @@ public class ProfessorSubjectServiceTests {
     }
 
     @Test
-    void testGetAllProfessorSubjectsReturnsEmptyList() {
-        List<ProfessorSubject> professorSubjects = new ArrayList<>();
-        when(professorSubjectRepository.findAll()).thenReturn(professorSubjects);
-        assertEquals(professorSubjects, professorSubjectService.getAllProfessorSubjects());
+    @DisplayName("Find by id")
+    void testFindById() {
+        ProfessorSubject professorSubject = new ProfessorSubject();
+        when(professorSubjectRepository.findById(any())).thenReturn(Optional.of(professorSubject));
+        assertEquals(professorSubject, professorSubjectService.findById(1L));
     }
 
     @Test
+    @DisplayName("Create association between professor and subject")
     void testCreatingAnAssociationBetweenProfessorAndSubject() {
         Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone");
         Subject subject = new Subject("Math");
@@ -58,6 +62,7 @@ public class ProfessorSubjectServiceTests {
     }
 
     @Test
+    @DisplayName("Change status of professor subject from pending to approved")
     void testChangingStatusOfProfessorSubjectFromPendingToApproved() {
         Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone");
         Subject subject = new Subject("Math");
@@ -73,6 +78,7 @@ public class ProfessorSubjectServiceTests {
     }
 
     @Test
+    @DisplayName("Change status of professor subject from pending to rejected")
     void testChangingStatusOfProfessorSubjectFromPendingToRejected() {
         Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone");
         Subject subject = new Subject("Math");
@@ -88,6 +94,7 @@ public class ProfessorSubjectServiceTests {
     }
 
     @Test
+    @DisplayName("Find by professor")
     void testFindSubjectByProfessor(){
         Professor professor1 = new Professor("John", "Doe", "mail", "ubication", "phone");
         Subject subject1 = new Subject("Math");
@@ -104,6 +111,7 @@ public class ProfessorSubjectServiceTests {
     }
 
     @Test
+    @DisplayName("Find by professor and subject")
     void testFindByProfessorAndSubject(){
         Professor professor1 = new Professor("John", "Doe", "mail", "ubication", "phone");
         Subject subject1 = new Subject("Math");
@@ -114,6 +122,7 @@ public class ProfessorSubjectServiceTests {
     }
 
     @Test
+    @DisplayName("Find by pending status")
     void testFindByPendingStatus(){
         Professor professor1 = new Professor("John", "Doe", "mail", "ubication", "phone");
         Subject subject1 = new Subject("Math");
@@ -127,6 +136,23 @@ public class ProfessorSubjectServiceTests {
 
         when(professorSubjectRepository.findByStatus(any())).thenReturn(professorSubjects);
         assertEquals(professorSubjects, professorSubjectService.findByStatus(SubjectStatus.PENDING));
+    }
+
+    @Test
+    @DisplayName("Find by professor id and status")
+    void testFindByProfessorAndPendingStatus(){
+        Professor professor1 = new Professor("John", "Doe", "mail", "ubication", "phone");
+        Subject subject1 = new Subject("Math");
+        ProfessorSubject professorSubject1 = new ProfessorSubject(professor1, subject1);
+
+        Subject subject2 = new Subject("Math");
+        ProfessorSubject professorSubject2 = new ProfessorSubject(professor1, subject2);
+        List<ProfessorSubject> professorSubjects = new ArrayList<>();
+        professorSubjects.add(professorSubject1);
+        professorSubjects.add(professorSubject2);
+
+        when(professorSubjectRepository.findByProfessorIdAndStatus(any(), any())).thenReturn(professorSubjects);
+        assertEquals(professorSubjects, professorSubjectService.findByProfessorIdAndStatus(professor1.getId(), SubjectStatus.PENDING));
     }
 
 }

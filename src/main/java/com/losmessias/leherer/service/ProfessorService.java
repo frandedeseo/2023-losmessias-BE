@@ -33,9 +33,6 @@ public class ProfessorService {
 
     public Professor updateProfessor(Long id, Professor professor) {
         Professor professorToUpdate = professorRepository.findById(id).orElse(null);
-        if (professorToUpdate == null) {
-            return null;
-        }
         professorToUpdate.setFirstName(professor.getFirstName() != null ? professor.getFirstName() : professorToUpdate.getFirstName());
         professorToUpdate.setLastName(professor.getLastName() != null ? professor.getLastName() : professorToUpdate.getLastName());
         professorToUpdate.setSubjects(professor.getSubjects() != null ? professor.getSubjects() : professorToUpdate.getSubjects());

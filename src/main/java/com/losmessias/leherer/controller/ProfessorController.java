@@ -16,9 +16,14 @@ public class ProfessorController {
 
     private final ProfessorService professorService;
 
-    @GetMapping
+    @GetMapping("/all")
     public List<Professor> getProfessor() { // retornar un DTO
         return professorService.getAllProfessors();
+    }
+
+    @GetMapping("/{id}")
+    public Professor getProfessorById(@PathVariable Long id) {
+        return professorService.getProfessorById(id);
     }
 
     @PostMapping("/register")

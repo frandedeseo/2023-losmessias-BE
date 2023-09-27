@@ -12,4 +12,5 @@ public interface ProfessorSubjectRepository extends JpaRepository<ProfessorSubje
     List<ProfessorSubject> findByProfessorId(Long professorId);
     ProfessorSubject findByProfessorIdAndSubject_Id(Long professorId, Long subjectId);
     List<ProfessorSubject> findByStatus(SubjectStatus status);
+    List<ProfessorSubject> findByProfessorIdAndStatus(Long professorId, SubjectStatus status);
 }

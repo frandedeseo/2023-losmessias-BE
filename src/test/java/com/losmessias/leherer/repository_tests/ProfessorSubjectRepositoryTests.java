@@ -62,7 +62,7 @@ public class ProfessorSubjectRepositoryTests {
     @Test
     @Transactional
     @Rollback
-    @DisplayName("findByProfessorId method")
+    @DisplayName("Find by professorId method")
     void findByProfessorId() {
         professorRepository.save(professor);
         subjectRepository.save(subject);
@@ -82,7 +82,7 @@ public class ProfessorSubjectRepositoryTests {
     @Test
     @Transactional
     @Rollback
-    @DisplayName("findByProfessorIdAndSubject_Id method")
+    @DisplayName("Find by professorId and Subject_Id method")
     void findByProfessorIdAndSubject_Id() {
         professorRepository.save(professor);
         subjectRepository.save(subject);
@@ -101,12 +101,32 @@ public class ProfessorSubjectRepositoryTests {
     @Test
     @Transactional
     @Rollback
-    @DisplayName("findByStatus method")
+    @DisplayName("Find by status method")
     void findByStatus() {
         professorRepository.save(professor);
         subjectRepository.save(subject);
         professorSubjectRepository.save(professorSubject);
         List<ProfessorSubject> subjectsFound = professorSubjectRepository.findByStatus(professorSubject.getStatus());
+        ProfessorSubject professorSubjectFound = subjectsFound.get(0);
+
+        assertEquals(professorSubjectFound.getId(), professorSubject.getId());
+        assertEquals(professorSubjectFound.getProfessor().getId(), professorSubject.getProfessor().getId());
+        assertEquals(professorSubjectFound.getSubject().getId(), professorSubject.getSubject().getId());
+        assertEquals(professorSubjectFound.getProfessor().getLastName(), professorSubject.getProfessor().getLastName());
+        assertEquals(professorSubjectFound.getSubject().getId(), professorSubject.getSubject().getId());
+        assertEquals(professorSubjectFound.getSubject().getName(), professorSubject.getSubject().getName());
+        assertEquals(professorSubjectFound.getStatus(), professorSubject.getStatus());
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    @DisplayName("Find by professorId and status method")
+    void findByProfessorIdAndStatus() {
+        professorRepository.save(professor);
+        subjectRepository.save(subject);
+        professorSubjectRepository.save(professorSubject);
+        List<ProfessorSubject> subjectsFound = professorSubjectRepository.findByProfessorIdAndStatus(professor.getId(), professorSubject.getStatus());
         ProfessorSubject professorSubjectFound = subjectsFound.get(0);
 
         assertEquals(professorSubjectFound.getId(), professorSubject.getId());
