@@ -9,10 +9,7 @@ import java.util.List;
 
 @Repository
 public interface ProfessorSubjectRepository extends JpaRepository<ProfessorSubject, Long> {
-
     List<ProfessorSubject> findByProfessorId(Long professorId);
-
     ProfessorSubject findByProfessorIdAndSubject_Id(Long professorId, Long subjectId);
-
     List<ProfessorSubject> findByStatus(SubjectStatus status);
 }

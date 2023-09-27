@@ -26,9 +26,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
-//@ExtendWith(SpringExtension.class)
 @Transactional
-//@RequiredArgsConstructor
 public class ProfessorSubjectRepositoryTests {
 
     @Autowired

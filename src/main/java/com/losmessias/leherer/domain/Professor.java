@@ -29,7 +29,7 @@ public class Professor {
     @Column
     private String email;
     @Column
-    private String ubication;
+    private String location;
     @Column
     private String phone;
 
@@ -43,11 +43,11 @@ public class Professor {
     )
     private Set<Subject> subjects;
 
-    public Professor(String firstName, String lastName, String email, String ubication, String phone) {
+    public Professor(String firstName, String lastName, String email, String location, String phone) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.ubication = ubication;
+        this.location = location;
         this.phone = phone;
         this.subjects = new HashSet<>();
     }

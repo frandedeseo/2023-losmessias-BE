@@ -48,7 +48,6 @@ public class ProfessorServiceTests {
         Subject subject = new Subject( "Math");
         professor.addSubject(subject);
 
-//        System.out.println(professor.toString());
         when(professorRepository.save(professor)).thenReturn(professor);
         assertEquals(professorService.addSubjectTo(professor, subject), professor);
     }
@@ -59,11 +58,4 @@ public class ProfessorServiceTests {
         when(professorRepository.findById(1L)).thenReturn(java.util.Optional.of(professor));
         assertEquals(professorService.getProfessorById(1L), professor);
     }
-
-//    @Test
-//    void testUpdatingProfessor() {
-//        Professor professor = new Professor("John", "Doe");
-//        when(professorRepository.save(professor)).thenReturn(professor);
-//        assertEquals(professorService.updateProfessor(professor), professor);
-//    }
 }

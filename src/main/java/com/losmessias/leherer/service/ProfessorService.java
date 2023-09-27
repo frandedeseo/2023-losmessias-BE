@@ -38,7 +38,10 @@ public class ProfessorService {
         }
         professorToUpdate.setFirstName(professor.getFirstName() != null ? professor.getFirstName() : professorToUpdate.getFirstName());
         professorToUpdate.setLastName(professor.getLastName() != null ? professor.getLastName() : professorToUpdate.getLastName());
-//        professorToUpdate.setSubjects(professor.getSubjects() != null ? professor.getSubjects() : professorToUpdate.getSubjects());
+        professorToUpdate.setSubjects(professor.getSubjects() != null ? professor.getSubjects() : professorToUpdate.getSubjects());
+        professorToUpdate.setEmail(professor.getEmail() != null ? professor.getEmail() : professorToUpdate.getEmail());
+        professorToUpdate.setPhone(professor.getPhone() != null ? professor.getPhone() : professorToUpdate.getPhone());
+        professorToUpdate.setLocation(professor.getLocation() != null ? professor.getLocation() : professorToUpdate.getLocation());
         return professorRepository.save(professorToUpdate);
     }
 }

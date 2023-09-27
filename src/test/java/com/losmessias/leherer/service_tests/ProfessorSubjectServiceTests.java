@@ -28,16 +28,8 @@ import static org.mockito.Mockito.when;
 public class ProfessorSubjectServiceTests {
     @Mock
     private ProfessorSubjectRepository professorSubjectRepository;
-    @Mock
-    private ProfessorRepository professorRepository;
-    @Mock
-    private SubjectRepository subjectRepository;
     @InjectMocks
     private ProfessorSubjectService professorSubjectService;
-    @InjectMocks
-    private ProfessorService professorService;
-    @InjectMocks
-    private SubjectService subjectService;
 
     @Test
     void testGetAllProfessorSubjects() {
