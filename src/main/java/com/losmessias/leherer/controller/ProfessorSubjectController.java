@@ -38,6 +38,7 @@ public class ProfessorSubjectController {
         return professorSubjectService.createAssociation(professor, subject);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/approve") //refactor this to a single method
     public List<ProfessorSubject> approve(@RequestBody SubjectRequestDto subjectRequestDto) {
         List<ProfessorSubject> approvedProfessorSubjects = new ArrayList<>();
@@ -54,6 +55,7 @@ public class ProfessorSubjectController {
         return approvedProfessorSubjects;
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/reject")
     public List<ProfessorSubject> reject(@RequestBody SubjectRequestDto subjectRequestDto) {
         List<ProfessorSubject> rejectedProfessorSubjects = new ArrayList<>();
