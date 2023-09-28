@@ -1,5 +1,6 @@
 package com.losmessias.leherer.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.WhereJoinTable;
@@ -43,7 +44,8 @@ public class Professor {
     )
     @WhereJoinTable(clause = "status = 1")
     private Set<Subject> subjects;
-    @OneToMany(mappedBy = "professor")
+    @JsonIgnore
+    @OneToMany(mappedBy = "professor", fetch = FetchType.LAZY)
     private List<ClassReservation> classReservations;
 
     public Professor(String firstName, String lastName, String email, String location, String phone) {

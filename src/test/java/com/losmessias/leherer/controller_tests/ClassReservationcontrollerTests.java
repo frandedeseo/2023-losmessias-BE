@@ -1,8 +1,8 @@
 package com.losmessias.leherer.controller_tests;
 
 import com.losmessias.leherer.controller.ClassReservationController;
-import com.losmessias.leherer.domain.ClassReservation;
-import com.losmessias.leherer.domain.ProfessorSubject;
+import com.losmessias.leherer.domain.*;
+import com.losmessias.leherer.dto.ClassReservationDto;
 import com.losmessias.leherer.repository.ProfessorRepository;
 import com.losmessias.leherer.repository.ProfessorSubjectRepository;
 import com.losmessias.leherer.repository.StudentRepository;
@@ -74,6 +74,13 @@ public class ClassReservationcontrollerTests {
     @DisplayName("Get reservation by id")
     void testGetReservationByIdReturnsOk() throws Exception {
         when(classReservationService.getReservationById(1L)).thenReturn(classReservationTest);
+        when(classReservationTest.getProfessor()).thenReturn(new Professor());
+        when(classReservationTest.getSubject()).thenReturn(new Subject());
+        when(classReservationTest.getStudent()).thenReturn(new Student());
+        when(classReservationTest.getDate()).thenReturn(null);
+        when(classReservationTest.getStartingHour()).thenReturn(null);
+        when(classReservationTest.getEndingHour()).thenReturn(null);
+        when(classReservationTest.getPrice()).thenReturn(null);
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/reservation/1"))
                 .andExpect(status().isOk());
@@ -109,7 +116,4 @@ public class ClassReservationcontrollerTests {
                         .with(csrf()))
                 .andExpect(status().isOk());
     }
-
-
-
 }

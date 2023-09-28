@@ -1,5 +1,6 @@
 package com.losmessias.leherer.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,6 +29,7 @@ public class Student {
     private String email;
     @Column
     private String location;
+    @JsonIgnore
     @OneToMany(mappedBy = "student")
     private List<ClassReservation> classReservations;
 
@@ -41,5 +43,16 @@ public class Student {
 
     public void addReservation(ClassReservation classReservation) {
         this.classReservations.add(classReservation);
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName=" + lastName +
+                ", email='" + email + '\'' +
+                ", location='" + location + '\'' +
+                '}';
     }
 }

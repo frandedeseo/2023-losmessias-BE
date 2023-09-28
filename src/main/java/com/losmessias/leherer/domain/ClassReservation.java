@@ -6,8 +6,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
-import java.util.Locale;
 
 @Entity
 @Getter
@@ -24,15 +22,15 @@ public class ClassReservation {
     @Column
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "professor_id")
     private Professor professor;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subject_id")
     private Subject subject;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     private Student student;
 
@@ -47,7 +45,13 @@ public class ClassReservation {
     @Column
     private Integer price;
 
-    public ClassReservation(Professor professor, Subject subject, Student student, LocalDate date, LocalTime startingHour, LocalTime endingHour, Integer price) {
+    public ClassReservation(Professor professor,
+                            Subject subject,
+                            Student student,
+                            LocalDate date,
+                            LocalTime startingHour,
+                            LocalTime endingHour,
+                            Integer price) {
         this.professor = professor;
         this.subject = subject;
         this.student = student;
@@ -56,5 +60,20 @@ public class ClassReservation {
         this.endingHour = endingHour;
         this.price = price;
         this.status = ReservationStatus.CONFIRMED;
+    }
+
+    @Override
+    public String toString() {
+        return "ClassReservation{" +
+                "id=" + id +
+                ", professor=" + professor +
+                ", subject=" + subject +
+                ", student=" + student +
+                ", date=" + date +
+                ", startingHour=" + startingHour +
+                ", endingHour=" + endingHour +
+                ", status=" + status +
+                ", price=" + price +
+                '}';
     }
 }

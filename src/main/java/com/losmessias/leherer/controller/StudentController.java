@@ -7,6 +7,8 @@ import com.losmessias.leherer.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/student")
 @RequiredArgsConstructor
@@ -16,8 +18,8 @@ public class StudentController {
     private final ClassReservationService classReservationService;
 
     @GetMapping("/all")
-    public String getAllStudents() {
-        return studentService.getAllStudents().toString();
+    public List<Student> getAllStudents() {
+        return studentService.getAllStudents();
     }
 
     @GetMapping("/{id}")

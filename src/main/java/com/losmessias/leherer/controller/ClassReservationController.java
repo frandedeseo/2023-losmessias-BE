@@ -25,13 +25,33 @@ public class ClassReservationController {
     private final ProfessorService professorService;
 
     @GetMapping("/all")
-    public List<ClassReservation> getAllReservations() {
-        return classReservationService.getAllReservations();
+    public List<ClassReservationDto> getAllReservations2() {
+        List<ClassReservation> classReservations = classReservationService.getAllReservations();
+        return classReservations
+                .stream()
+                .map(classReservation -> new ClassReservationDto(
+                        classReservation.getProfessor().getId(),
+                        classReservation.getSubject().getId(),
+                        classReservation.getStudent().getId(),
+                        classReservation.getDate(),
+                        classReservation.getStartingHour(),
+                        classReservation.getEndingHour(),
+                        classReservation.getPrice()
+                )).toList();
     }
 
     @GetMapping("/{id}")
-    public ClassReservation getReservationById(@PathVariable Long id) {
-        return classReservationService.getReservationById(id);
+    public ClassReservationDto getReservationById(@PathVariable Long id) {
+        ClassReservation classReservation = classReservationService.getReservationById(id);
+        return new ClassReservationDto(
+                classReservation.getProfessor().getId(),
+                classReservation.getSubject().getId(),
+                classReservation.getStudent().getId(),
+                classReservation.getDate(),
+                classReservation.getStartingHour(),
+                classReservation.getEndingHour(),
+                classReservation.getPrice()
+        );
     }
 
     @PostMapping("/create")
