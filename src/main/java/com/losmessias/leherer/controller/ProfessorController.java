@@ -21,6 +21,7 @@ public class ProfessorController {
         return professorService.getAllProfessors();
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/{id}")
     public Professor getProfessorById(@PathVariable Long id) {
         return professorService.getProfessorById(id);

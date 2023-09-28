@@ -15,7 +15,7 @@ public class ClassReservationDto {
     private Long subjectId;
     private Long studentId;
     private LocalDate day;
-    private LocalTime startingTime;
-    private LocalTime endingTime;
+    private LocalTime startingHour;
+    private LocalTime endingHour;
     private Integer price;
 }

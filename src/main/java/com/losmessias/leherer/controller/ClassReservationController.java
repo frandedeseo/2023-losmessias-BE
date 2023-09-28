@@ -54,6 +54,7 @@ public class ClassReservationController {
         );
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/create")
     public ClassReservation createReservation(@RequestBody ClassReservationDto classReservationDto) {
         Professor professor = professorService.getProfessorById(classReservationDto.getProfessorId());
@@ -65,8 +66,8 @@ public class ClassReservationController {
                 subject,
                 student,
                 classReservationDto.getDay(),
-                classReservationDto.getStartingTime(),
-                classReservationDto.getEndingTime(),
+                classReservationDto.getStartingHour(),
+                classReservationDto.getEndingHour(),
                 classReservationDto.getPrice());
     }
 }
