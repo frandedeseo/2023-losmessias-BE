@@ -74,7 +74,9 @@ public class RegistrationService {
         confirmationTokenService.setConfirmedAt(token);
         appUserService.enableAppUser(
                 confirmationToken.getAppUser().getEmail());
-        return "redirect:/register?success";
+
+        confirmationToken.getAppUser().getAuthorities();
+        return "Successful Registration";
     }
 
     private String buildEmail(String name, String link) {

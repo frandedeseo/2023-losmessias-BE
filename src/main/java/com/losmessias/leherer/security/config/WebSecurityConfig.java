@@ -38,7 +38,7 @@ public class WebSecurityConfig {
                             authorize.anyRequest().authenticated();
                 }).formLogin(form -> form
                         .loginProcessingUrl("/login")
-                        .loginProcessingUrl("/teacher")
+                        .defaultSuccessUrl("http://localhost:3000/landing-page")
                 );
         return http.build();
     }
