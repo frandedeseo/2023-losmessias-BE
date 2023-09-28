@@ -2,9 +2,6 @@ package com.losmessias.leherer.domain;
 
 import org.springframework.stereotype.Service;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.util.function.Predicate;
 
 @Service
@@ -21,6 +18,8 @@ public class EmailValidator implements Predicate<String> {
         return isValidEmail;
     }
 }
+
+
 /*
 public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
 

@@ -37,9 +37,7 @@ public class AppUserService implements UserDetailsService {
         AppUser user = appUserRepository.findByEmail(appUser.getEmail());
 
         if (user!=null) {
-            // TODO check of attributes are the same and
-            // TODO if email not confirmed send confirmation email.
-
+            // TODO tener la opcion de reenviar el token
             throw new IllegalStateException("email already taken");
         }
 
@@ -58,10 +56,7 @@ public class AppUserService implements UserDetailsService {
                 appUser
         );
 
-        confirmationTokenService.saveConfirmationToken(
-                confirmationToken);
-
-//        TODO: SEND EMAIL
+        confirmationTokenService.saveConfirmationToken(confirmationToken);
 
         return token;
     }
