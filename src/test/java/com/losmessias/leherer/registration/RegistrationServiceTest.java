@@ -1,11 +1,13 @@
 package com.losmessias.leherer.registration;
 
-import com.losmessias.leherer.appuser.AppUser;
-import com.losmessias.leherer.appuser.AppUserRepository;
-import com.losmessias.leherer.appuser.AppUserRole;
-import com.losmessias.leherer.appuser.AppUserService;
-import com.losmessias.leherer.email.EmailSender;
-import com.losmessias.leherer.registration.token.ConfirmationTokenService;
+import com.losmessias.leherer.domain.AppUser;
+import com.losmessias.leherer.domain.EmailValidator;
+import com.losmessias.leherer.dto.RegistrationRequest;
+import com.losmessias.leherer.role.AppUserRole;
+import com.losmessias.leherer.service.AppUserService;
+import com.losmessias.leherer.ext_interface.EmailSender;
+import com.losmessias.leherer.service.ConfirmationTokenService;
+import com.losmessias.leherer.service.RegistrationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;

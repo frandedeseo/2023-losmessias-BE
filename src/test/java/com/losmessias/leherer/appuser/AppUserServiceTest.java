@@ -1,6 +1,10 @@
 package com.losmessias.leherer.appuser;
 
-import com.losmessias.leherer.registration.token.ConfirmationTokenService;
+import com.losmessias.leherer.domain.AppUser;
+import com.losmessias.leherer.service.ConfirmationTokenService;
+import com.losmessias.leherer.repository.AppUserRepository;
+import com.losmessias.leherer.role.AppUserRole;
+import com.losmessias.leherer.service.AppUserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -9,13 +13,11 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.mockito.Mock;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.BDDMockito.*;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.junit.jupiter.api.Assertions.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)

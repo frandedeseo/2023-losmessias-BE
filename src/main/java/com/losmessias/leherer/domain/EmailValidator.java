@@ -1,4 +1,4 @@
-package com.losmessias.leherer.registration;
+package com.losmessias.leherer.domain;
 
 import org.springframework.stereotype.Service;
 

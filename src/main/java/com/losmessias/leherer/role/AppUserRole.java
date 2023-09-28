@@ -1,4 +1,4 @@
-package com.losmessias.leherer.appuser;
+package com.losmessias.leherer.role;
 
 public enum AppUserRole {
 

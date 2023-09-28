@@ -1,11 +1,9 @@
-package com.losmessias.leherer.appuser;
+package com.losmessias.leherer.service;
 
-import com.losmessias.leherer.registration.token.ConfirmationToken;
-import com.losmessias.leherer.registration.token.ConfirmationTokenService;
+import com.losmessias.leherer.domain.AppUser;
+import com.losmessias.leherer.domain.ConfirmationToken;
+import com.losmessias.leherer.repository.AppUserRepository;
 import lombok.AllArgsConstructor;
-import org.hibernate.mapping.Collection;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,9 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor

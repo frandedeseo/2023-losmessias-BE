@@ -1,5 +1,7 @@
-package com.losmessias.leherer.registration;
+package com.losmessias.leherer.controller;
 
+import com.losmessias.leherer.dto.RegistrationRequest;
+import com.losmessias.leherer.service.RegistrationService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

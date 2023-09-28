@@ -1,6 +1,6 @@
-package com.losmessias.leherer.registration.token;
+package com.losmessias.leherer.domain;
 
-import com.losmessias.leherer.appuser.AppUser;
+import com.losmessias.leherer.domain.AppUser;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

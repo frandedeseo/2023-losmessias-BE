@@ -1,17 +1,18 @@
-package com.losmessias.leherer.registration;
+package com.losmessias.leherer.service;
 
-import com.losmessias.leherer.appuser.AppUser;
-import com.losmessias.leherer.appuser.AppUserRole;
-import com.losmessias.leherer.appuser.AppUserService;
-import com.losmessias.leherer.email.EmailSender;
-import com.losmessias.leherer.registration.token.ConfirmationToken;
-import com.losmessias.leherer.registration.token.ConfirmationTokenService;
+import com.losmessias.leherer.domain.AppUser;
+import com.losmessias.leherer.domain.EmailValidator;
+import com.losmessias.leherer.dto.RegistrationRequest;
+import com.losmessias.leherer.role.AppUserRole;
+import com.losmessias.leherer.service.AppUserService;
+import com.losmessias.leherer.ext_interface.EmailSender;
+import com.losmessias.leherer.domain.ConfirmationToken;
+import com.losmessias.leherer.service.ConfirmationTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Service
 @AllArgsConstructor

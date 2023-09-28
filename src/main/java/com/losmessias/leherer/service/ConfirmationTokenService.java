@@ -1,5 +1,7 @@
-package com.losmessias.leherer.registration.token;
+package com.losmessias.leherer.service;
 
+import com.losmessias.leherer.domain.ConfirmationToken;
+import com.losmessias.leherer.repository.ConfirmationTokenRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.losmessias.leherer.registration;
+package com.losmessias.leherer.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

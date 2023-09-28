@@ -8,19 +8,9 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import com.losmessias.leherer.appuser.AppUserService;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-
-import static org.springframework.security.config.Customizer.withDefaults;
+import com.losmessias.leherer.service.AppUserService;
 
 @Configuration
 @EnableWebSecurity
@@ -58,7 +48,7 @@ public class WebSecurityConfig {
 /*
 package com.losmessias.leherer.security.config;
 
-import com.losmessias.leherer.appuser.AppUserService;
+import com.losmessias.leherer.service.AppUserService;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
