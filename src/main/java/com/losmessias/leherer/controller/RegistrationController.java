@@ -27,9 +27,12 @@ public class RegistrationController {
         return registrationService.register(request);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/login")
-    public String login(){return "login";}
+//    @CrossOrigin(origins = "http://localhost:3000")
+//    @GetMapping("/login")
+//    public String login(){
+//        System.out.println("Hola");
+//        return "login";
+//    }
 
     @GetMapping(path = "api/v1/registration/confirm")
     public String confirm(@RequestParam("token") String token) {

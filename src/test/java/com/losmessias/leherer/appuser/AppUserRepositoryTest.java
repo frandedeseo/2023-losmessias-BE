@@ -23,7 +23,8 @@ class AppUserRepositoryTest {
                 "de Deseö",
                 "fran@gmail.com",
                 "fran123",
-                AppUserRole.USER
+                AppUserRole.USER,
+                1L
         );
         repositoryTest.save(appUser);
 
