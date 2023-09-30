@@ -4,6 +4,7 @@ import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.repository.ProfessorRepository;
 import com.losmessias.leherer.service.ProfessorService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,6 +27,7 @@ public class ProfessorServiceTests {
     private ProfessorService professorService;
 
     @Test
+    @DisplayName("Get all professors")
     void testGetAllProfessors() {
         List<Professor> professors = new ArrayList<Professor>();
         professors.add(new Professor("John", "Doe", "mail", "ubication", "phone"));
@@ -36,6 +38,7 @@ public class ProfessorServiceTests {
     }
 
     @Test
+    @DisplayName("Get all professors empty")
     void testGetAllProfessorsEmpty() {
         List<Professor> professors = new ArrayList<Professor>();
         when(professorRepository.findAll()).thenReturn(professors);
@@ -43,6 +46,7 @@ public class ProfessorServiceTests {
     }
 
     @Test
+    @DisplayName("Add subject to professor")
     void testGetProfessorSubjects() {
         Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone");
         Subject subject = new Subject( "Math");
@@ -53,6 +57,7 @@ public class ProfessorServiceTests {
     }
 
     @Test
+    @DisplayName("Find professor by id")
     void testFindProfessorById() {
         Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone");
         when(professorRepository.findById(1L)).thenReturn(java.util.Optional.of(professor));

@@ -14,14 +14,18 @@ public class SubjectController {
 
     private final SubjectService subjectService;
 
-    @GetMapping
+    @GetMapping("/all")
     public List<Subject> getSubject() {
         return subjectService.getAllSubjects();
     }
 
+    @GetMapping("/{id}")
+    public Subject getSubjectById(@PathVariable Long id) {
+        return subjectService.getSubjectById(id);
+    }
+
     @PostMapping("/create")
     public Subject createSubject(@RequestBody Subject subject) {
-        System.out.println(subject);
         if(subject.getId() != null) {
             throw new RuntimeException("Creation of subject cannot have an id");
         }

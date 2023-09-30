@@ -3,6 +3,7 @@ package com.losmessias.leherer.controller_tests;
 import com.losmessias.leherer.controller.ProfessorController;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.service.ProfessorService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -36,14 +37,16 @@ public class ProfessorControllerTests {
 
     @Test
     @WithMockUser
+    @DisplayName("Get all professors")
     void testGetAllProfessorsReturnsOk() throws Exception {
         when(professorService.getAllProfessors()).thenReturn(new ArrayList<>());
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/professor"))
+                        .get("/api/professor/all"))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @DisplayName("Get all professors without authentication")
     void testGetAllProfessorsReturnsUnauthorized() throws Exception {
         when(professorService.getAllProfessors()).thenReturn(new ArrayList<>());
         mockMvc.perform(MockMvcRequestBuilders
@@ -53,13 +56,14 @@ public class ProfessorControllerTests {
 
     @Test
     @WithMockUser
+    @DisplayName("Get all professors returns array of professors")
     void testGetAllProfessorsReturnArrayOfProfessors() throws Exception {
         List<Professor> professors = new ArrayList<Professor>();
         professors.add(new Professor("John", "Doe", "mail", "ubication", "phone"));
         professors.add(new Professor("Jane", "Doe", "mail", "ubication", "phone"));
         when(professorService.getAllProfessors()).thenReturn(professors);
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/professor"))
+                        .get("/api/professor/all"))
                 .andExpect(result -> {
                     String json = result.getResponse().getContentAsString();
                     assert (json.contains("John"));
@@ -70,6 +74,7 @@ public class ProfessorControllerTests {
 
     @Test
     @WithMockUser
+    @DisplayName("Save a professor")
     void testSaveAProfessorReturnsOk() throws Exception {
         Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone");
 
@@ -88,6 +93,7 @@ public class ProfessorControllerTests {
 
     @Test
     @WithMockUser
+    @DisplayName("Save a professor returns bad request at id")
     void testSaveAProfessorReturnsBadRequest() throws Exception {
         Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone");
         when(professorService.saveProfessor(professor)).thenReturn(professor);
@@ -105,6 +111,7 @@ public class ProfessorControllerTests {
 
     @Test
     @WithMockUser
+    @DisplayName("Update a professor")
     void testChangingProfessorReturnsNotFound() throws Exception {
         Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone");
         professorService.saveProfessor(professor);

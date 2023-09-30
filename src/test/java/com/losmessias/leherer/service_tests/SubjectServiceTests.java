@@ -3,6 +3,7 @@ package com.losmessias.leherer.service_tests;
 import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.repository.SubjectRepository;
 import com.losmessias.leherer.service.SubjectService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +25,7 @@ public class SubjectServiceTests {
     private SubjectRepository subjectRepository;
 
     @Test
+    @DisplayName("Get all subjects")
     void testGetAllSubjects() {
         List<Subject> subjects = new ArrayList<>();
         subjects.add(new Subject("Math"));
@@ -35,6 +37,7 @@ public class SubjectServiceTests {
     }
 
     @Test
+    @DisplayName("Get all subjects empty")
     void testGetAllSubjectsReturnsEmptyList() {
         List<Subject> subjects = new ArrayList<>();
         when(subjectRepository.findAll()).thenReturn(subjects);
@@ -43,6 +46,7 @@ public class SubjectServiceTests {
     }
 
     @Test
+    @DisplayName("Create a valid subject")
     void testCreatingAValidSubject() {
         Subject subject = new Subject("Math");
         when(subjectRepository.save(subject)).thenReturn(subject);
@@ -50,6 +54,7 @@ public class SubjectServiceTests {
     }
 
     @Test
+    @DisplayName("Find subject by id")
     void testFindSubjectById() {
         Subject subject = new Subject("Math");
         when(subjectRepository.findById(1L)).thenReturn(java.util.Optional.of(subject));
