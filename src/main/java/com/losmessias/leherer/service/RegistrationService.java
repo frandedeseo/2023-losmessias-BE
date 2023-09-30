@@ -1,38 +1,55 @@
 package com.losmessias.leherer.service;
 
-import com.losmessias.leherer.domain.AppUser;
-import com.losmessias.leherer.domain.EmailValidator;
+import com.losmessias.leherer.domain.*;
 import com.losmessias.leherer.dto.RegistrationRequest;
 import com.losmessias.leherer.role.AppUserRole;
 import com.losmessias.leherer.ext_interface.EmailSender;
-import com.losmessias.leherer.domain.ConfirmationToken;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RegistrationService {
-
 
     private final AppUserService appUserService;
     private final EmailValidator emailValidator;
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailSender emailSender;
+    private final StudentService studentService;
+    private final ProfessorService professorService;
 
     public String register(RegistrationRequest request) {
-
         emailValidator.test(request.getEmail());
-
+        Long id;
         AppUserRole role;
+
         if (request.getRole().equals("Student")){
             role=AppUserRole.STUDENT;
+            Student student = studentService.create(
+                    new Student(
+                            request.getFirstName(),
+                            request.getLastName(),
+                            request.getEmail(),
+                            null
+                    )
+            );
+            id = student.getId();
         }else{
-            role =AppUserRole.TEACHER;
+            role =AppUserRole.PROFESSOR;
+            Professor professor = professorService.saveProfessor(
+                    new Professor(
+                            request.getFirstName(),
+                            request.getLastName(),
+                            request.getEmail(),
+                            null,
+                            null
+                    )
+            );
+            id = professor.getId();
         }
-
 
         String token = appUserService.signUpUser(
                 new AppUser(
@@ -40,7 +57,8 @@ public class RegistrationService {
                         request.getLastName(),
                         request.getEmail(),
                         request.getPassword(),
-                        role
+                        role,
+                        id
                 )
         );
 

@@ -44,12 +44,9 @@ class AppUserServiceTest {
                 "de Deseö",
                 "fran@gmail.com",
                 "fran123456",
-                AppUserRole.USER
+                AppUserRole.USER,
+                23L
         );
-    }
-    @Test
-    @Disabled
-    void loadUserByUsername() {
     }
 
     @Test
