@@ -1,6 +1,6 @@
 package com.losmessias.leherer.domain;
 
-import com.losmessias.leherer.role.AppUserRole;
+import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

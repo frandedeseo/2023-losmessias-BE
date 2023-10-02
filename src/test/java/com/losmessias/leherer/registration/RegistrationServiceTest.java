@@ -3,7 +3,7 @@
 //import com.losmessias.leherer.domain.AppUser;
 //import com.losmessias.leherer.domain.EmailValidator;
 //import com.losmessias.leherer.dto.RegistrationRequest;
-//import com.losmessias.leherer.role.AppUserRole;
+//import com.losmessias.leherer.domain.enumeration.AppUserRole;
 //import com.losmessias.leherer.service.*;
 //import com.losmessias.leherer.ext_interface.EmailSender;
 //import org.junit.jupiter.api.BeforeEach;

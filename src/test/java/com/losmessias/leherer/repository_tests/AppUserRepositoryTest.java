@@ -1,8 +1,8 @@
-package com.losmessias.leherer.appuser;
+package com.losmessias.leherer.repository_tests;
 
 import com.losmessias.leherer.domain.AppUser;
 import com.losmessias.leherer.repository.AppUserRepository;
-import com.losmessias.leherer.role.AppUserRole;
+import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
