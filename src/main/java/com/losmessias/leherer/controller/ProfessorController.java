@@ -17,7 +17,7 @@ public class ProfessorController {
     private final ProfessorService professorService;
 
     @GetMapping("/all")
-    public List<Professor> getProfessor() { // retornar un DTO
+    public List<Professor> getProfessor() {
         return professorService.getAllProfessors();
     }
 
@@ -27,6 +27,7 @@ public class ProfessorController {
         return professorService.getProfessorById(id);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/register")
     public ResponseEntity<String> registerProfessor(@RequestBody Professor professor) {
         if (professor.getId() != null) {
@@ -37,10 +38,11 @@ public class ProfessorController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PatchMapping("/update/{id}")
     public ResponseEntity<String> updateProfessor(@PathVariable Long id, @RequestBody Professor professor) {
-        if (professor.getId() == null) {
-            return new ResponseEntity<>("Professor not registered", org.springframework.http.HttpStatus.BAD_REQUEST);
+        if (id == null) {
+            return new ResponseEntity<>("Professor ID not registered", org.springframework.http.HttpStatus.BAD_REQUEST);
         } else if (professorService.getProfessorById(id) == null) {
             return new ResponseEntity<>("Professor not found", org.springframework.http.HttpStatus.NOT_FOUND);
         }

@@ -32,4 +32,14 @@ public class StudentService {
         student.addReservation(classReservation);
         return studentRepository.save(student);
     }
+
+    public Student updateStudent(Long id, Student student) {
+        Student studentToUpdate = studentRepository.findById(id).orElse(null);
+        studentToUpdate.setFirstName(student.getFirstName() != null ? student.getFirstName() : studentToUpdate.getFirstName());
+        studentToUpdate.setLastName(student.getLastName() != null ? student.getLastName() : studentToUpdate.getLastName());
+        studentToUpdate.setEmail(student.getEmail() != null ? student.getEmail() : studentToUpdate.getEmail());
+        studentToUpdate.setLocation(student.getLocation() != null ? student.getLocation() : studentToUpdate.getLocation());
+        studentToUpdate.setClassReservations(student.getClassReservations() != null ? student.getClassReservations() : studentToUpdate.getClassReservations());
+        return studentRepository.save(studentToUpdate);
+    }
 }

@@ -3,6 +3,7 @@ package com.losmessias.leherer.controller_tests;
 import com.losmessias.leherer.controller.ProfessorController;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.service.ProfessorService;
+import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +19,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -116,15 +118,17 @@ public class ProfessorControllerTests {
         Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone");
         professorService.saveProfessor(professor);
         when(professorService.saveProfessor(professor)).thenReturn(professor);
+        when(professorService.getProfessorById(any())).thenReturn(professor);
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("firstName", "John");
+        jsonContent.put("lastName", "Doe");
+        jsonContent.put("email", "email");
+        jsonContent.put("location", "location");
         mockMvc.perform(MockMvcRequestBuilders
                         .patch("/api/professor/update/1")
                         .contentType("application/json")
-                        .content(
-                                "{\"id\": 1," +
-                                        "\"firstName\": \"John\"," +
-                                        "\"lastName\": \"Doe\"" +
-                                        "}")
+                        .content(jsonContent.toString())
                         .with(csrf()))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
     }
 }
