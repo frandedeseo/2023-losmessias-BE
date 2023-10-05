@@ -53,8 +53,7 @@ public class StudentController {
             return new ResponseEntity<>("Student not found", org.springframework.http.HttpStatus.NOT_FOUND);
         }
 
-        studentService.updateStudent(id, student);
-        String response = "Student updated";
-        return new ResponseEntity<>(response, org.springframework.http.HttpStatus.OK);
+        Student studentSaved = studentService.updateStudent(id, student);
+        return new ResponseEntity<>(studentSaved.toJson(), org.springframework.http.HttpStatus.OK);
     }
 }

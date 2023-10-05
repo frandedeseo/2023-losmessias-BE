@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -101,6 +102,7 @@ public class StudentControllerTests {
         Student student = new Student("John", "Doe", "email", "location");
         studentService.create(student);
         when(studentRepository.save(student)).thenReturn(student);
+        when(studentService.updateStudent(any(), any())).thenReturn(student);
         when(studentService.getStudentById(1L)).thenReturn(student);
         JSONObject jsonContent = new JSONObject();
         jsonContent.put("firstName", "John");

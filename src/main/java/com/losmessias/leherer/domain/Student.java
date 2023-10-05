@@ -55,4 +55,14 @@ public class Student {
                 ", location='" + location + '\'' +
                 '}';
     }
+
+    public String toJson(){
+        return "{" +
+                "\"id\":" + id +
+                ", \"firstName\":\"" + firstName + '\"' +
+                ", \"lastName\":\"" + lastName + '\"' +
+                ", \"email\":\"" + email + '\"' +
+                ", \"location\":\"" + location + '\"' +
+                '}';
+    }
 }
