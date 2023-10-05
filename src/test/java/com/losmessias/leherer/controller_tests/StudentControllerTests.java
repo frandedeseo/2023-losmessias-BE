@@ -2,6 +2,7 @@ package com.losmessias.leherer.controller_tests;
 
 import com.losmessias.leherer.controller.StudentController;
 import com.losmessias.leherer.domain.Student;
+import com.losmessias.leherer.repository.StudentRepository;
 import com.losmessias.leherer.service.ClassReservationService;
 import com.losmessias.leherer.service.StudentService;
 import org.json.JSONArray;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,6 +37,8 @@ public class StudentControllerTests {
 
     @MockBean
     private ClassReservationService classReservationService;
+    @MockBean
+    private StudentRepository studentRepository;
 
     @Test
     @WithMockUser
@@ -87,6 +91,28 @@ public class StudentControllerTests {
                         .post("/api/student/addReservation")
                         .param("studentId", "1")
                         .param("reservationId", "1")
+                        .with(csrf()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Update student")
+    void testUpdateStudentReturnsOk() throws Exception {
+        Student student = new Student("John", "Doe", "email", "location");
+        studentService.create(student);
+        when(studentRepository.save(student)).thenReturn(student);
+        when(studentService.updateStudent(any(), any())).thenReturn(student);
+        when(studentService.getStudentById(1L)).thenReturn(student);
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("firstName", "John");
+        jsonContent.put("lastName", "Doe");
+        jsonContent.put("email", "email");
+        jsonContent.put("location", "location");
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("/api/student/update/1")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
                         .with(csrf()))
                 .andExpect(status().isOk());
     }

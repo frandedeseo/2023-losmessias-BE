@@ -14,8 +14,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,6 +61,20 @@ public class StudentServiceTests {
 
         when(studentRepository.save(student)).thenReturn(student);
         assertEquals(studentService.addReservationTo(student, reservation), student);
+    }
+
+    @Test
+    @DisplayName("Update student")
+    void testUpdateStudent() {
+        Student student = new Student("John", "Doe", "mail", "ubication");
+        Student studentToUpdate = new Student("John", "Doe", "mail", "ubication");
+        studentToUpdate.setFirstName("Jane");
+        studentToUpdate.setLastName("Doe");
+        studentToUpdate.setEmail("mail");
+        studentToUpdate.setLocation("ubication");
+        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
+        when(studentRepository.save(any())).thenReturn(studentToUpdate);
+        assertEquals(studentService.updateStudent(1L, studentToUpdate), studentToUpdate);
     }
 
 }

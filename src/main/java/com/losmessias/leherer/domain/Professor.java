@@ -72,4 +72,15 @@ public class Professor {
                 '}';
     }
 
+    public String toJson() {
+        return "{" +
+                "\"id\":" + id +
+                ", \"firstName\":\"" + firstName + '\"' +
+                ", \"lastName\":\"" + lastName + '\"' +
+                ", \"email\":\"" + email + '\"' +
+                ", \"location\":\"" + location + '\"' +
+                ", \"phone\":\"" + phone + '\"' +
+                '}';
+    }
+
 }
