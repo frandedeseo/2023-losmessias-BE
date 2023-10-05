@@ -47,8 +47,7 @@ public class ProfessorController {
             return new ResponseEntity<>("Professor not found", org.springframework.http.HttpStatus.NOT_FOUND);
         }
 
-        professorService.updateProfessor(id, professor);
-        String response = "Professor updated";
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        Professor professorSaved = professorService.updateProfessor(id, professor);
+        return new ResponseEntity<>(professorSaved.toJson(), HttpStatus.OK);
     }
 }

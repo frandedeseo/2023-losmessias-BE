@@ -39,6 +39,7 @@ public class StudentService {
         studentToUpdate.setLastName(student.getLastName() != null ? student.getLastName() : studentToUpdate.getLastName());
         studentToUpdate.setEmail(student.getEmail() != null ? student.getEmail() : studentToUpdate.getEmail());
         studentToUpdate.setLocation(student.getLocation() != null ? student.getLocation() : studentToUpdate.getLocation());
+        studentToUpdate.setPhone(student.getPhone() != null ? student.getPhone() : studentToUpdate.getPhone());
         studentToUpdate.setClassReservations(student.getClassReservations() != null ? student.getClassReservations() : studentToUpdate.getClassReservations());
         return studentRepository.save(studentToUpdate);
     }

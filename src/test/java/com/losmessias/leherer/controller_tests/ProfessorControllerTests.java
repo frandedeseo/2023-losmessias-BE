@@ -119,6 +119,7 @@ public class ProfessorControllerTests {
         professorService.saveProfessor(professor);
         when(professorService.saveProfessor(professor)).thenReturn(professor);
         when(professorService.getProfessorById(any())).thenReturn(professor);
+        when(professorService.updateProfessor(any(), any())).thenReturn(professor);
         JSONObject jsonContent = new JSONObject();
         jsonContent.put("firstName", "John");
         jsonContent.put("lastName", "Doe");

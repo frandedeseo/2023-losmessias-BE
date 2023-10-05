@@ -29,6 +29,8 @@ public class Student {
     private String email;
     @Column
     private String location;
+    @Column
+    private String phone;
     @JsonIgnore
     @OneToMany(mappedBy = "student")
     private List<ClassReservation> classReservations;
