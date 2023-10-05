@@ -62,6 +62,15 @@ public class ClassReservation {
         this.status = ReservationStatus.CONFIRMED;
     }
 
+    //Unavailable reservation initialization
+    public ClassReservation(Professor professor,LocalDate date, LocalTime startingHour, LocalTime endingHour){
+        this.professor = professor;
+        this.date = date;
+        this.startingHour = startingHour;
+        this.endingHour = endingHour;
+        this.status = ReservationStatus.NOT_AVAILABLE;
+    }
+
     @Override
     public String toString() {
         return "ClassReservation{" +

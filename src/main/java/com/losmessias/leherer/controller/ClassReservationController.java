@@ -5,6 +5,8 @@ import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.dto.ClassReservationDto;
+import com.losmessias.leherer.dto.ClassReservationResponseDto;
+import com.losmessias.leherer.dto.UnavailableClassReservationDto;
 import com.losmessias.leherer.service.ClassReservationService;
 import com.losmessias.leherer.service.ProfessorService;
 import com.losmessias.leherer.service.StudentService;
@@ -25,32 +27,36 @@ public class ClassReservationController {
     private final ProfessorService professorService;
 
     @GetMapping("/all")
-    public List<ClassReservationDto> getAllReservations2() {
+    public List<ClassReservationResponseDto> getAllReservations() {
         List<ClassReservation> classReservations = classReservationService.getAllReservations();
         return classReservations
                 .stream()
-                .map(classReservation -> new ClassReservationDto(
+                .map(classReservation -> new ClassReservationResponseDto(
+                        classReservation.getId(),
                         classReservation.getProfessor().getId(),
-                        classReservation.getSubject().getId(),
-                        classReservation.getStudent().getId(),
+                        classReservation.getSubject() == null ? null : classReservation.getSubject().getId(),
+                        classReservation.getStudent() == null ? null : classReservation.getStudent().getId(),
                         classReservation.getDate(),
                         classReservation.getStartingHour(),
                         classReservation.getEndingHour(),
-                        classReservation.getPrice()
+                        classReservation.getPrice() == null ? null : classReservation.getPrice(),
+                        classReservation.getStatus().toString()
                 )).toList();
     }
 
     @GetMapping("/{id}")
-    public ClassReservationDto getReservationById(@PathVariable Long id) {
+    public ClassReservationResponseDto getReservationById(@PathVariable Long id) {
         ClassReservation classReservation = classReservationService.getReservationById(id);
-        return new ClassReservationDto(
+        return new ClassReservationResponseDto(
+                classReservation.getId(),
                 classReservation.getProfessor().getId(),
-                classReservation.getSubject().getId(),
-                classReservation.getStudent().getId(),
+                classReservation.getSubject() == null ? null : classReservation.getSubject().getId(),
+                classReservation.getStudent() == null ? null : classReservation.getStudent().getId(),
                 classReservation.getDate(),
                 classReservation.getStartingHour(),
                 classReservation.getEndingHour(),
-                classReservation.getPrice()
+                classReservation.getPrice() == null ? null : classReservation.getPrice(),
+                classReservation.getStatus().toString()
         );
     }
 
@@ -69,5 +75,27 @@ public class ClassReservationController {
                 classReservationDto.getStartingHour(),
                 classReservationDto.getEndingHour(),
                 classReservationDto.getPrice());
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PostMapping("/createUnavailable")
+    public ClassReservation createUnavailableReservation(@RequestBody UnavailableClassReservationDto classReservationDto) {
+        Professor professor = professorService.getProfessorById(classReservationDto.getProfessorId());
+        return classReservationService.createUnavailableReservation(
+                professor,
+                classReservationDto.getDay(),
+                classReservationDto.getStartingHour(),
+                classReservationDto.getEndingHour());
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PostMapping("/createMultipleUnavailable")
+    public List<ClassReservation> createMultipleUnavailableReservations(@RequestBody UnavailableClassReservationDto classReservationDtos) {
+        Professor professor = professorService.getProfessorById(classReservationDtos.getProfessorId());
+        return classReservationService.createMultipleUnavailableReservationsFor(
+                professor,
+                classReservationDtos.getDay(),
+                classReservationDtos.getStartingHour(),
+                classReservationDtos.getEndingHour());
     }
 }

@@ -1,12 +1,11 @@
-package com.losmessias.leherer.appuser;
+package com.losmessias.leherer.service_tests;
 
 import com.losmessias.leherer.domain.AppUser;
 import com.losmessias.leherer.service.ConfirmationTokenService;
 import com.losmessias.leherer.repository.AppUserRepository;
-import com.losmessias.leherer.role.AppUserRole;
+import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.service.AppUserService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
