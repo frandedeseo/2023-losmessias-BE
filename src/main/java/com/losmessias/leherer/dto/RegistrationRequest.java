@@ -15,4 +15,6 @@ public class RegistrationRequest {
     private final String email;
     private final String password;
     private final String role;
+    private final String location;
+    private final String phone;
 }

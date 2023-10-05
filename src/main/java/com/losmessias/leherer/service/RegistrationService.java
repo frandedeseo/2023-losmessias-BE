@@ -1,6 +1,7 @@
 package com.losmessias.leherer.service;
 
 import com.losmessias.leherer.domain.*;
+import com.losmessias.leherer.dto.ForgotPasswordDto;
 import com.losmessias.leherer.dto.RegistrationRequest;
 import com.losmessias.leherer.role.AppUserRole;
 import com.losmessias.leherer.ext_interface.EmailSender;
@@ -8,21 +9,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 public class RegistrationService {
 
     private final AppUserService appUserService;
-    private final EmailValidator emailValidator;
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailSender emailSender;
     private final StudentService studentService;
     private final ProfessorService professorService;
 
     public String register(RegistrationRequest request) {
-        emailValidator.test(request.getEmail());
+
+        appUserService.validateEmailNotTaken(request.getEmail());
+
         Long id;
         AppUserRole role;
 
@@ -33,7 +33,7 @@ public class RegistrationService {
                             request.getFirstName(),
                             request.getLastName(),
                             request.getEmail(),
-                            null
+                            request.getLocation()
                     )
             );
             id = student.getId();
@@ -44,60 +44,86 @@ public class RegistrationService {
                             request.getFirstName(),
                             request.getLastName(),
                             request.getEmail(),
-                            null,
-                            null
+                            request.getLocation(),
+                            request.getPhone()
                     )
             );
             id = professor.getId();
         }
 
-        String token = appUserService.signUpUser(
-                new AppUser(
-                        request.getFirstName(),
-                        request.getLastName(),
-                        request.getEmail(),
-                        request.getPassword(),
-                        role,
-                        id
-                )
+        AppUser appUser = new AppUser(
+                request.getEmail(),
+                request.getPassword(),
+                role,
+                id
         );
+
+        appUserService.signUpUser(appUser);
+
+        String token = confirmationTokenService.generateConfirmationToken(appUser);
 
         String link = "http://localhost:8080/api/v1/registration/confirm?token=" + token;
 
         emailSender.send(
                 request.getEmail(),
-                buildEmail(request.getFirstName(), link));
+                buildEmail(request.getFirstName(), link, "Confirm yor email", "Welcome to Leherer! The place where your dreams come true. I would like to thank you for registering! "));
 
         return "Successful Registration";
+    }
+
+    public String sendEmailForPasswordChange(String email){
+
+        AppUser appUser = appUserService.getAppUser(email);
+
+        String firstName;
+        if (appUser.getAppUserRole() == AppUserRole.STUDENT){
+            firstName = (studentService.getStudentById(appUser.getAssociationId())).getFirstName();
+        }else{
+            firstName = (professorService.getProfessorById(appUser.getAssociationId())).getFirstName();
+        }
+
+        String token = confirmationTokenService.generateConfirmationToken(appUser);
+
+        String link = "http://localhost:3000/recover-password?email="+email+"&token=" + token;
+
+        emailSender.send(
+                email,
+                buildEmail(firstName, link, "Confirm your Email for Password Change", "Please do not be so silly to forget you password again! "));
+
+        return "Confirm your email for password change";
+
     }
 
 
     @Transactional
-    public String confirmToken(String token) {
-        ConfirmationToken confirmationToken = confirmationTokenService
-                .getToken(token)
-                .orElseThrow(() ->
-                        new IllegalStateException("token not found"));
+    public String confirmEmailToken(String token) {
 
-        if (confirmationToken.getConfirmedAt() != null) {
-            throw new IllegalStateException("email already confirmed");
-        }
+        ConfirmationToken confirmationToken = confirmationTokenService.validateToken(token);
 
-        LocalDateTime expiredAt = confirmationToken.getExpiresAt();
-
-        if (expiredAt.isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("token expired");
-        }
-
-        confirmationTokenService.setConfirmedAt(token);
         appUserService.enableAppUser(
                 confirmationToken.getAppUser().getEmail());
 
         confirmationToken.getAppUser().getAuthorities();
-        return "Successful Registration";
+
+        return "Email Confirmed";
     }
 
-    private String buildEmail(String name, String link) {
+    @Transactional
+    public String confirmChangePasswordToken(String token) {
+
+        confirmationTokenService.validateToken(token);
+
+        return "Email Confirmed";
+    }
+    public String changePassword(ForgotPasswordDto request) {
+
+        String encodedPassword = appUserService.encodePassword(request.getPassword());
+        appUserService.changePassword(request.getEmail(), encodedPassword);
+
+        return "Password changed successfully";
+    }
+
+    private String buildEmail(String name, String link, String title, String text) {
         return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +
                 "\n" +
                 "<span style=\"display:none;font-size:1px;color:#fff;max-height:0\"></span>\n" +
@@ -115,7 +141,7 @@ public class RegistrationService {
                 "                  \n" +
                 "                    </td>\n" +
                 "                    <td style=\"font-size:28px;line-height:1.315789474;Margin-top:4px;padding-left:10px\">\n" +
-                "                      <span style=\"font-family:Helvetica,Arial,sans-serif;font-weight:700;color:#ffffff;text-decoration:none;vertical-align:top;display:inline-block\">Confirm your email</span>\n" +
+                "                      <span style=\"font-family:Helvetica,Arial,sans-serif;font-weight:700;color:#ffffff;text-decoration:none;vertical-align:top;display:inline-block\">" + title + "</span>\n" +
                 "                    </td>\n" +
                 "                  </tr>\n" +
                 "                </tbody></table>\n" +
@@ -153,7 +179,7 @@ public class RegistrationService {
                 "      <td width=\"10\" valign=\"middle\"><br></td>\n" +
                 "      <td style=\"font-family:Helvetica,Arial,sans-serif;font-size:19px;line-height:1.315789474;max-width:560px\">\n" +
                 "        \n" +
-                "            <p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\">Hi " + name + ",</p><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> Thank you for registering. Please click on the below link to activate your account: </p><blockquote style=\"Margin:0 0 20px 0;border-left:10px solid #b1b4b6;padding:15px 0 0.1px 15px;font-size:19px;line-height:25px\"><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> <a href=\"" + link + "\">Activate Now</a> </p></blockquote>\n Link will expire in 15 minutes. <p>See you soon</p>" +
+                "            <p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\">Hi " + name + ",</p><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\">" + text + "Please click on the below link: </p><blockquote style=\"Margin:0 0 20px 0;border-left:10px solid #b1b4b6;padding:15px 0 0.1px 15px;font-size:19px;line-height:25px\"><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> <a href=\"" + link + "\">Click here</a> </p></blockquote>\n Link will expire in 15 minutes. <p>See you soon</p>" +
                 "        \n" +
                 "      </td>\n" +
                 "      <td width=\"10\" valign=\"middle\"><br></td>\n" +
@@ -165,4 +191,5 @@ public class RegistrationService {
                 "\n" +
                 "</div></div>";
     }
+
 }
