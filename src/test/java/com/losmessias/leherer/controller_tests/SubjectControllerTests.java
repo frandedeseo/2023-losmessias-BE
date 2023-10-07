@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -37,7 +38,10 @@ public class SubjectControllerTests {
     @WithMockUser
     @DisplayName("Get all subjects")
     void testGetAllSubjectsReturnsOk() throws Exception {
-        when(subjectService.getAllSubjects()).thenReturn(new ArrayList<>());
+        List<Subject> subjects = new ArrayList<>();
+        subjects.add(new Subject());
+        subjects.add(new Subject());
+        when(subjectService.getAllSubjects()).thenReturn(subjects);
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/subject/all"))
                 .andExpect(status().isOk());
@@ -56,7 +60,7 @@ public class SubjectControllerTests {
     @WithMockUser
     @DisplayName("Get subject by id")
     void testGetSubjectByIdReturnsOk() throws Exception {
-        when(subjectService.getSubjectById(1L)).thenReturn(null);
+        when(subjectService.getSubjectById(1L)).thenReturn(new Subject());
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/subject/1"))
                 .andExpect(status().isOk());
@@ -83,7 +87,7 @@ public class SubjectControllerTests {
                         .contentType("application/json")
                         .content(jsonContent.toString())
                         .with(csrf()))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @Test

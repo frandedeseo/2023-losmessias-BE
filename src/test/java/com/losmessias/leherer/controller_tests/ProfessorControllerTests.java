@@ -41,10 +41,25 @@ public class ProfessorControllerTests {
     @WithMockUser
     @DisplayName("Get all professors")
     void testGetAllProfessorsReturnsOk() throws Exception {
-        when(professorService.getAllProfessors()).thenReturn(new ArrayList<>());
+        Professor professor1 = new Professor("John", "Doe", "mail", "ubication", "phone");
+        Professor professor2 = new Professor("Jane", "Doe", "mail", "ubication", "phone");
+        List<Professor> professors = new ArrayList<Professor>();
+        professors.add(professor1);
+        professors.add(professor2);
+        when(professorService.getAllProfessors()).thenReturn(professors);
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/professor/all"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Get all professors gets empty list")
+    void testGetAllProfessorsReturnsEmptyList() throws Exception {
+        when(professorService.getAllProfessors()).thenReturn(new ArrayList<>());
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/professor/all"))
+                .andExpect(status().isNotFound());
     }
 
     @Test

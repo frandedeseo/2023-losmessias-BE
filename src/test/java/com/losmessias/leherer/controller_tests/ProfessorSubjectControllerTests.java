@@ -4,6 +4,7 @@ import com.losmessias.leherer.controller.ProfessorSubjectController;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.domain.ProfessorSubject;
 import com.losmessias.leherer.domain.Subject;
+import com.losmessias.leherer.domain.enumeration.SubjectStatus;
 import com.losmessias.leherer.dto.SubjectRequestDto;
 import com.losmessias.leherer.service.ProfessorService;
 import com.losmessias.leherer.service.ProfessorSubjectService;
@@ -13,6 +14,7 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -55,7 +57,10 @@ public class ProfessorSubjectControllerTests {
     @WithMockUser
     @DisplayName("Get all professor-subjects")
     void testGetAllProfessorSubjectsReturnsOk() throws Exception {
-        when(professorSubjectService.getAllProfessorSubjects()).thenReturn(new ArrayList<>());
+        List<ProfessorSubject> professorSubjects = new ArrayList<>();
+        professorSubjects.add(new ProfessorSubject());
+        professorSubjects.add(new ProfessorSubject());
+        when(professorSubjectService.getAllProfessorSubjects()).thenReturn(professorSubjects);
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/professor-subject/all"))
                 .andExpect(status().isOk());
@@ -95,62 +100,26 @@ public class ProfessorSubjectControllerTests {
     @WithMockUser
     @DisplayName("Create a professor-subject association")
     void testCreateProfessorSubjectAssociationReturnsOk() throws Exception {
-        when(professorService.getProfessorById(1L)).thenReturn(null);
-        when(subjectService.getSubjectById(1L)).thenReturn(null);
+        when(professorService.getProfessorById(1L)).thenReturn(new Professor());
+        when(subjectService.getSubjectById(1L)).thenReturn(new Subject());
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/professor-subject/createAssociation")
                         .param("professorId", "1")
                         .param("subjectId", "1")
                         .with(csrf()))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
-
-//    @Test
-//    @WithMockUser
-//    @DisplayName("Approve a professor-subject association")
-//    void testApproveProfessorSubjectAssociationReturnsOk() throws Exception {
-//        JSONObject jsonContent = new JSONObject();
-//        JSONArray jsonArray = new JSONArray();
-//        jsonArray.put(1L);
-//        jsonContent.put("professorId", 1L);
-//        jsonContent.put("subjectsId", jsonArray);
-//        when(subjectRequestDtoMock.getSubjectIds()).thenReturn(List.of(1L));
-//        when(subjectRequestDtoMock.getProfessorId()).thenReturn(1L);
-//        when(professorSubjectService.findByProfessorAndSubject(Mockito.any(), Mockito.any())).thenReturn(null);
-//        when(professorSubjectService.findByProfessorIdAndStatus(1L, null)).thenReturn(new ArrayList<>());
-//
-//        mockMvc.perform(MockMvcRequestBuilders
-//                        .post("/api/professor-subject/approve")
-//                        .contentType("application/json")
-//                        .content(jsonContent.toString())
-//                        .with(csrf()))
-//                .andExpect(status().isOk());
-//    }
-
-//    @Test
-//    @WithMockUser
-//    @DisplayName("Reject a professor-subject association")
-//    void testRejectProfessorSubjectAssociationReturnsOk() throws Exception {
-//        JSONObject jsonContent = new JSONObject();
-//        JSONArray jsonArray = new JSONArray();
-//        jsonArray.put(1L);
-//        jsonContent.put("professorId", 1L);
-//        jsonContent.put("subjectsId", jsonArray);
-//        when(professorSubjectService.findByProfessorIdAndStatus(1L, null)).thenReturn(new ArrayList<>());
-//
-//        mockMvc.perform(MockMvcRequestBuilders
-//                        .post("/api/professor-subject/reject")
-//                        .contentType("application/json")
-//                        .content(jsonContent.toString())
-//                        .with(csrf()))
-//                .andExpect(status().isOk());
-//    }
 
     @Test
     @WithMockUser
     @DisplayName("Find professor-subjects by professor")
     void testFindProfessorSubjectsByProfessorReturnsOk() throws Exception {
-        when(professorService.getProfessorById(1L)).thenReturn(null);
+        Professor professor = new Professor();
+        List<ProfessorSubject> professorSubjects = new ArrayList<>();
+        professorSubjects.add(new ProfessorSubject());
+        professorSubjects.add(new ProfessorSubject());
+        when(professorService.getProfessorById(1L)).thenReturn(new Professor());
+        when(professorSubjectService.findByProfessor(any())).thenReturn(professorSubjects);
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/professor-subject/findByProfessor/1"))
                 .andExpect(status().isOk());
@@ -160,7 +129,10 @@ public class ProfessorSubjectControllerTests {
     @WithMockUser
     @DisplayName("Find professor-subjects by status")
     void testFindProfessorSubjectsByStatusReturnsOk() throws Exception {
-        when(professorSubjectService.findByStatus(Mockito.any())).thenReturn(new ArrayList<>());
+        List<ProfessorSubject> professorSubjects = new ArrayList<>();
+        professorSubjects.add(new ProfessorSubject());
+        professorSubjects.add(new ProfessorSubject());
+        when(professorSubjectService.findByStatus(SubjectStatus.PENDING)).thenReturn(professorSubjects);
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/professor-subject/findByStatus")
                         .param("status", "PENDING"))

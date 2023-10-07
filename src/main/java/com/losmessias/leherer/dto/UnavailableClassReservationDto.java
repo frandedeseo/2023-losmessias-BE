@@ -15,4 +15,5 @@ public class UnavailableClassReservationDto {
     private LocalDate day;
     private LocalTime startingHour;
     private LocalTime endingHour;
+    private Double duration;
 }

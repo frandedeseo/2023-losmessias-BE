@@ -41,4 +41,5 @@ public class ProfessorService {
         professorToUpdate.setLocation(professor.getLocation() != null ? professor.getLocation() : professorToUpdate.getLocation());
         return professorRepository.save(professorToUpdate);
     }
+
 }

@@ -1,6 +1,7 @@
 package com.losmessias.leherer.controller_tests;
 
 import com.losmessias.leherer.controller.StudentController;
+import com.losmessias.leherer.domain.ClassReservation;
 import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.repository.StudentRepository;
 import com.losmessias.leherer.service.ClassReservationService;
@@ -42,9 +43,24 @@ public class StudentControllerTests {
 
     @Test
     @WithMockUser
-    @DisplayName("Get all students")
+    @DisplayName("Get all students gets empty list")
     void testGetAllStudentsReturnsOk() throws Exception {
         when(studentService.getAllStudents()).thenReturn(new ArrayList<>());
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/student/all"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Get all students")
+    void testGetAllStudentsReturnsNotFound() throws Exception {
+        Student student1 = new Student("John", "Doe", "email", "location");
+        Student student2 = new Student("Jane", "Doe", "email", "location");
+        ArrayList<Student> students = new ArrayList<>();
+        students.add(student1);
+        students.add(student2);
+        when(studentService.getAllStudents()).thenReturn(students);
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/student/all"))
                 .andExpect(status().isOk());
@@ -78,7 +94,7 @@ public class StudentControllerTests {
                         .contentType("application/json")
                         .content(jsonContent.toString())
                         .with(csrf()))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -86,13 +102,41 @@ public class StudentControllerTests {
     @DisplayName("Add reservation to student")
     void testAddReservationToStudentReturnsOk() throws Exception {
         when(studentService.getStudentById(1L)).thenReturn(new Student());
-        when(classReservationService.getReservationById(1L)).thenReturn(null);
+        when(classReservationService.getReservationById(1L)).thenReturn(new ClassReservation());
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/student/addReservation")
                         .param("studentId", "1")
                         .param("reservationId", "1")
                         .with(csrf()))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Add reservation to student returns bad request when student not found")
+    void testAddReservationToStudentReturnsBadRequest() throws Exception {
+        when(studentService.getStudentById(1L)).thenReturn(null);
+        when(classReservationService.getReservationById(1L)).thenReturn(new ClassReservation());
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/student/addReservation")
+                        .param("studentId", "1")
+                        .param("reservationId", "1")
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Add reservation to student returns bad request when reservation not found")
+    void testAddReservationToStudentReturnsBadRequest2() throws Exception {
+        when(studentService.getStudentById(1L)).thenReturn(new Student());
+        when(classReservationService.getReservationById(1L)).thenReturn(null);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/student/addReservation")
+                        .param("studentId", "1")
+                        .param("reservationId", "1")
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
