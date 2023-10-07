@@ -41,8 +41,8 @@ public class ProfessorControllerTests {
     @WithMockUser
     @DisplayName("Get all professors")
     void testGetAllProfessorsReturnsOk() throws Exception {
-        Professor professor1 = new Professor("John", "Doe", "mail", "ubication", "phone");
-        Professor professor2 = new Professor("Jane", "Doe", "mail", "ubication", "phone");
+        Professor professor1 = new Professor("John", "Doe", "mail", "location", "phone");
+        Professor professor2 = new Professor("Jane", "Doe", "mail", "location", "phone");
         List<Professor> professors = new ArrayList<Professor>();
         professors.add(professor1);
         professors.add(professor2);
@@ -76,8 +76,8 @@ public class ProfessorControllerTests {
     @DisplayName("Get all professors returns array of professors")
     void testGetAllProfessorsReturnArrayOfProfessors() throws Exception {
         List<Professor> professors = new ArrayList<Professor>();
-        professors.add(new Professor("John", "Doe", "mail", "ubication", "phone"));
-        professors.add(new Professor("Jane", "Doe", "mail", "ubication", "phone"));
+        professors.add(new Professor("John", "Doe", "mail", "location", "phone"));
+        professors.add(new Professor("Jane", "Doe", "mail", "location", "phone"));
         when(professorService.getAllProfessors()).thenReturn(professors);
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/professor/all"))
@@ -93,7 +93,7 @@ public class ProfessorControllerTests {
     @WithMockUser
     @DisplayName("Save a professor")
     void testSaveAProfessorReturnsOk() throws Exception {
-        Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone");
+        Professor professor = new Professor("John", "Doe", "mail", "location", "phone");
 
         when(professorService.saveProfessor(professor)).thenReturn(professorTest);
         mockMvc.perform(MockMvcRequestBuilders
@@ -112,7 +112,7 @@ public class ProfessorControllerTests {
     @WithMockUser
     @DisplayName("Save a professor returns bad request at id")
     void testSaveAProfessorReturnsBadRequest() throws Exception {
-        Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone");
+        Professor professor = new Professor("John", "Doe", "mail", "location", "phone");
         when(professorService.saveProfessor(professor)).thenReturn(professor);
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/professor/register")
@@ -130,7 +130,7 @@ public class ProfessorControllerTests {
     @WithMockUser
     @DisplayName("Update a professor")
     void testChangingProfessorReturnsNotFound() throws Exception {
-        Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone");
+        Professor professor = new Professor("John", "Doe", "mail", "location", "phone");
         professorService.saveProfessor(professor);
         when(professorService.saveProfessor(professor)).thenReturn(professor);
         when(professorService.getProfessorById(any())).thenReturn(professor);
@@ -145,6 +145,68 @@ public class ProfessorControllerTests {
                         .contentType("application/json")
                         .content(jsonContent.toString())
                         .with(csrf()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Find a professor by id doesnt find any")
+    void testFindProfessorByIdReturnsNotFound() throws Exception {
+        when(professorService.getProfessorById(any())).thenReturn(null);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/professor/1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Find a professor by id returns ok")
+    void testFindProfessorByIdReturnsOk() throws Exception {
+        Professor professor = new Professor("John", "Doe", "mail", "location", "phone");
+        when(professorService.getProfessorById(any())).thenReturn(professor);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/professor/1"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Find a professor by id returns professor")
+    void testFindProfessorByIdReturnsProfessor() throws Exception {
+        Professor professor = new Professor("John", "Doe", "mail", "location", "phone");
+        when(professorService.getProfessorById(any())).thenReturn(professor);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/professor/1"))
+                .andExpect(result -> {
+                    String json = result.getResponse().getContentAsString();
+                    assert (json.contains("John"));
+                    assert (json.contains("Doe"));
+                })
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Update a professor returns updated professor")
+    void testUpdateProfessorReturnsUpdatedProfessor() throws Exception {
+        Professor professor = new Professor("John", "Doe", "mail", "location", "phone");
+        when(professorService.getProfessorById(any())).thenReturn(professor);
+        when(professorService.updateProfessor(any(), any())).thenReturn(professor);
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("firstName", "John");
+        jsonContent.put("lastName", "Doe");
+        jsonContent.put("email", "email");
+        jsonContent.put("location", "location");
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("/api/professor/update/1")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(result -> {
+                    String json = result.getResponse().getContentAsString();
+                    assert (json.contains("John"));
+                    assert (json.contains("Doe"));
+                })
                 .andExpect(status().isOk());
     }
 }

@@ -58,6 +58,16 @@ public class SubjectControllerTests {
 
     @Test
     @WithMockUser
+    @DisplayName("Get all subjects gets empty list")
+    void testGetAllSubjectsReturnsNotFound() throws Exception {
+        when(subjectService.getAllSubjects()).thenReturn(new ArrayList<>());
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/subject/all"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
     @DisplayName("Get subject by id")
     void testGetSubjectByIdReturnsOk() throws Exception {
         when(subjectService.getSubjectById(1L)).thenReturn(new Subject());
@@ -73,6 +83,16 @@ public class SubjectControllerTests {
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/subject/1"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Get subject by id returns subject not found")
+    void testGetSubjectByIdReturnsNotFound() throws Exception {
+        when(subjectService.getSubjectById(1L)).thenReturn(null);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/subject/1"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -102,5 +122,20 @@ public class SubjectControllerTests {
                         .content(jsonContent.toString())
                         .with(csrf()))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Create subject returns bad request for id not null")
+    void testCreateSubjectReturnsBadRequest() throws Exception {
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("id", 1L);
+        when(subjectService.create(any())).thenReturn(new Subject());
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/subject/create")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
     }
 }

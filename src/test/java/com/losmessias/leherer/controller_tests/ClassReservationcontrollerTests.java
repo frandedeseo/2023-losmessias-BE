@@ -1,7 +1,10 @@
 package com.losmessias.leherer.controller_tests;
 
 import com.losmessias.leherer.controller.ClassReservationController;
-import com.losmessias.leherer.domain.*;
+import com.losmessias.leherer.domain.ClassReservation;
+import com.losmessias.leherer.domain.Professor;
+import com.losmessias.leherer.domain.Student;
+import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.domain.enumeration.ReservationStatus;
 import com.losmessias.leherer.repository.ProfessorSubjectRepository;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
@@ -27,7 +30,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -87,6 +89,16 @@ public class ClassReservationcontrollerTests {
     }
 
     @Test
+    @WithMockUser
+    @DisplayName("Get all reservations finds no reservation")
+    void testGetAllReservationsReturnsNotFound() throws Exception {
+        when(classReservationService.getAllReservations()).thenReturn(new ArrayList<>());
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/reservation/all"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     @DisplayName("Get all reservations without authentication")
     void testGetAllReservationsReturnsUnauthorized() throws Exception {
         when(classReservationService.getAllReservations()).thenReturn(new ArrayList<>());
@@ -114,6 +126,16 @@ public class ClassReservationcontrollerTests {
     }
 
     @Test
+    @WithMockUser
+    @DisplayName("Get reservation by id finds no reservation")
+    void testGetReservationByIdReturnsNotFound() throws Exception {
+        when(classReservationService.getReservationById(1L)).thenReturn(null);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/reservation/1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     @DisplayName("Get reservation by id without authentication")
     void testGetReservationByIdReturnsUnauthorized() throws Exception {
         when(classReservationService.getReservationById(1L)).thenReturn(classReservationTest1);
@@ -124,7 +146,7 @@ public class ClassReservationcontrollerTests {
 
     @Test
     @WithMockUser
-    @DisplayName("Create a reservation")
+    @DisplayName("Create a reservation returns ok")
     void testCreateAReservationReturnsOk() throws Exception {
         Professor professor = new Professor();
         Subject subject = new Subject();
@@ -135,7 +157,7 @@ public class ClassReservationcontrollerTests {
         jsonContent.put("studentId", 1);
         jsonContent.put("day", LocalDate.of(2023, 1, 1));
         jsonContent.put("startingTime", LocalTime.of(12, 0));
-        jsonContent.put("endingTime", LocalTime.of(13, 0));
+        jsonContent.put("endingHour", LocalTime.of(13, 0));
         jsonContent.put("price", 100);
 
         when(classReservationService.createReservation(professor, subject, student, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0, 0), LocalTime.of(13, 0, 0), 1.0, 100)).thenReturn(classReservationTest1);
@@ -149,6 +171,72 @@ public class ClassReservationcontrollerTests {
 
     @Test
     @WithMockUser
+    @DisplayName("Create a reservation with no professor id returns bad request")
+    void testCreateAReservationReturnsBadRequest() throws Exception {
+        Subject subject = new Subject();
+        Student student = new Student();
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("subjectId", 1);
+        jsonContent.put("studentId", 1);
+        jsonContent.put("day", LocalDate.of(2023, 1, 1));
+        jsonContent.put("startingTime", LocalTime.of(12, 0));
+        jsonContent.put("endingHour", LocalTime.of(13, 0));
+        jsonContent.put("price", 100);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/reservation/create")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Create a reservation with no subject id returns bad request")
+    void testCreateAReservationReturnsBadRequest2() throws Exception {
+        Professor professor = new Professor();
+        Student student = new Student();
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("professorId", 1);
+        jsonContent.put("studentId", 1);
+        jsonContent.put("day", LocalDate.of(2023, 1, 1));
+        jsonContent.put("startingTime", LocalTime.of(12, 0));
+        jsonContent.put("endingHour", LocalTime.of(13, 0));
+        jsonContent.put("price", 100);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/reservation/create")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Create a reservation with no student id returns bad request")
+    void testCreateAReservationReturnsBadRequest3() throws Exception {
+        Professor professor = new Professor();
+        Subject subject = new Subject();
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("professorId", 1);
+        jsonContent.put("subjectId", 1);
+        jsonContent.put("day", LocalDate.of(2023, 1, 1));
+        jsonContent.put("startingTime", LocalTime.of(12, 0));
+        jsonContent.put("endingHour", LocalTime.of(13, 0));
+        jsonContent.put("price", 100);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/reservation/create")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
     @DisplayName("Create unavailable reservation")
     void testCreateUnavailableReservationReturnsOk() throws Exception {
         Professor professor = new Professor();
@@ -156,7 +244,7 @@ public class ClassReservationcontrollerTests {
         jsonContent.put("professorId", 1);
         jsonContent.put("day", LocalDate.of(2023, 1, 1));
         jsonContent.put("startingTime", LocalTime.of(12, 0));
-        jsonContent.put("endingTime", LocalTime.of(13, 0));
+        jsonContent.put("endingHour", LocalTime.of(13, 0));
 
         when(professorService.getProfessorById(1L)).thenReturn(professor);
         when(classReservationService.createUnavailableReservation(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0))).thenReturn(classReservationTest1);
@@ -175,7 +263,7 @@ public class ClassReservationcontrollerTests {
         jsonContent.put("professorId", 1);
         jsonContent.put("day", LocalDate.of(2023, 1, 1));
         jsonContent.put("startingTime", LocalTime.of(12, 0));
-        jsonContent.put("endingTime", LocalTime.of(13, 0));
+        jsonContent.put("endingHour", LocalTime.of(13, 0));
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/reservation/create")
                         .contentType("application/json")
@@ -192,9 +280,9 @@ public class ClassReservationcontrollerTests {
         JSONObject jsonContent = new JSONObject();
         jsonContent.put("professorId", 1);
         jsonContent.put("day", LocalDate.of(2023, 1, 1));
-        jsonContent.put("startingTime", LocalTime.of(12, 0));
-        jsonContent.put("endingTime", LocalTime.of(13, 0));
-        jsonContent.put("numberOfReservations", 2);
+        jsonContent.put("startingHour", LocalTime.of(12, 0));
+        jsonContent.put("endingHour", LocalTime.of(13, 0));
+        jsonContent.put("duration", 1.0);
         List<ClassReservation> classReservationList = new ArrayList<>();
         classReservationList.add(new ClassReservation());
         classReservationList.add(new ClassReservation());
@@ -206,6 +294,91 @@ public class ClassReservationcontrollerTests {
                         .content(jsonContent.toString())
                         .with(csrf()))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Create multiple unavailable reservations with no professor id returns bad request")
+    void testCreateMultipleUnavailableReservationsReturnsBadRequest() throws Exception {
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("day", LocalDate.of(2023, 1, 1));
+        jsonContent.put("startingHour", LocalTime.of(12, 0));
+        jsonContent.put("endingHour", LocalTime.of(13, 0));
+        jsonContent.put("duration", 1.0);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/reservation/createMultipleUnavailable")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Create multiple unavailable reservations with no day returns bad request")
+    void testCreateMultipleUnavailableReservationsReturnsBadRequest2() throws Exception {
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("professorId", 1);
+        jsonContent.put("startingHour", LocalTime.of(12, 0));
+        jsonContent.put("endingHour", LocalTime.of(13, 0));
+        jsonContent.put("duration", 1.0);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/reservation/createMultipleUnavailable")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Create multiple unavailable reservations with no starting hour returns bad request")
+    void testCreateMultipleUnavailableReservationsReturnsBadRequest3() throws Exception {
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("professorId", 1);
+        jsonContent.put("day", LocalDate.of(2023, 1, 1));
+        jsonContent.put("endingHour", LocalTime.of(13, 0));
+        jsonContent.put("duration", 1.0);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/reservation/createMultipleUnavailable")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Create multiple unavailable reservations with no ending hour returns bad request")
+    void testCreateMultipleUnavailableReservationsReturnsBadRequest4() throws Exception {
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("professorId", 1);
+        jsonContent.put("day", LocalDate.of(2023, 1, 1));
+        jsonContent.put("startingHour", LocalTime.of(12, 0));
+        jsonContent.put("duration", 1.0);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/reservation/createMultipleUnavailable")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Create multiple unavailable reservations with no duration of reservations returns bad request")
+    void testCreateMultipleUnavailableReservationsReturnsBadRequest5() throws Exception {
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("professorId", 1);
+        jsonContent.put("day", LocalDate.of(2023, 1, 1));
+        jsonContent.put("startingHour", LocalTime.of(12, 0));
+        jsonContent.put("endingHour", LocalTime.of(13, 0));
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/reservation/createMultipleUnavailable")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -236,6 +409,17 @@ public class ClassReservationcontrollerTests {
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/reservation/customDaySummary"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Get today's summary for admin")
+    void testGetTodaysSummaryReturnsOk2() throws Exception {
+        List<ProfessorDailySummary> professorDailySummaryList = new ArrayList<>();
+        when(classReservationService.getDailySummary(LocalDate.now())).thenReturn(professorDailySummaryList);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/reservation/todaySummary"))
+                .andExpect(status().isOk());
     }
 
 }

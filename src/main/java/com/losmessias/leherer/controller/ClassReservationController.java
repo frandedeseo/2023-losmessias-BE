@@ -100,6 +100,8 @@ public class ClassReservationController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/createUnavailable")
     public ResponseEntity<String> createUnavailableReservation(@RequestBody UnavailableClassReservationDto classReservationDto) throws JsonProcessingException {
+        if (classReservationDto.getProfessorId() == null)
+            return ResponseEntity.badRequest().body("Professor id must be provided");
         Professor professor = professorService.getProfessorById(classReservationDto.getProfessorId());
         if (professor == null) return new ResponseEntity<>("Professor could not be found", HttpStatus.NOT_FOUND);
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
@@ -113,6 +115,11 @@ public class ClassReservationController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/createMultipleUnavailable")
     public ResponseEntity<String> createMultipleUnavailableReservations(@RequestBody UnavailableClassReservationDto classReservationDtos) throws JsonProcessingException {
+        if (classReservationDtos.getProfessorId() == null) return ResponseEntity.badRequest().body("Professor id must be provided");
+        if (classReservationDtos.getDay() == null) return ResponseEntity.badRequest().body("Day must be provided");
+        if (classReservationDtos.getStartingHour() == null) return ResponseEntity.badRequest().body("Starting hour must be provided");
+        if (classReservationDtos.getEndingHour() == null) return ResponseEntity.badRequest().body("Ending hour must be provided");
+        if (classReservationDtos.getDuration() == null) return ResponseEntity.badRequest().body("Duration must be provided");
         Professor professor = professorService.getProfessorById(classReservationDtos.getProfessorId());
         if (professor == null) return new ResponseEntity<>("Professor could not be found", HttpStatus.NOT_FOUND);
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();

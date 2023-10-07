@@ -78,6 +78,17 @@ public class StudentControllerTests {
 
     @Test
     @WithMockUser
+    @DisplayName("Get student by id returns not found")
+    void testGetStudentByIdReturnsNotFound() throws Exception {
+        when(studentService.getStudentById(1L)).thenReturn(null);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/student/1"))
+                .andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    @WithMockUser
     @DisplayName("Add student")
     void testAddStudentReturnsOk() throws Exception {
         JSONObject jsonContent = new JSONObject();
@@ -95,6 +106,21 @@ public class StudentControllerTests {
                         .content(jsonContent.toString())
                         .with(csrf()))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Add student returns bad request")
+    void testAddStudentReturnsBadRequest() throws Exception {
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("id", 1L);
+        when(studentService.create(new Student())).thenReturn(new Student());
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/student/create")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -159,5 +185,41 @@ public class StudentControllerTests {
                         .content(jsonContent.toString())
                         .with(csrf()))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Update student returns bad request when student not found")
+    void testUpdateStudentReturnsBadRequest() throws Exception {
+        Student student = new Student("John", "Doe", "email", "location");
+        studentService.create(student);
+        when(studentRepository.save(student)).thenReturn(student);
+        when(studentService.updateStudent(any(), any())).thenReturn(student);
+        when(studentService.getStudentById(1L)).thenReturn(null);
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("firstName", "John");
+        jsonContent.put("lastName", "Doe");
+        jsonContent.put("email", "email");
+        jsonContent.put("location", "location");
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("/api/student/update/1")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Update student returns bad request when student id is null")
+    void testUpdateStudentReturnsBadRequest2() throws Exception {
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("id", null);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("/api/student/update/1")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
     }
 }
