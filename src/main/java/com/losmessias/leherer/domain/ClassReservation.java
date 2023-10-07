@@ -41,6 +41,9 @@ public class ClassReservation {
     @Column
     private LocalTime endingHour;
     @Column
+    private Double duration;
+    @Column
+    @Enumerated(EnumType.ORDINAL)
     private ReservationStatus status;
     @Column
     private Integer price;
@@ -51,6 +54,7 @@ public class ClassReservation {
                             LocalDate date,
                             LocalTime startingHour,
                             LocalTime endingHour,
+                            Double duration,
                             Integer price) {
         this.professor = professor;
         this.subject = subject;
@@ -58,16 +62,18 @@ public class ClassReservation {
         this.date = date;
         this.startingHour = startingHour;
         this.endingHour = endingHour;
+        this.duration = duration;
         this.price = price;
         this.status = ReservationStatus.CONFIRMED;
     }
 
     //Unavailable reservation initialization
-    public ClassReservation(Professor professor,LocalDate date, LocalTime startingHour, LocalTime endingHour){
+    public ClassReservation(Professor professor,LocalDate date, LocalTime startingHour, LocalTime endingHour, Double duration){
         this.professor = professor;
         this.date = date;
         this.startingHour = startingHour;
         this.endingHour = endingHour;
+        this.duration = duration;
         this.status = ReservationStatus.NOT_AVAILABLE;
     }
 

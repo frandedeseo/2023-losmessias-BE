@@ -2,6 +2,7 @@ package com.losmessias.leherer.service;
 
 import com.losmessias.leherer.domain.*;
 import com.losmessias.leherer.repository.ClassReservationRepository;
+import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,30 +25,13 @@ public class ClassReservationService {
         return classReservationRepository.findById(id).orElse(null);
     }
 
-    public ClassReservation createReservationFrom(ProfessorSubject professorSubject,
-                                                  Student student,
-                                                  LocalDate day,
-                                                  LocalTime startingTime,
-                                                  LocalTime endingTime,
-                                                  Integer price) {
-        if(startingTime.isAfter(endingTime)) throw new IllegalArgumentException("Starting time must be before ending time");
-        ClassReservation classReservation = this.createReservation(
-                professorSubject.getProfessor(),
-                professorSubject.getSubject(),
-                student,
-                day,
-                startingTime,
-                endingTime,
-                price);
-        return classReservationRepository.save(classReservation);
-    }
-
     public ClassReservation createReservation(Professor professor,
                                               Subject subject,
                                               Student student,
                                               LocalDate day,
                                               LocalTime startingTime,
                                               LocalTime endingTime,
+                                              Double duration,
                                               Integer price) {
         if(startingTime.isAfter(endingTime)) throw new IllegalArgumentException("Starting time must be before ending time");
         ClassReservation classReservation = new ClassReservation(
@@ -57,6 +41,7 @@ public class ClassReservationService {
                 day,
                 startingTime,
                 endingTime,
+                duration,
                 price);
         return classReservationRepository.save(classReservation);
     }
@@ -75,16 +60,17 @@ public class ClassReservationService {
 
     public ClassReservation createUnavailableReservation(Professor professor, LocalDate day, LocalTime startingTime, LocalTime endingTime) {
         if (startingTime.isAfter(endingTime)) throw new IllegalArgumentException("Starting time must be before ending time");
-        ClassReservation classReservation = new ClassReservation(professor, day, startingTime, endingTime);
+        Double duration = (endingTime.getHour() - startingTime.getHour()) + ((endingTime.getMinute() - startingTime.getMinute()) / 60.0);
+        ClassReservation classReservation = new ClassReservation(professor, day, startingTime, endingTime, duration);
         return classReservationRepository.save(classReservation);
     }
 
-    public List<ClassReservation> createMultipleUnavailableReservationsFor(Professor professor, LocalDate day, LocalTime startingTime, LocalTime endingTime) {
+    public List<ClassReservation> createMultipleUnavailableReservationsFor(Professor professor, LocalDate day, LocalTime startingTime, LocalTime endingTime, Double duration) {
         if (startingTime.isAfter(endingTime)) throw new IllegalArgumentException("Starting time must be before ending time");
         List<LocalTime> intervals = generateTimeIntervals(startingTime, endingTime);
         List<ClassReservation> unavailableReservations = new ArrayList<>();
         for (LocalTime interval : intervals) {
-            ClassReservation classReservation = new ClassReservation(professor, day, interval, interval.plusMinutes(30));
+            ClassReservation classReservation = new ClassReservation(professor, day, interval, interval.plusMinutes(30), 0.5);
             unavailableReservations.add(classReservation);
         }
         return classReservationRepository.saveAll(unavailableReservations);
@@ -97,6 +83,11 @@ public class ClassReservationService {
             startTime = startTime.plusMinutes(30);
         }
         return intervals;
+    }
+
+    public List<ProfessorDailySummary> getDailySummary(LocalDate day) {
+        return classReservationRepository.getProfessorDailySummaryByDay(day);
+//        return classReservationRepository.getProfessorDailySummaryByDay(LocalDate.now());
     }
 
 }
