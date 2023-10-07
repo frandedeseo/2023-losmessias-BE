@@ -1,6 +1,8 @@
 package com.losmessias.leherer.repository;
 
 import com.losmessias.leherer.domain.ClassReservation;
+import com.losmessias.leherer.domain.Professor;
+import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.domain.enumeration.ReservationStatus;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,5 +26,7 @@ public interface ClassReservationRepository extends JpaRepository<ClassReservati
             "AND (c.status = 1 OR c.status = 2 ) " +
             "GROUP BY c.professor.id, c.subject.id")
     List<ProfessorDailySummary> getProfessorDailySummaryByDay(LocalDate day);
+
+    List<ClassReservation> findByProfessorAndSubject(Professor professor, Subject subject);
 
 }

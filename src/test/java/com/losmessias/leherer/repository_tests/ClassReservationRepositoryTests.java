@@ -140,4 +140,13 @@ public class ClassReservationRepositoryTests {
         assertEquals(2, classReservationRepository.getProfessorDailySummaryByDay(classReservation.getDate()).size());
     }
 
+    @Test
+    @Transactional
+    @Rollback
+    @DisplayName("Find by professor and subject id")
+    public void shouldFindByProfessorAndSubject() {
+        classReservationRepository.save(classReservation);
+        assertEquals(1, classReservationRepository.findByProfessorAndSubject(professor, subject).size());
+    }
+
 }

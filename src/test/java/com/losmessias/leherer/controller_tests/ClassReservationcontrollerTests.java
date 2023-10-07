@@ -422,4 +422,75 @@ public class ClassReservationcontrollerTests {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    @DisplayName("Get today's summary for admin without authentication")
+    void testGetTodaysSummaryReturnsUnauthorized2() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/reservation/todaySummary"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Get all reservations by professor id and subject id")
+    void testGetAllReservationsByProfessorIdAndSubjectIdReturnsOk() throws Exception {
+        List<ClassReservation> classReservationList = new ArrayList<>();
+        classReservationList.add(classReservationTest1);
+        classReservationList.add(classReservationTest2);
+        when(classReservationService.getByProfessorAndSubject(1L, 1L)).thenReturn(classReservationList);
+        when(classReservationTest1.getProfessor()).thenReturn(new Professor());
+        when(classReservationTest1.getSubject()).thenReturn(new Subject());
+        when(classReservationTest1.getStudent()).thenReturn(new Student());
+        when(classReservationTest1.getDate()).thenReturn(null);
+        when(classReservationTest1.getStartingHour()).thenReturn(null);
+        when(classReservationTest1.getEndingHour()).thenReturn(null);
+        when(classReservationTest1.getPrice()).thenReturn(null);
+        when(classReservationTest1.getStatus()).thenReturn(ReservationStatus.CONFIRMED);
+
+        when(classReservationTest2.getProfessor()).thenReturn(new Professor());
+        when(classReservationTest2.getSubject()).thenReturn(new Subject());
+        when(classReservationTest2.getStudent()).thenReturn(new Student());
+        when(classReservationTest2.getDate()).thenReturn(null);
+        when(classReservationTest2.getStartingHour()).thenReturn(null);
+        when(classReservationTest2.getEndingHour()).thenReturn(null);
+        when(classReservationTest2.getPrice()).thenReturn(null);
+        when(classReservationTest2.getStatus()).thenReturn(ReservationStatus.CONFIRMED);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/reservation/findByProfessorAndSubject")
+                        .param("professorId", "1")
+                        .param("subjectId", "1"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Get all reservations by professor id and subject id with no professor id provided")
+    void testGetAllReservationsByProfessorIdAndSubjectIdReturnsBadRequest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/reservation/findByProfessorAndSubject")
+                        .param("subjectId", "1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Get all reservations by professor id and subject id with no subject id provided")
+    void testGetAllReservationsByProfessorIdAndSubjectIdReturnsBadRequest2() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/reservation/findByProfessorAndSubject")
+                        .param("professorId", "1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Get all reservations by professor id and subject id with no found reservations")
+    void testGetAllReservationsByProfessorIdAndSubjectIdReturnsNotFound() throws Exception {
+        when(classReservationService.getByProfessorAndSubject(1L, 1L)).thenReturn(new ArrayList<>());
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/reservation/findByProfessorAndSubject")
+                        .param("professorId", "1")
+                        .param("subjectId", "1"))
+                .andExpect(status().isNotFound());
+    }
 }
