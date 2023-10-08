@@ -2,12 +2,16 @@ package com.losmessias.leherer.service;
 
 import com.losmessias.leherer.domain.*;
 import com.losmessias.leherer.dto.ForgotPasswordDto;
+import com.losmessias.leherer.dto.RegistrationProfessorRequest;
 import com.losmessias.leherer.dto.RegistrationRequest;
 import com.losmessias.leherer.role.AppUserRole;
 import com.losmessias.leherer.ext_interface.EmailSender;
+import com.losmessias.leherer.role.AppUserSex;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +22,7 @@ public class RegistrationService {
     private final EmailSender emailSender;
     private final StudentService studentService;
     private final ProfessorService professorService;
+    private final ProfessorSubjectService professorSubjectService;
 
     public String register(RegistrationRequest request) {
 
@@ -25,32 +30,23 @@ public class RegistrationService {
 
         Long id;
         AppUserRole role;
-
-        if (request.getRole().equals("Student")){
-            role=AppUserRole.STUDENT;
-            Student student = studentService.create(
-                    new Student(
-                            request.getFirstName(),
-                            request.getLastName(),
-                            request.getEmail(),
-                            request.getLocation()
-                    )
-            );
-            id = student.getId();
+        AppUserSex sex;
+        if (request.getSex().equals("Male")){
+            sex = AppUserSex.MALE;
         }else{
-            role =AppUserRole.PROFESSOR;
-            Professor professor = professorService.saveProfessor(
-                    new Professor(
-                            request.getFirstName(),
-                            request.getLastName(),
-                            request.getEmail(),
-                            request.getLocation(),
-                            request.getPhone()
-                    )
-            );
-            id = professor.getId();
+            sex = AppUserSex.FEMALE;
         }
-
+        role=AppUserRole.STUDENT;
+        Student student = studentService.create(
+                new Student(
+                        request.getFirstName(),
+                        request.getLastName(),
+                        request.getEmail(),
+                        request.getLocation()
+                )
+        );
+        id = student.getId();
+        
         AppUser appUser = new AppUser(
                 request.getEmail(),
                 request.getPassword(),
@@ -68,7 +64,58 @@ public class RegistrationService {
                 request.getEmail(),
                 buildEmail(request.getFirstName(), link, "Confirm yor email", "Welcome to Leherer! The place where your dreams come true. I would like to thank you for registering! "));
 
-        return "Successful Registration";
+        return "Registration successful";
+    }
+
+    public String validateEmailNotTaken(String email){
+        appUserService.validateEmailNotTaken(email);
+        return "Email not taken";
+    }
+    public String registerProfessor(RegistrationProfessorRequest request) {
+
+        appUserService.validateEmailNotTaken(request.getEmail());
+
+        Long id;
+        AppUserRole role;
+        AppUserSex sex;
+        if (request.getSex().equals("Male")){
+            sex = AppUserSex.MALE;
+        }else {
+            sex = AppUserSex.FEMALE;
+        }
+        role =AppUserRole.PROFESSOR;
+        Professor professor = professorService.saveProfessor(
+                new Professor(
+                        request.getFirstName(),
+                        request.getLastName(),
+                        request.getEmail(),
+                        request.getLocation(),
+                        request.getPhone()
+                )
+        );
+        id = professor.getId();
+
+        AppUser appUser = new AppUser(
+                request.getEmail(),
+                request.getPassword(),
+                role,
+                id
+        );
+        List<Subject> subjectList = request.getSubjects();
+        for (Subject subject: subjectList) {
+            professorSubjectService.createAssociation(professor, subject);
+        }
+        appUserService.signUpUser(appUser);
+
+        String token = confirmationTokenService.generateConfirmationToken(appUser);
+
+        String link = "http://localhost:8080/api/v1/registration/confirm?token=" + token;
+
+        emailSender.send(
+                request.getEmail(),
+                buildEmail(request.getFirstName(), link, "Confirm yor email", "Welcome to Leherer! The place where your dreams come true. I would like to thank you for registering! "));
+
+        return "Registration successful";
     }
 
     public String sendEmailForPasswordChange(String email){
@@ -117,8 +164,7 @@ public class RegistrationService {
     }
     public String changePassword(ForgotPasswordDto request) {
 
-        String encodedPassword = appUserService.encodePassword(request.getPassword());
-        appUserService.changePassword(request.getEmail(), encodedPassword);
+        appUserService.changePassword(request.getEmail(), request.getPassword());
 
         return "Password changed successfully";
     }

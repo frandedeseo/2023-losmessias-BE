@@ -45,7 +45,8 @@ public class RegistrationServiceTests {
                 "fran123456",
                 "Professor",
                 "Recoleta",
-                "543462663707"
+                "543462663707",
+                "Male"
         );
         request2 = new RegistrationRequest(
                 "Francisco",
@@ -54,7 +55,8 @@ public class RegistrationServiceTests {
                 "fran123456",
                 "Student",
                 "Recoleta",
-                "543462663707"
+                "543462663707",
+                "Male"
         );
 
         professor1 = new Professor(

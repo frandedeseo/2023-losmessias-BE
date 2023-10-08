@@ -14,6 +14,7 @@ public class SubjectController {
 
     private final SubjectService subjectService;
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/all")
     public List<Subject> getSubject() {
         return subjectService.getAllSubjects();
