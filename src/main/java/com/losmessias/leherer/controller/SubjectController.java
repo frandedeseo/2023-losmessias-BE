@@ -18,6 +18,7 @@ public class SubjectController {
 
     private final SubjectService subjectService;
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/all")
     public ResponseEntity<String> getSubject() throws JsonProcessingException {
         List<Subject> subjects = subjectService.getAllSubjects();
@@ -34,6 +35,7 @@ public class SubjectController {
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(subject), HttpStatus.OK);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/create")
     public ResponseEntity<String> createSubject(@RequestBody Subject subject) throws JsonProcessingException {
         if(subject.getId() != null) return ResponseEntity.badRequest().body("Subject ID must be null");
