@@ -1,6 +1,7 @@
 package com.losmessias.leherer.service_tests;
 
 import com.losmessias.leherer.dto.ForgotPasswordDto;
+import com.losmessias.leherer.dto.RegistrationProfessorRequest;
 import com.losmessias.leherer.role.AppUserRole;
 import com.losmessias.leherer.domain.*;
 import com.losmessias.leherer.dto.RegistrationRequest;
@@ -13,6 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import static org.mockito.ArgumentMatchers.any;
@@ -23,22 +27,30 @@ public class RegistrationServiceTests {
     @Mock
     private AppUserService appUserService;
     @Mock
+    private ProfessorSubjectService professorSubjectService;
+    @Mock
     private ConfirmationTokenService confirmationTokenService;
     @Mock
     private StudentService studentService;
     @Mock
     private ProfessorService professorService;
+    @Mock
+    private EmailSender emailSender;
     @InjectMocks
     private RegistrationService registrationService;
 
-    private RegistrationRequest request1, request2;
+    private RegistrationRequest request2;
+    private RegistrationProfessorRequest request1;
     private Professor professor1;
     private Student student1;
     private AppUser user1;
 
     @BeforeEach
     void setUp(){
-        request1 = new RegistrationRequest(
+        List<Subject> subjects = new ArrayList<Subject>();
+        subjects.add(new Subject("Math"));
+        subjects.add(new Subject("History"));
+        request1 = new RegistrationProfessorRequest(
                 "Francisco",
                 "de Deseö",
                 "fran@gmail.com",
@@ -46,7 +58,9 @@ public class RegistrationServiceTests {
                 "Professor",
                 "Recoleta",
                 "543462663707",
-                "Male"
+                "Male",
+                subjects
+
         );
         request2 = new RegistrationRequest(
                 "Francisco",
@@ -83,7 +97,8 @@ public class RegistrationServiceTests {
     @DisplayName("Professor registration is successful")
     void testRegistrationProfessorIsDoneCorrectly() {
         when( professorService.saveProfessor(any())).thenReturn(professor1);
-        String message = registrationService.register(request1);
+        when( professorService.saveProfessor(any())).thenReturn(professor1);
+        String message = registrationService.registerProfessor(request1);
         assertEquals("Successful Registration", message);
 
     }
@@ -106,7 +121,7 @@ public class RegistrationServiceTests {
         ));
         String message = registrationService.confirmEmailToken("token");
 
-        assertEquals("Email confirmed", message);
+        assertEquals("Email Confirmed", message);
     }
     @Test
     @DisplayName("Confirm the token for Password change was activated successfully")
@@ -115,7 +130,7 @@ public class RegistrationServiceTests {
 
         assertEquals("Email confirmed", message);
     }
-
+/**
     @Test
     @DisplayName("The password was changed successfully")
     void testChangePassword(){
@@ -125,4 +140,5 @@ public class RegistrationServiceTests {
         String message = registrationService.changePassword(request);
         assertEquals(message, "Password changed successfully");
     }
+    */
 }

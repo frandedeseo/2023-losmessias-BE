@@ -64,7 +64,7 @@ public class RegistrationService {
                 request.getEmail(),
                 buildEmail(request.getFirstName(), link, "Confirm yor email", "Welcome to Leherer! The place where your dreams come true. I would like to thank you for registering! "));
 
-        return "Registration successful";
+        return "Successful Registration";
     }
 
     public String validateEmailNotTaken(String email){
@@ -115,7 +115,7 @@ public class RegistrationService {
                 request.getEmail(),
                 buildEmail(request.getFirstName(), link, "Confirm yor email", "Welcome to Leherer! The place where your dreams come true. I would like to thank you for registering! "));
 
-        return "Registration successful";
+        return "Successful Registration";
     }
 
     public String sendEmailForPasswordChange(String email){
@@ -160,7 +160,7 @@ public class RegistrationService {
 
         confirmationTokenService.validateToken(token);
 
-        return "Email Confirmed";
+        return "Email confirmed";
     }
     public String changePassword(ForgotPasswordDto request) {
 
