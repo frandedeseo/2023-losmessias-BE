@@ -64,18 +64,22 @@ public class WebSecurityConfig {
                                                                 Authentication authentication) throws IOException, ServletException {
                                 UserDetails userDetails = (UserDetails) authentication.getPrincipal();
                                 Boolean isStudent = false;
+                                Boolean isProfessor = false;
                                 Collection<? extends GrantedAuthority> roles = authentication.getAuthorities();
                                 for (GrantedAuthority rol : roles) {
                                     isStudent = rol.getAuthority().equals("STUDENT");
+                                    isProfessor = rol.getAuthority().equals("PROFESSOR");
                                 }
                                 String username = ((UserDetails) authentication.getPrincipal()).getUsername();
                                 AppUser appUser = appUserRepository.findByEmail(username);
                                 Long id = appUser.getId();
 
                                 if (isStudent) {
-                                    response.sendRedirect("http://localhost:3000/student-landing?id=" + id);
-                                } else {
-                                    response.sendRedirect("http://localhost:3000/professor-landing?id=" + id);
+                                    response.sendRedirect("http://localhost:3000/student-landing?id=" + id + "&role=student");
+                                } else if (isProfessor){
+                                    response.sendRedirect("http://localhost:3000/professor-landing?id=" + id + "&role=professor");
+                                }else {
+                                    response.sendRedirect("http://localhost:3000/admin-landing?id=" + id + "&role=admin");
                                 }
                             }
                         })
