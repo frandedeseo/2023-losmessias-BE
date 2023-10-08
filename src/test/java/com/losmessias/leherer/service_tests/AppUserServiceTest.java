@@ -2,7 +2,7 @@ package com.losmessias.leherer.service_tests;
 
 import com.losmessias.leherer.domain.AppUser;
 import com.losmessias.leherer.repository.AppUserRepository;
-import com.losmessias.leherer.role.AppUserRole;
+import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.service.AppUserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

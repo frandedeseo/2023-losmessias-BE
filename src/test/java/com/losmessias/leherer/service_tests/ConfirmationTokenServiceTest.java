@@ -3,7 +3,7 @@ package com.losmessias.leherer.service_tests;
 import com.losmessias.leherer.domain.AppUser;
 import com.losmessias.leherer.domain.ConfirmationToken;
 import com.losmessias.leherer.repository.ConfirmationTokenRepository;
-import com.losmessias.leherer.role.AppUserRole;
+import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.service.ConfirmationTokenService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;

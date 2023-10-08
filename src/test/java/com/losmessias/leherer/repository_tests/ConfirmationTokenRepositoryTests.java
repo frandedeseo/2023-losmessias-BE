@@ -4,7 +4,7 @@ import com.losmessias.leherer.domain.AppUser;
 import com.losmessias.leherer.domain.ConfirmationToken;
 import com.losmessias.leherer.repository.AppUserRepository;
 import com.losmessias.leherer.repository.ConfirmationTokenRepository;
-import com.losmessias.leherer.role.AppUserRole;
+import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
