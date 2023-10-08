@@ -4,7 +4,7 @@ import com.losmessias.leherer.domain.*;
 import com.losmessias.leherer.dto.ForgotPasswordDto;
 import com.losmessias.leherer.dto.RegistrationProfessorRequest;
 import com.losmessias.leherer.dto.RegistrationRequest;
-import com.losmessias.leherer.role.AppUserRole;
+import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.ext_interface.EmailSender;
 import com.losmessias.leherer.role.AppUserSex;
 import lombok.RequiredArgsConstructor;
