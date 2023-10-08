@@ -1,12 +1,12 @@
 package com.losmessias.leherer.service;
 
+import com.losmessias.leherer.domain.AppUser;
 import com.losmessias.leherer.domain.ConfirmationToken;
 import com.losmessias.leherer.repository.ConfirmationTokenRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -14,16 +14,46 @@ public class ConfirmationTokenService {
 
     private final ConfirmationTokenRepository confirmationTokenRepository;
 
-    public void saveConfirmationToken(ConfirmationToken token) {
-        confirmationTokenRepository.save(token);
+    public ConfirmationToken getToken(String token) {
+        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token);
+        if (confirmationToken == null){
+            throw new IllegalStateException("token not found");
+        }
+        return confirmationToken;
     }
 
-    public Optional<ConfirmationToken> getToken(String token) {
-        return confirmationTokenRepository.findByToken(token);
+    public String generateConfirmationToken(AppUser appUser){
+        String token = UUID.randomUUID().toString();
+
+        ConfirmationToken confirmationToken = new ConfirmationToken(
+                token,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(15),
+                appUser
+        );
+
+        confirmationTokenRepository.save(confirmationToken);
+
+        return token;
     }
 
-    public int setConfirmedAt(String token) {
-        return confirmationTokenRepository.updateConfirmedAt(
-                token, LocalDateTime.now());
+    public ConfirmationToken validateToken(String token){
+        ConfirmationToken confirmationToken = getToken(token);
+
+        if (confirmationToken.getConfirmedAt() != null) {
+            throw new IllegalStateException("email already confirmed");
+        }
+
+        LocalDateTime expiredAt = confirmationToken.getExpiresAt();
+
+        if (expiredAt.isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("token expired");
+        }
+
+        confirmationToken.setConfirmedAt(LocalDateTime.now());
+
+        confirmationTokenRepository.save(confirmationToken);
+
+        return confirmationToken;
     }
 }

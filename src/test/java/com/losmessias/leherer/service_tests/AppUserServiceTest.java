@@ -1,88 +1,95 @@
 package com.losmessias.leherer.service_tests;
 
 import com.losmessias.leherer.domain.AppUser;
-import com.losmessias.leherer.service.ConfirmationTokenService;
 import com.losmessias.leherer.repository.AppUserRepository;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.service.AppUserService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 class AppUserServiceTest {
 
-    private AppUserService serviceTestWithMocks;
-    @Mock private AppUserRepository mockAppUserRepository;
-    @Mock private BCryptPasswordEncoder mockBCryptPasswordEncoder;
-    @Mock private ConfirmationTokenService mockConfirmationTokenService;
-
-    @Autowired
-    public AppUserService serviceTestWithOutMocks;
+    @Mock
     private AppUserRepository appUserRepository;
+    @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    private ConfirmationTokenService confirmationTokenService;
-    private AppUser appUser1;
-    private AppUser appUser2;
+
+    @InjectMocks
+    public AppUserService appUserService;
+
+    private AppUser appUser;
 
     @BeforeEach
     void setUp(){
-        serviceTestWithMocks = new AppUserService(mockAppUserRepository, mockBCryptPasswordEncoder, mockConfirmationTokenService);
-        appUser1 = new AppUser(
-                "Francisco",
-                "de Deseö",
+
+        appUser = new AppUser(
                 "fran@gmail.com",
                 "fran123456",
                 AppUserRole.USER,
                 23L
         );
     }
+    @Test
+    @DisplayName("Log In Successful")
+    void testLoadUserByUsernameReturnTheUser() {
+        when(appUserRepository.findByEmail("fran@gmail.com")).thenReturn(appUser);
+        UserDetails appUserResult = appUserService.loadUserByUsername("fran@gmail.com");
+        assertEquals(appUser, appUserResult);
+
+    }
+    @Test
+    @DisplayName("The log in throws error because of wrong email")
+    void testLoadUserByUsernameThrowsErrorInvalidUserName() {
+
+        when(appUserRepository.findByEmail("fran@gmail.com")).thenReturn(null);
+
+        Assertions.assertThrows(UsernameNotFoundException.class, () -> {
+            appUserService.loadUserByUsername("fran@gmail.com");
+        }, "Invalid username or password.");
+
+    }
 
     @Test
+    @DisplayName("Sign Up Successful")
     void testUserSignsUpCorrectly() {
-        serviceTestWithMocks.signUpUser(appUser1);
+        appUserService.signUpUser(appUser);
 
         ArgumentCaptor<AppUser> appUserArgumentCaptor = ArgumentCaptor.forClass(AppUser.class);
         ArgumentCaptor<String> passwordArgumentCaptor = ArgumentCaptor.forClass(String.class);
 
-        verify(mockBCryptPasswordEncoder).encode(passwordArgumentCaptor.capture());
-        verify(mockAppUserRepository).save(appUserArgumentCaptor.capture());
+        verify(bCryptPasswordEncoder).encode(passwordArgumentCaptor.capture());
+        verify(appUserRepository).save(appUserArgumentCaptor.capture());
 
         AppUser capturedAppUser = appUserArgumentCaptor.getValue();
         String capturedPassword = passwordArgumentCaptor.getValue();
 
         assertEquals(capturedPassword, "fran123456");
-        assertEquals(capturedAppUser, appUser1);
+        assertEquals(capturedAppUser, appUser);
     }
-    /*
+
     @Test
-    void testUserSignUpWithTheSameEmailThrowsError(){
-        userExists
-        given((mockAppUserRepository.findByEmail(appUser1.getEmail()))).willReturn(true);
+    @DisplayName("Email repeated throws error")
+    void testValidateEmailThrowsErrorIfEmailTaken(){
 
-        assertThatThrownBy(() -> serviceTestWithMocks.signUpUser(appUser1))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("email already taken");
+        when(appUserRepository.findByEmail("fran@gmail.com")).thenReturn(appUser);
+
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            appUserService.validateEmailNotTaken("fran@gmail.com");
+        }, "email already taken");
+
     }
-    @Test
-    void testUserSignUpWithTheSameEmailThrowsErrors(){
-
-        serviceTestWithOutMocks.signUpUser(appUser1);
-
-        assertThatThrownBy(() -> serviceTestWithOutMocks.signUpUser(appUser1))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("email already taken");
-    }
-    */
 
 }

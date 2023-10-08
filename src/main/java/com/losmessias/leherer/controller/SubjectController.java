@@ -18,6 +18,7 @@ public class SubjectController {
 
     private final SubjectService subjectService;
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/all")
     public ResponseEntity<String> getSubject() throws JsonProcessingException {
         List<Subject> subjects = subjectService.getAllSubjects();

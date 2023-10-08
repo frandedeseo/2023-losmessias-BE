@@ -1,15 +1,14 @@
 package com.losmessias.leherer.dto;
 
+import com.losmessias.leherer.domain.Subject;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
+import java.util.List;
+@Data
 @AllArgsConstructor
-@EqualsAndHashCode
-@ToString
-public class RegistrationRequest {
+public class RegistrationProfessorRequest {
     private final String firstName;
     private final String lastName;
     private final String email;
@@ -18,4 +17,5 @@ public class RegistrationRequest {
     private final String location;
     private final String phone;
     private final String sex;
+    private final List<Subject> subjects;
 }
