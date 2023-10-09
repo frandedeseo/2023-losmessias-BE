@@ -1,8 +1,11 @@
 package com.losmessias.leherer.repository.interfaces;
 
+import com.losmessias.leherer.domain.Professor;
+import com.losmessias.leherer.domain.Subject;
+
 public interface ProfessorDailySummary {
-    Integer getProfessorId();
-    Integer getSubjectId();
-    Integer getTotalHours();
+    Professor getProfessor();
+    Subject getSubject();
+    Double getTotalHours();
     Integer getTotalIncome();
 }

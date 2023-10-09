@@ -16,6 +16,8 @@ import java.util.List;
 public class ClassReservationService {
 
     private final ClassReservationRepository classReservationRepository;
+    private final ProfessorService professorService;
+    private final SubjectService subjectService;
 
     public List<ClassReservation> getAllReservations() {
         return classReservationRepository.findAll();
@@ -87,7 +89,12 @@ public class ClassReservationService {
 
     public List<ProfessorDailySummary> getDailySummary(LocalDate day) {
         return classReservationRepository.getProfessorDailySummaryByDay(day);
-//        return classReservationRepository.getProfessorDailySummaryByDay(LocalDate.now());
+    }
+
+    public List<ClassReservation> getByProfessorAndSubject(Long professorId, Long subjectId) {
+        Professor professor = professorService.getProfessorById(professorId);
+        Subject subject = subjectService.getSubjectById(subjectId);
+        return classReservationRepository.findByProfessorAndSubject(professor, subject);
     }
 
 }
