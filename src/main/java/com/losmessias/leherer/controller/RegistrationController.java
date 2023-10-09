@@ -1,12 +1,11 @@
 package com.losmessias.leherer.controller;
 
-import com.losmessias.leherer.dto.ForgotPasswordDto;
-import com.losmessias.leherer.dto.RegistrationProfessorRequest;
-import com.losmessias.leherer.dto.RegistrationRequest;
+import com.losmessias.leherer.dto.*;
 import com.losmessias.leherer.service.RegistrationService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -17,9 +16,14 @@ public class RegistrationController {
     private final RegistrationService registrationService;
 
     @PostMapping(path = "api/v1/registration")
-    public String register(@RequestBody RegistrationRequest request) {
-        return registrationService.register(request);
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegistrationRequest request) {
+        return ResponseEntity.ok(registrationService.register(request));
     }
+    @PostMapping(path = "api/v1/authentication")
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+        return ResponseEntity.ok(registrationService.authenticate(request));
+    }
+
     @PostMapping(path = "api/v1/registration-professor")
     public String registerProfessor(@RequestBody RegistrationProfessorRequest request) {
         return registrationService.registerProfessor(request);

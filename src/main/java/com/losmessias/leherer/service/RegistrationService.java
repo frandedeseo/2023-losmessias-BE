@@ -1,13 +1,14 @@
 package com.losmessias.leherer.service;
 
 import com.losmessias.leherer.domain.*;
-import com.losmessias.leherer.dto.ForgotPasswordDto;
-import com.losmessias.leherer.dto.RegistrationProfessorRequest;
-import com.losmessias.leherer.dto.RegistrationRequest;
+import com.losmessias.leherer.dto.*;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.ext_interface.EmailSender;
 import com.losmessias.leherer.role.AppUserSex;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +24,25 @@ public class RegistrationService {
     private final StudentService studentService;
     private final ProfessorService professorService;
     private final ProfessorSubjectService professorSubjectService;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
-    public String register(RegistrationRequest request) {
+    public AuthenticationResponse authenticate(AuthenticationRequest request){
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+        var appUser = appUserService.getAppUser(request.getEmail());
+
+        var jwtToken = jwtService.generateToken(appUser);
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
+    }
+
+    public AuthenticationResponse register(RegistrationRequest request) {
 
         appUserService.validateEmailNotTaken(request.getEmail());
 
@@ -54,6 +72,8 @@ public class RegistrationService {
                 id
         );
 
+        var jwtToken = jwtService.generateToken(appUser);
+
         appUserService.signUpUser(appUser);
 
         String token = confirmationTokenService.generateConfirmationToken(appUser);
@@ -64,7 +84,9 @@ public class RegistrationService {
                 request.getEmail(),
                 buildEmail(request.getFirstName(), link, "Confirm yor email", "Welcome to Leherer! The place where your dreams come true. I would like to thank you for registering! "));
 
-        return "Successful Registration";
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
     }
 
     public String validateEmailNotTaken(String email){
