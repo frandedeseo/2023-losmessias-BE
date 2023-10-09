@@ -20,7 +20,7 @@ public interface ClassReservationRepository extends JpaRepository<ClassReservati
 
     List<ClassReservation> findBySubjectId(Long id);
 
-    @Query("SELECT  c.professor.id AS professorId, c.subject.id AS subjectId,  SUM(c.price) AS totalIncome, SUM(c.duration) AS totalHours " +
+    @Query("SELECT  c.professor AS professor, c.subject AS subject,  SUM(c.price) AS totalIncome, SUM(c.duration) AS totalHours " +
             "FROM ClassReservation c " +
             "WHERE  c.date = ?1 " +
             "AND (c.status = 1 OR c.status = 2 ) " +
