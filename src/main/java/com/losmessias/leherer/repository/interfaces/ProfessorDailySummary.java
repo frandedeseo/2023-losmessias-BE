@@ -6,6 +6,6 @@ import com.losmessias.leherer.domain.Subject;
 public interface ProfessorDailySummary {
     Professor getProfessor();
     Subject getSubject();
-    Integer getTotalHours();
+    Double getTotalHours();
     Integer getTotalIncome();
 }
