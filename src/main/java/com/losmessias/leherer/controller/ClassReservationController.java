@@ -149,4 +149,55 @@ public class ClassReservationController {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(professorDailySummaries));
     }
+/*
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/findByProfessorAndSubject")
+    public ResponseEntity<String> getReservationByProfessorAndSubject(@RequestParam Long professorId, @RequestParam Long subjectId) throws JsonProcessingException {
+        if(professorId == null) return ResponseEntity.badRequest().body("Professor id must be provided");
+        if(subjectId == null) return ResponseEntity.badRequest().body("Subject id must be provided");
+        List<ClassReservation> classReservations = classReservationService.getByProfessorAndSubject(professorId, subjectId);
+        if (classReservations.isEmpty())
+            return new ResponseEntity<>("No reservations found", HttpStatus.NOT_FOUND);
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        List<ClassReservationResponseDto> classReservationResponseDtos = classReservations
+                .stream()
+                .map(classReservation -> new ClassReservationResponseDto(
+                        classReservation.getId(),
+                        classReservation.getProfessor().getId(),
+                        classReservation.getSubject() == null ? null : classReservation.getSubject().getId(),
+                        classReservation.getStudent() == null ? null : classReservation.getStudent().getId(),
+                        classReservation.getDate(),
+                        classReservation.getStartingHour(),
+                        classReservation.getEndingHour(),
+                        classReservation.getPrice() == null ? null : classReservation.getPrice(),
+                        classReservation.getStatus().toString()
+                )).toList();
+        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationResponseDtos));
+    }
+
+    @CrossOrigin
+    @GetMapping("/findByProfessor")
+    public ResponseEntity<String> getReservationByProfessor(@RequestParam Long professorId) throws JsonProcessingException {
+        if(professorId == null) return ResponseEntity.badRequest().body("Professor id must be provided");
+        List<ClassReservation> classReservations = classReservationService.getReservationsByProfessorId(professorId);
+        if (classReservations.isEmpty())
+            return new ResponseEntity<>("No reservations found", HttpStatus.NOT_FOUND);
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        List<ClassReservationResponseDto> classReservationResponseDtos = classReservations
+                .stream()
+                .map(classReservation -> new ClassReservationResponseDto(
+                        classReservation.getId(),
+                        classReservation.getProfessor().getId(),
+                        classReservation.getSubject() == null ? null : classReservation.getSubject().getId(),
+                        classReservation.getStudent() == null ? null : classReservation.getStudent().getId(),
+                        classReservation.getDate(),
+                        classReservation.getStartingHour(),
+                        classReservation.getEndingHour(),
+                        classReservation.getPrice() == null ? null : classReservation.getPrice(),
+                        classReservation.getStatus().toString()
+                )).toList();
+        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationResponseDtos));
+    }
+
+ */
 }

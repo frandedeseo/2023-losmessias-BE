@@ -1,5 +1,5 @@
 package com.losmessias.leherer.security.config;
-
+/**
 import com.losmessias.leherer.domain.AppUser;
 import com.losmessias.leherer.repository.AppUserRepository;
 import jakarta.servlet.ServletException;
@@ -85,3 +85,4 @@ public class WebSecurityConfig {
         return http.build();
     }
 }
+*/

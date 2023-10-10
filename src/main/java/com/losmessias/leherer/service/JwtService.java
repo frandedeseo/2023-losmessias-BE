@@ -5,10 +5,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,9 +19,8 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-
-    private static final String SECRET_KEY = "A7CB5EDCE8AD6D9C82D99AFCF35F7";
-    public String extractUserName(String token){
+    private static final String SECRET_KEY = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
+    public String extractUsername(String token){
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -33,6 +34,7 @@ public class JwtService {
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails){
+
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
@@ -44,7 +46,7 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails){
-        final String username = extractUserName(token);
+        final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
