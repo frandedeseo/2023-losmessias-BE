@@ -4,6 +4,7 @@ import com.losmessias.leherer.controller.StudentController;
 import com.losmessias.leherer.domain.ClassReservation;
 import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.repository.StudentRepository;
+import com.losmessias.leherer.role.AppUserSex;
 import com.losmessias.leherer.service.ClassReservationService;
 import com.losmessias.leherer.service.StudentService;
 import org.json.JSONArray;
@@ -55,8 +56,8 @@ public class StudentControllerTests {
     @WithMockUser
     @DisplayName("Get all students")
     void testGetAllStudentsReturnsNotFound() throws Exception {
-        Student student1 = new Student("John", "Doe", "email", "location");
-        Student student2 = new Student("Jane", "Doe", "email", "location");
+        Student student1 = new Student("John", "Doe", "email", "location", AppUserSex.MALE);
+        Student student2 = new Student("Jane", "Doe", "email", "location", AppUserSex.FEMALE);
         ArrayList<Student> students = new ArrayList<>();
         students.add(student1);
         students.add(student2);
@@ -169,7 +170,7 @@ public class StudentControllerTests {
     @WithMockUser
     @DisplayName("Update student")
     void testUpdateStudentReturnsOk() throws Exception {
-        Student student = new Student("John", "Doe", "email", "location");
+        Student student = new Student("John", "Doe", "email", "location", AppUserSex.MALE);
         studentService.create(student);
         when(studentRepository.save(student)).thenReturn(student);
         when(studentService.updateStudent(any(), any())).thenReturn(student);
@@ -191,7 +192,7 @@ public class StudentControllerTests {
     @WithMockUser
     @DisplayName("Update student returns bad request when student not found")
     void testUpdateStudentReturnsBadRequest() throws Exception {
-        Student student = new Student("John", "Doe", "email", "location");
+        Student student = new Student("John", "Doe", "email", "location", AppUserSex.MALE);
         studentService.create(student);
         when(studentRepository.save(student)).thenReturn(student);
         when(studentService.updateStudent(any(), any())).thenReturn(student);

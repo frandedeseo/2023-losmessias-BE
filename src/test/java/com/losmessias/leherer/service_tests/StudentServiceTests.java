@@ -4,6 +4,7 @@ import com.losmessias.leherer.domain.ClassReservation;
 import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.repository.StudentRepository;
+import com.losmessias.leherer.role.AppUserSex;
 import com.losmessias.leherer.service.StudentService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,7 @@ public class StudentServiceTests {
     @Test
     @DisplayName("Create student")
     void testCreateStudent() {
-        Student student = new Student("John", "Doe", "mail", "ubication");
+        Student student = new Student("John", "Doe", "mail", "ubication", AppUserSex.MALE);
         when(studentRepository.save(student)).thenReturn(student);
         assertEquals(student, studentService.create(student));
     }
@@ -56,7 +57,7 @@ public class StudentServiceTests {
     @Test
     @DisplayName("Add reservation to student")
     void testGetStudentSubjects() {
-        Student student = new Student("John", "Doe", "mail", "ubication");
+        Student student = new Student("John", "Doe", "mail", "ubication", AppUserSex.MALE);
         ClassReservation reservation = new ClassReservation();
 
         when(studentRepository.save(student)).thenReturn(student);
@@ -66,8 +67,8 @@ public class StudentServiceTests {
     @Test
     @DisplayName("Update student")
     void testUpdateStudent() {
-        Student student = new Student("John", "Doe", "mail", "ubication");
-        Student studentToUpdate = new Student("John", "Doe", "mail", "ubication");
+        Student student = new Student("John", "Doe", "mail", "ubication", AppUserSex.MALE);
+        Student studentToUpdate = new Student("John", "Doe", "mail", "ubication", AppUserSex.MALE);
         studentToUpdate.setFirstName("Jane");
         studentToUpdate.setLastName("Doe");
         studentToUpdate.setEmail("mail");

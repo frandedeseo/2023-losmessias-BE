@@ -42,7 +42,8 @@ public class RegistrationService {
                         request.getFirstName(),
                         request.getLastName(),
                         request.getEmail(),
-                        request.getLocation()
+                        request.getLocation(),
+                        sex
                 )
         );
         id = student.getId();
@@ -90,7 +91,8 @@ public class RegistrationService {
                         request.getLastName(),
                         request.getEmail(),
                         request.getLocation(),
-                        request.getPhone()
+                        request.getPhone(),
+                        sex
                 )
         );
         id = professor.getId();

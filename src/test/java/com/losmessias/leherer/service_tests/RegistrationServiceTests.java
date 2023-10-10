@@ -73,19 +73,8 @@ public class RegistrationServiceTests {
                 "Male"
         );
 
-        professor1 = new Professor(
-                request1.getFirstName(),
-                request1.getLastName(),
-                request1.getEmail(),
-                request1.getLocation(),
-                request1.getPhone()
-        );
-        student1 = new Student(
-                request1.getFirstName(),
-                request1.getLastName(),
-                request1.getEmail(),
-                request1.getLocation()
-        );
+        professor1 = new Professor();
+        student1 = new Student();
         user1 = new AppUser(
                 request1.getEmail(),
                 request1.getPassword(),
