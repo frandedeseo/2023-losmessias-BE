@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.WhereJoinTable;
+import com.losmessias.leherer.role.AppUserSex;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,6 +36,8 @@ public class Professor {
     private String location;
     @Column
     private String phone;
+    @Column
+    private AppUserSex sex;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -48,7 +51,7 @@ public class Professor {
     @OneToMany(mappedBy = "professor", fetch = FetchType.LAZY)
     private List<ClassReservation> classReservations;
 
-    public Professor(String firstName, String lastName, String email, String location, String phone) {
+    public Professor(String firstName, String lastName, String email, String location, String phone, AppUserSex appUserSex) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -56,6 +59,7 @@ public class Professor {
         this.phone = phone;
         this.subjects = new HashSet<>();
         this.classReservations = new ArrayList<>();
+        this.sex = appUserSex;
     }
 
     public void addSubject(Subject subject) {
