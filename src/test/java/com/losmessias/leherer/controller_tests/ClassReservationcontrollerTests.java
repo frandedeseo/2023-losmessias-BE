@@ -1,38 +1,49 @@
 package com.losmessias.leherer.controller_tests;
 
 import com.losmessias.leherer.controller.ClassReservationController;
-import com.losmessias.leherer.domain.ClassReservation;
-import com.losmessias.leherer.domain.Professor;
-import com.losmessias.leherer.domain.Student;
-import com.losmessias.leherer.domain.Subject;
+import com.losmessias.leherer.domain.*;
+import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.domain.enumeration.ReservationStatus;
 import com.losmessias.leherer.repository.ProfessorSubjectRepository;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
-import com.losmessias.leherer.service.ClassReservationService;
-import com.losmessias.leherer.service.ProfessorService;
-import com.losmessias.leherer.service.StudentService;
-import com.losmessias.leherer.service.SubjectService;
+import com.losmessias.leherer.security.config.ApplicationConfig;
+import com.losmessias.leherer.security.config.SecurityConfiguration;
+import com.losmessias.leherer.service.*;
+import com.losmessias.leherer.service.JwtService;
+import io.jsonwebtoken.Jwt;
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import io.jsonwebtoken.Jwts;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(ClassReservationController.class)
@@ -51,6 +62,8 @@ public class ClassReservationcontrollerTests {
     private ProfessorService professorService;
     @MockBean
     private ProfessorSubjectRepository professorSubjectRepository;
+    @MockBean
+    private JwtService jwtService;
 
     @Mock
     private ClassReservation classReservationTest1;
@@ -58,7 +71,7 @@ public class ClassReservationcontrollerTests {
     private ClassReservation classReservationTest2;
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Get all reservations")
     void testGetAllReservationsReturnsOk() throws Exception {
         List<ClassReservation> classReservationList = new ArrayList<>();
@@ -83,32 +96,29 @@ public class ClassReservationcontrollerTests {
         when(classReservationTest2.getEndingHour()).thenReturn(null);
         when(classReservationTest2.getPrice()).thenReturn(null);
         when(classReservationTest2.getStatus()).thenReturn(ReservationStatus.CONFIRMED);
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/reservation/all"))
-                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/reservation/all"))
+                        .andExpect(status().isOk());
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Get all reservations finds no reservation")
     void testGetAllReservationsReturnsNotFound() throws Exception {
         when(classReservationService.getAllReservations()).thenReturn(new ArrayList<>());
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/reservation/all"))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/reservation/all"))
+                        .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("Get all reservations without authentication")
     void testGetAllReservationsReturnsUnauthorized() throws Exception {
         when(classReservationService.getAllReservations()).thenReturn(new ArrayList<>());
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/reservation"))
+        mockMvc.perform(get("/api/reservation"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Get reservation by id")
     void testGetReservationByIdReturnsOk() throws Exception {
         when(classReservationService.getReservationById(1L)).thenReturn(classReservationTest1);
@@ -120,18 +130,16 @@ public class ClassReservationcontrollerTests {
         when(classReservationTest1.getEndingHour()).thenReturn(null);
         when(classReservationTest1.getPrice()).thenReturn(null);
         when(classReservationTest1.getStatus()).thenReturn(ReservationStatus.CONFIRMED);
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/reservation/1"))
+        mockMvc.perform(get("/api/reservation/1"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Get reservation by id finds no reservation")
     void testGetReservationByIdReturnsNotFound() throws Exception {
         when(classReservationService.getReservationById(1L)).thenReturn(null);
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/reservation/1"))
+        mockMvc.perform(get("/api/reservation/1"))
                 .andExpect(status().isNotFound());
     }
 
@@ -139,13 +147,12 @@ public class ClassReservationcontrollerTests {
     @DisplayName("Get reservation by id without authentication")
     void testGetReservationByIdReturnsUnauthorized() throws Exception {
         when(classReservationService.getReservationById(1L)).thenReturn(classReservationTest1);
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/reservation/1"))
+        mockMvc.perform(get("/api/reservation/1"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Create a reservation returns ok")
     void testCreateAReservationReturnsOk() throws Exception {
         Professor professor = new Professor();
@@ -170,7 +177,7 @@ public class ClassReservationcontrollerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Create a reservation with no professor id returns bad request")
     void testCreateAReservationReturnsBadRequest() throws Exception {
         Subject subject = new Subject();
@@ -387,8 +394,7 @@ public class ClassReservationcontrollerTests {
     void testGetTodaysSummaryReturnsOk() throws Exception {
         List<ProfessorDailySummary> professorDailySummaryList = new ArrayList<>();
         when(classReservationService.getDailySummary(LocalDate.of(2023, 1, 1))).thenReturn(professorDailySummaryList);
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/reservation/customDaySummary")
+        mockMvc.perform(get("/api/reservation/customDaySummary")
                         .param("day", "2023-01-01"))
                 .andExpect(status().isOk());
     }
@@ -396,8 +402,7 @@ public class ClassReservationcontrollerTests {
     @Test
     @DisplayName("Get custom day summary for admin without authentication")
     void testGetTodaysSummaryReturnsUnauthorized() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/reservation/customDaySummary")
+        mockMvc.perform(get("/api/reservation/customDaySummary")
                         .param("day", "2023-01-01"))
                 .andExpect(status().isUnauthorized());
     }
@@ -406,8 +411,7 @@ public class ClassReservationcontrollerTests {
     @WithMockUser
     @DisplayName("Get custom day with no day provided")
     void testGetTodaysSummaryReturnsBadRequest() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/reservation/customDaySummary"))
+        mockMvc.perform(get("/api/reservation/customDaySummary"))
                 .andExpect(status().isBadRequest());
     }
 
@@ -417,8 +421,7 @@ public class ClassReservationcontrollerTests {
     void testGetTodaysSummaryReturnsOk2() throws Exception {
         List<ProfessorDailySummary> professorDailySummaryList = new ArrayList<>();
         when(classReservationService.getDailySummary(LocalDate.now())).thenReturn(professorDailySummaryList);
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/reservation/todaySummary"))
+        mockMvc.perform(get("/api/reservation/todaySummary"))
                 .andExpect(status().isOk());
     }
 
