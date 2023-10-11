@@ -41,13 +41,7 @@ public class RegistrationService {
         if (!appUser.isEnabled()){
              throw new IllegalStateException("You have not confirmed your email address yet");
         }
-        Map<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("role", appUser.getAppUserRole());
-
-        var jwtToken = jwtService.generateToken(extraClaims, appUser);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+        return generateToken(appUser);
     }
 
     public String register(RegistrationRequest request) {
@@ -91,7 +85,7 @@ public class RegistrationService {
                 request.getEmail(),
                 buildEmail(request.getFirstName(), link, "Confirm yor email", "Welcome to Leherer! The place where your dreams come true. I would like to thank you for registering! "));
 
-        return "";
+        return "Successful Registration";
     }
 
     public String validateEmailNotTaken(String email){
@@ -143,7 +137,7 @@ public class RegistrationService {
                 request.getEmail(),
                 buildEmail(request.getFirstName(), link, "Confirm yor email", "Welcome to Leherer! The place where your dreams come true. I would like to thank you for registering! "));
 
-        return "";
+        return "Successful Registration";
 
     }
 
@@ -182,7 +176,16 @@ public class RegistrationService {
 
         confirmationToken.getAppUser().getAuthorities();
 
-        var jwtToken = jwtService.generateToken(appUser);
+        return generateToken(appUser);
+    }
+
+    public AuthenticationResponse generateToken(AppUser appUser){
+
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("role", appUser.getAppUserRole());
+        extraClaims.put("id", appUser.getAssociationId());
+
+        var jwtToken = jwtService.generateToken(extraClaims, appUser);
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)

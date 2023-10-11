@@ -3,6 +3,7 @@ package com.losmessias.leherer.controller_tests;
 import com.losmessias.leherer.controller.ProfessorController;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.role.AppUserSex;
+import com.losmessias.leherer.service.JwtService;
 import com.losmessias.leherer.service.ProfessorService;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
@@ -34,12 +35,14 @@ public class ProfessorControllerTests {
 
     @MockBean
     private ProfessorService professorService;
+    @MockBean
+    private JwtService jwtService;
 
     @Mock
     private Professor professorTest;
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Get all professors")
     void testGetAllProfessorsReturnsOk() throws Exception {
         Professor professor1 = new Professor("John", "Doe", "mail", "location", "phone", AppUserSex.MALE);
@@ -54,7 +57,7 @@ public class ProfessorControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Get all professors gets empty list")
     void testGetAllProfessorsReturnsEmptyList() throws Exception {
         when(professorService.getAllProfessors()).thenReturn(new ArrayList<>());
@@ -73,7 +76,7 @@ public class ProfessorControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Get all professors returns array of professors")
     void testGetAllProfessorsReturnArrayOfProfessors() throws Exception {
         List<Professor> professors = new ArrayList<Professor>();
@@ -91,7 +94,7 @@ public class ProfessorControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Save a professor")
     void testSaveAProfessorReturnsOk() throws Exception {
         Professor professor = new Professor("John", "Doe", "mail", "location", "phone", AppUserSex.MALE);
@@ -110,7 +113,7 @@ public class ProfessorControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Save a professor returns bad request at id")
     void testSaveAProfessorReturnsBadRequest() throws Exception {
         Professor professor = new Professor("John", "Doe", "mail", "location", "phone", AppUserSex.MALE);
@@ -128,7 +131,7 @@ public class ProfessorControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Update a professor")
     void testChangingProfessorReturnsNotFound() throws Exception {
         Professor professor = new Professor("John", "Doe", "mail", "location", "phone", AppUserSex.MALE);
@@ -150,7 +153,7 @@ public class ProfessorControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Find a professor by id doesnt find any")
     void testFindProfessorByIdReturnsNotFound() throws Exception {
         when(professorService.getProfessorById(any())).thenReturn(null);
@@ -160,7 +163,7 @@ public class ProfessorControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Find a professor by id returns ok")
     void testFindProfessorByIdReturnsOk() throws Exception {
         Professor professor = new Professor("John", "Doe", "mail", "location", "phone", AppUserSex.MALE);
@@ -171,7 +174,7 @@ public class ProfessorControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Find a professor by id returns professor")
     void testFindProfessorByIdReturnsProfessor() throws Exception {
         Professor professor = new Professor("John", "Doe", "mail", "location", "phone", AppUserSex.MALE);
@@ -187,7 +190,7 @@ public class ProfessorControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Update a professor returns updated professor")
     void testUpdateProfessorReturnsUpdatedProfessor() throws Exception {
         Professor professor = new Professor("John", "Doe", "mail", "location", "phone", AppUserSex.MALE);

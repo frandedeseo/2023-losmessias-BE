@@ -6,6 +6,7 @@ import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.repository.StudentRepository;
 import com.losmessias.leherer.role.AppUserSex;
 import com.losmessias.leherer.service.ClassReservationService;
+import com.losmessias.leherer.service.JwtService;
 import com.losmessias.leherer.service.StudentService;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -41,6 +42,8 @@ public class StudentControllerTests {
     private ClassReservationService classReservationService;
     @MockBean
     private StudentRepository studentRepository;
+    @MockBean
+    private JwtService jwtService;
 
     @Test
     @WithMockUser

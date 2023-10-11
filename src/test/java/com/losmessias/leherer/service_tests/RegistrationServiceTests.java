@@ -1,6 +1,7 @@
 package com.losmessias.leherer.service_tests;
 
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
+import com.losmessias.leherer.dto.AuthenticationResponse;
 import com.losmessias.leherer.dto.ForgotPasswordDto;
 import com.losmessias.leherer.dto.RegistrationProfessorRequest;
 import com.losmessias.leherer.domain.*;
@@ -17,8 +18,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -36,6 +41,8 @@ public class RegistrationServiceTests {
     private ProfessorService professorService;
     @Mock
     private EmailSender emailSender;
+    @Mock
+    private JwtService jwtService;
     @InjectMocks
     private RegistrationService registrationService;
 
@@ -79,7 +86,7 @@ public class RegistrationServiceTests {
                 request1.getEmail(),
                 request1.getPassword(),
                 AppUserRole.PROFESSOR,
-                professor1.getId()
+                2L
         );
     }
     @Test
@@ -87,8 +94,8 @@ public class RegistrationServiceTests {
     void testRegistrationProfessorIsDoneCorrectly() {
         when( professorService.saveProfessor(any())).thenReturn(professor1);
         when( professorService.saveProfessor(any())).thenReturn(professor1);
-     //   String message = registrationService.registerProfessor(request1);
-     //   assertEquals("Successful Registration", message);
+        String message = registrationService.registerProfessor(request1);
+        assertEquals("Successful Registration", message);
 
     }
     @Test
@@ -96,22 +103,26 @@ public class RegistrationServiceTests {
     void testRegistrationStudentIsDoneCorrectly() {
 
         when( studentService.create(any())).thenReturn(student1);
-      //  String message = registrationService.register(request2);
-       // assertEquals("Successful Registration", message);
+        String message = registrationService.register(request2);
+        assertEquals("Successful Registration", message);
 
     }
-    @Test
-    @DisplayName("Confirm the registration by the email token")
-    void testConfirmEmailToken() {
-        String token = "token";
-
-        when(confirmationTokenService.validateToken(token)).thenReturn(new ConfirmationToken(
-                "token", LocalDateTime.now(), LocalDateTime.now(), user1
-        ));
-      //  String message = registrationService.confirmEmailToken("token");
-
-        //assertEquals("Email Confirmed", message);
-    }
+//    @Test
+//    @DisplayName("Confirm the registration by the email token")
+//    void testConfirmEmailToken() {
+//        String token = "token";
+//
+//        when(confirmationTokenService.validateToken(token)).thenReturn(new ConfirmationToken(
+//                "token", LocalDateTime.now(), LocalDateTime.now(), user1
+//        ));
+//        AuthenticationResponse authenticationResponseExpected = AuthenticationResponse.builder()
+//                .token("jwtToken")
+//                .build();
+//        when(jwtService.generateToken(any())).thenReturn("jwtToken");
+//        AuthenticationResponse authenticationResponse = registrationService.confirmEmailToken("token");
+//
+//        assertEquals(authenticationResponseExpected, authenticationResponse);
+//    }
     @Test
     @DisplayName("Confirm the token for Password change was activated successfully")
     void testConfirmChangePasswordToken(){
