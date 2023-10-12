@@ -6,6 +6,7 @@ import com.losmessias.leherer.domain.ProfessorSubject;
 import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.domain.enumeration.SubjectStatus;
 import com.losmessias.leherer.dto.SubjectRequestDto;
+import com.losmessias.leherer.service.JwtService;
 import com.losmessias.leherer.service.ProfessorService;
 import com.losmessias.leherer.service.ProfessorSubjectService;
 import com.losmessias.leherer.service.SubjectService;
@@ -45,12 +46,14 @@ public class ProfessorSubjectControllerTests {
     private ProfessorService professorService;
     @MockBean
     private SubjectService subjectService;
+    @MockBean
+    private JwtService jwtService;
 
     @Mock
     private SubjectRequestDto subjectRequestDtoMock;
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Get all professor-subjects")
     void testGetAllProfessorSubjectsReturnsOk() throws Exception {
         List<ProfessorSubject> professorSubjects = new ArrayList<>();
@@ -72,7 +75,7 @@ public class ProfessorSubjectControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Get all professor-subjects finds none")
     void testGetAllProfessorSubjectsReturnsNotFound() throws Exception {
         when(professorSubjectService.getAllProfessorSubjects()).thenReturn(new ArrayList<>());
@@ -82,7 +85,7 @@ public class ProfessorSubjectControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Get a professor-subject by id")
     void testGetProfessorSubjectByIdReturnsOk() throws Exception {
         ProfessorSubject professorSubject = new ProfessorSubject();
@@ -103,7 +106,7 @@ public class ProfessorSubjectControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Get a professor-subject by id finds none")
     void testGetProfessorSubjectByIdReturnsNotFound() throws Exception {
         when(professorSubjectService.findById(1L)).thenReturn(null);
@@ -113,7 +116,7 @@ public class ProfessorSubjectControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Create a professor-subject association")
     void testCreateProfessorSubjectAssociationReturnsOk() throws Exception {
         when(professorService.getProfessorById(1L)).thenReturn(new Professor());
@@ -127,7 +130,7 @@ public class ProfessorSubjectControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Create a professor-subject association finds no professor")
     void testCreateProfessorSubjectAssociationReturnsNotFoundProfessor() throws Exception {
         when(professorService.getProfessorById(1L)).thenReturn(null);
@@ -141,7 +144,7 @@ public class ProfessorSubjectControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Create a professor-subject association finds no subject")
     void testCreateProfessorSubjectAssociationReturnsNotFoundSubject() throws Exception {
         when(professorService.getProfessorById(1L)).thenReturn(new Professor());
@@ -155,7 +158,7 @@ public class ProfessorSubjectControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Find professor-subjects by professor")
     void testFindProfessorSubjectsByProfessorReturnsOk() throws Exception {
         Professor professor = new Professor();
@@ -170,7 +173,7 @@ public class ProfessorSubjectControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Find professor-subjects by status")
     void testFindProfessorSubjectsByStatusReturnsOk() throws Exception {
         List<ProfessorSubject> professorSubjects = new ArrayList<>();
@@ -184,7 +187,7 @@ public class ProfessorSubjectControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Find professor-subjects by status finds none")
     void testFindProfessorSubjectsByStatusReturnsNotFound() throws Exception {
         when(professorSubjectService.findByStatus(SubjectStatus.PENDING)).thenReturn(new ArrayList<>());
@@ -195,7 +198,7 @@ public class ProfessorSubjectControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Approve professor-subjects returns ok")
     void testApproveProfessorSubjectsReturnsOk() throws Exception {
         Professor professor = new Professor();
@@ -215,7 +218,7 @@ public class ProfessorSubjectControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Approve professor-subjects finds no professor")
     void testApproveProfessorSubjectsReturnsNotFoundProfessor() throws Exception {
         JSONObject jsonObject = new JSONObject();
@@ -234,7 +237,7 @@ public class ProfessorSubjectControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Approve professor-subjects finds no subject")
     void testApproveProfessorSubjectsReturnsNotFoundSubject() throws Exception {
         JSONObject jsonObject = new JSONObject();
@@ -253,7 +256,7 @@ public class ProfessorSubjectControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Approve professor-subjects finds no professor-subject")
     void testApproveProfessorSubjectsReturnsNotFoundProfessorSubject() throws Exception {
         JSONObject jsonObject = new JSONObject();
@@ -271,7 +274,7 @@ public class ProfessorSubjectControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Reject professor-subjects returns ok")
     void testRejectProfessorSubjectsReturnsOk() throws Exception {
         Professor professor = new Professor();
@@ -291,7 +294,7 @@ public class ProfessorSubjectControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Reject professor-subjects finds no professor")
     void testRejectProfessorSubjectsReturnsNotFoundProfessor() throws Exception {
         JSONObject jsonObject = new JSONObject();
@@ -307,7 +310,7 @@ public class ProfessorSubjectControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Reject professor-subjects finds no subject")
     void testRejectProfessorSubjectsReturnsNotFoundSubject() throws Exception {
         JSONObject jsonObject = new JSONObject();
@@ -324,7 +327,7 @@ public class ProfessorSubjectControllerTests {
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Reject professor-subjects finds no professor-subject")
     void testRejectProfessorSubjectsReturnsNotFoundProfessorSubject() throws Exception {
         JSONObject jsonObject = new JSONObject();

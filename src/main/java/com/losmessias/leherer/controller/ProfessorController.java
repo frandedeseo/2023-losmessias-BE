@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/professor")
 @RequiredArgsConstructor
 public class ProfessorController {
@@ -27,6 +28,7 @@ public class ProfessorController {
         }
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(professors));
     }
+
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/{id}")

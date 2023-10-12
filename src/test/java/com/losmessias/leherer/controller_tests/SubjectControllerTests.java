@@ -2,6 +2,7 @@ package com.losmessias.leherer.controller_tests;
 
 import com.losmessias.leherer.controller.SubjectController;
 import com.losmessias.leherer.domain.Subject;
+import com.losmessias.leherer.service.JwtService;
 import com.losmessias.leherer.service.SubjectService;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,6 +34,8 @@ public class SubjectControllerTests {
 
     @MockBean
     private SubjectService subjectService;
+    @MockBean
+    private JwtService jwtService;
 
     @Test
     @WithMockUser
