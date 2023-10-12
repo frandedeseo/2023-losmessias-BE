@@ -34,6 +34,8 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/loadEmailForPasswordChange").permitAll()
                                 .requestMatchers("/api/validate-email").permitAll()
                                 .requestMatchers("/api/subject/**").permitAll()
+                                .requestMatchers("/api/**").permitAll()
+                                .requestMatchers("/personal-data").permitAll()
                                 .requestMatchers("/api/professor-subject/all").hasAuthority("PROFESSOR")
                                 .anyRequest().authenticated()
                 )
