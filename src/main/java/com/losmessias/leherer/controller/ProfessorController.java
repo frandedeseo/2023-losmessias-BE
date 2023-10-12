@@ -29,6 +29,7 @@ public class ProfessorController {
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(professors));
     }
 
+
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/{id}")
     public ResponseEntity<String> getProfessorById(@PathVariable Long id) throws JsonProcessingException {
