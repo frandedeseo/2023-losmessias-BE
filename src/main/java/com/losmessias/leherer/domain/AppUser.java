@@ -1,6 +1,6 @@
 package com.losmessias.leherer.domain;
 
-import com.losmessias.leherer.role.AppUserRole;
+import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -31,8 +31,6 @@ public class AppUser implements UserDetails {
             generator = "student_sequence"
     )
     private Long id;
-    private String firstName;
-    private String lastName;
     private String email;
     private String password;
     @Enumerated(EnumType.STRING)
@@ -41,14 +39,10 @@ public class AppUser implements UserDetails {
     private Boolean enabled = false;
     private Long associationId;
 
-    public AppUser(String firstName,
-                   String lastName,
-                   String email,
+    public AppUser(String email,
                    String password,
                    AppUserRole appUserRole,
                    Long associationId) {
-        this.firstName = firstName;
-        this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.appUserRole = appUserRole;

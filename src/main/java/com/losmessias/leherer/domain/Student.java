@@ -1,6 +1,7 @@
 package com.losmessias.leherer.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.losmessias.leherer.role.AppUserSex;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,16 +30,22 @@ public class Student {
     private String email;
     @Column
     private String location;
+    @Column
+    private String phone;
+    @Column
+    private AppUserSex sex;
     @JsonIgnore
     @OneToMany(mappedBy = "student")
     private List<ClassReservation> classReservations;
 
-    public Student(String firstName, String lastName, String email, String location) {
+    public Student(String firstName, String lastName, String email, String location, String phone, AppUserSex appUserSex) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.location = location;
         this.classReservations = new ArrayList<>();
+        this.phone = phone;
+        this.sex = appUserSex;
     }
 
     public void addReservation(ClassReservation classReservation) {
@@ -53,6 +60,16 @@ public class Student {
                 ", lastName=" + lastName +
                 ", email='" + email + '\'' +
                 ", location='" + location + '\'' +
+                '}';
+    }
+
+    public String toJson(){
+        return "{" +
+                "\"id\":" + id +
+                ", \"firstName\":\"" + firstName + '\"' +
+                ", \"lastName\":\"" + lastName + '\"' +
+                ", \"email\":\"" + email + '\"' +
+                ", \"location\":\"" + location + '\"' +
                 '}';
     }
 }

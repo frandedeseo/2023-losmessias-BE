@@ -1,8 +1,7 @@
 package com.losmessias.leherer.security.config;
-
+/**
 import com.losmessias.leherer.domain.AppUser;
 import com.losmessias.leherer.repository.AppUserRepository;
-import com.losmessias.leherer.role.AppUserRole;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,7 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -64,18 +62,22 @@ public class WebSecurityConfig {
                                                                 Authentication authentication) throws IOException, ServletException {
                                 UserDetails userDetails = (UserDetails) authentication.getPrincipal();
                                 Boolean isStudent = false;
+                                Boolean isProfessor = false;
                                 Collection<? extends GrantedAuthority> roles = authentication.getAuthorities();
                                 for (GrantedAuthority rol : roles) {
                                     isStudent = rol.getAuthority().equals("STUDENT");
+                                    isProfessor = rol.getAuthority().equals("PROFESSOR");
                                 }
                                 String username = ((UserDetails) authentication.getPrincipal()).getUsername();
                                 AppUser appUser = appUserRepository.findByEmail(username);
                                 Long id = appUser.getId();
 
                                 if (isStudent) {
-                                    response.sendRedirect("http://localhost:3000/student-landing?id=" + id);
-                                } else {
-                                    response.sendRedirect("http://localhost:3000/professor-landing?id=" + id);
+                                    response.sendRedirect("http://localhost:3000/student-landing?id=" + id + "&role=student");
+                                } else if (isProfessor){
+                                    response.sendRedirect("http://localhost:3000/professor-landing?id=" + id + "&role=professor");
+                                }else {
+                                    response.sendRedirect("http://localhost:3000/admin-landing?id=" + id + "&role=admin");
                                 }
                             }
                         })
@@ -83,3 +85,4 @@ public class WebSecurityConfig {
         return http.build();
     }
 }
+*/
