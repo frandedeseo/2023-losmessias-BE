@@ -49,7 +49,7 @@ public class StudentServiceTests {
     @Test
     @DisplayName("Create student")
     void testCreateStudent() {
-        Student student = new Student("John", "Doe", "mail", "ubication", AppUserSex.MALE);
+        Student student = new Student("John", "Doe", "mail", "ubication", "123", AppUserSex.MALE);
         when(studentRepository.save(student)).thenReturn(student);
         assertEquals(student, studentService.create(student));
     }
@@ -57,7 +57,7 @@ public class StudentServiceTests {
     @Test
     @DisplayName("Add reservation to student")
     void testGetStudentSubjects() {
-        Student student = new Student("John", "Doe", "mail", "ubication", AppUserSex.MALE);
+        Student student = new Student("John", "Doe", "mail", "ubication", "123", AppUserSex.MALE);
         ClassReservation reservation = new ClassReservation();
 
         when(studentRepository.save(student)).thenReturn(student);
@@ -67,8 +67,8 @@ public class StudentServiceTests {
     @Test
     @DisplayName("Update student")
     void testUpdateStudent() {
-        Student student = new Student("John", "Doe", "mail", "ubication", AppUserSex.MALE);
-        Student studentToUpdate = new Student("John", "Doe", "mail", "ubication", AppUserSex.MALE);
+        Student student = new Student("John", "Doe", "mail", "ubication", "123", AppUserSex.MALE);
+        Student studentToUpdate = new Student("John", "Doe", "mail", "ubication", "123", AppUserSex.MALE);
         studentToUpdate.setFirstName("Jane");
         studentToUpdate.setLastName("Doe");
         studentToUpdate.setEmail("mail");

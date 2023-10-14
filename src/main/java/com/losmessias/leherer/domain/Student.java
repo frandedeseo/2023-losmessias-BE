@@ -38,12 +38,13 @@ public class Student {
     @OneToMany(mappedBy = "student")
     private List<ClassReservation> classReservations;
 
-    public Student(String firstName, String lastName, String email, String location, AppUserSex appUserSex) {
+    public Student(String firstName, String lastName, String email, String location, String phone, AppUserSex appUserSex) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.location = location;
         this.classReservations = new ArrayList<>();
+        this.phone = phone;
         this.sex = appUserSex;
     }
 

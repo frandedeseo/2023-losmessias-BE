@@ -26,7 +26,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
+
                 .authorizeHttpRequests(req ->
                         req.requestMatchers("/api/registration/**").permitAll()
                                 .requestMatchers("/api/registration-professor/**").permitAll()
@@ -34,15 +34,15 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/loadEmailForPasswordChange").permitAll()
                                 .requestMatchers("/api/validate-email").permitAll()
                                 .requestMatchers("/api/subject/**").permitAll()
-                                .requestMatchers("/api/**").permitAll()
-                                .requestMatchers("/personal-data").permitAll()
-                                .requestMatchers("/api/professor-subject/all").hasAuthority("PROFESSOR")
+                                .requestMatchers("/api/student/**").permitAll()
+                                .requestMatchers("/api/professor/**").permitAll()
+                                .requestMatchers("/api/professor-subject/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .cors();
         return http.build();
     }
 }

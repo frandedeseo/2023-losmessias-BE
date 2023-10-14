@@ -63,6 +63,7 @@ public class RegistrationService {
                         request.getLastName(),
                         request.getEmail(),
                         request.getLocation(),
+                        request.getPhone(),
                         sex
                 )
         );
