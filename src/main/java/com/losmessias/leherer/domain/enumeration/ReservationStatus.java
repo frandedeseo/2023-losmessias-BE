@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum ReservationStatus {
     NOT_AVAILABLE("NOT_AVAILABLE"),
     CONFIRMED("CONFIRMED"),
-    CONCLUDED("CONCLUDED");
+    CONCLUDED("CONCLUDED"),
+    CANCELLED("CANCELLED");
 
     private final String status;
 

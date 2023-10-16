@@ -6,6 +6,7 @@ import com.losmessias.leherer.domain.ProfessorSubject;
 import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.domain.enumeration.SubjectStatus;
 import com.losmessias.leherer.dto.SubjectRequestDto;
+import com.losmessias.leherer.service.NotificationService;
 import com.losmessias.leherer.service.ProfessorService;
 import com.losmessias.leherer.service.ProfessorSubjectService;
 import com.losmessias.leherer.service.SubjectService;
@@ -27,6 +28,7 @@ public class ProfessorSubjectController {
     private final ProfessorSubjectService professorSubjectService;
     private final ProfessorService professorService;
     private final SubjectService subjectService;
+    private final NotificationService notificationService;
 
     @GetMapping("/all")
     public ResponseEntity<String> getProfessorSubject() throws JsonProcessingException {
@@ -78,6 +80,9 @@ public class ProfessorSubjectController {
         }
         if (approvedSubjects.isEmpty())
             return new ResponseEntity<>("No professor-subjects found", HttpStatus.NOT_FOUND);
+
+        notificationService.lecturedApprovedByAdminNotification(approvedSubjects);
+
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(approvedSubjects), HttpStatus.OK);
     }
 
@@ -96,15 +101,18 @@ public class ProfessorSubjectController {
 
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
 
-        List<ProfessorSubject> approvedSubjects = new ArrayList<>();
+        List<ProfessorSubject> rejectedSubjects = new ArrayList<>();
         for (Subject subject : subjects) {
             ProfessorSubject professorSubject = professorSubjectService.findByProfessorAndSubject(professor, subject);
             if (professorSubject != null)
-                approvedSubjects.add(professorSubjectService.changeStatusOf(professorSubject.getId(), SubjectStatus.REJECTED));
+                rejectedSubjects.add(professorSubjectService.changeStatusOf(professorSubject.getId(), SubjectStatus.REJECTED));
         }
-        if (approvedSubjects.isEmpty())
+        if (rejectedSubjects.isEmpty())
             return new ResponseEntity<>("No professor-subjects found", HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(approvedSubjects), HttpStatus.OK);
+
+        notificationService.lecturedRejectedByAdminNotification(rejectedSubjects);
+
+        return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(rejectedSubjects), HttpStatus.OK);
     }
 
     @GetMapping("/findByProfessor/{id}")

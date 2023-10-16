@@ -5,6 +5,7 @@ import com.losmessias.leherer.domain.ClassReservation;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.domain.Subject;
+import com.losmessias.leherer.dto.ClassReservationCancel;
 import com.losmessias.leherer.dto.ClassReservationDto;
 import com.losmessias.leherer.dto.ClassReservationResponseDto;
 import com.losmessias.leherer.dto.UnavailableClassReservationDto;
@@ -95,6 +96,14 @@ public class ClassReservationController {
                     classReservationDto.getEndingHour(),
                     classReservationDto.getDuration(),
                     classReservationDto.getPrice())));
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PostMapping ("/cancel")
+    public ResponseEntity<String> cancelReservation(@RequestBody ClassReservationCancel classReservationCancel) throws JsonProcessingException {
+        if (classReservationCancel.getId() == null) return ResponseEntity.badRequest().body("Class Reservation id must be provided");
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationService.cancelReservation(classReservationCancel)));
     }
 
     @CrossOrigin(origins = "http://localhost:3000")

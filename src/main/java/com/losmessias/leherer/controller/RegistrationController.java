@@ -28,31 +28,31 @@ public class RegistrationController {
     }
 
     @PostMapping(path = "/registration-professor")
-    public String registerProfessor(@RequestBody RegistrationProfessorRequest request) {
-        return registrationService.registerProfessor(request);
+    public ResponseEntity<String> registerProfessor(@RequestBody RegistrationProfessorRequest request) {
+        return ResponseEntity.ok(registrationService.registerProfessor(request));
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(path = "/registration/confirm")
-    public AuthenticationResponse confirm(@RequestParam("token") String token) {
-        return registrationService.confirmEmailToken(token);
+    public ResponseEntity<AuthenticationResponse> confirm(@RequestParam("token") String token) {
+        return ResponseEntity.ok(registrationService.confirmEmailToken(token));
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(path = "/forgot_password/confirm")
-    public String confirmTokenForgotPassword(@RequestParam("token") String token) {
-        return registrationService.confirmChangePasswordToken(token);
+    public ResponseEntity<String> confirmTokenForgotPassword(@RequestParam("token") String token) {
+        return ResponseEntity.ok(registrationService.confirmChangePasswordToken(token));
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(path = "/loadEmailForPasswordChange")
-    public String sendEmailForPasswordChange(@RequestParam("email") String email) {
-        return registrationService.sendEmailForPasswordChange(email);
+    public ResponseEntity<String> sendEmailForPasswordChange(@RequestParam("email") String email) {
+        return ResponseEntity.ok(registrationService.sendEmailForPasswordChange(email));
     }
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(path = "/validate-email")
-    public String validateEmailNotTaken(@RequestParam("email") String email) {
-        return registrationService.validateEmailNotTaken(email);
+    public ResponseEntity<String> validateEmailNotTaken(@RequestParam("email") String email) {
+        return ResponseEntity.ok(registrationService.validateEmailNotTaken(email));
     }
 
     @CrossOrigin(origins = "http://localhost:3000")

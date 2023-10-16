@@ -43,7 +43,7 @@ public class ClassReservation {
     @Column
     private Double duration;
     @Column
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private ReservationStatus status;
     @Column
     private Integer price;

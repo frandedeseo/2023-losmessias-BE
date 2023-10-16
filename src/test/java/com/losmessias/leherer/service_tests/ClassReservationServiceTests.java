@@ -4,6 +4,7 @@ import com.losmessias.leherer.domain.*;
 import com.losmessias.leherer.repository.ClassReservationRepository;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
 import com.losmessias.leherer.service.ClassReservationService;
+import com.losmessias.leherer.service.NotificationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,8 @@ import static org.mockito.Mockito.when;
 public class ClassReservationServiceTests {
     @Mock
     private ClassReservationRepository classReservationRepository;
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private ClassReservationService classReservationService;
@@ -51,6 +54,33 @@ public class ClassReservationServiceTests {
     @Test
     @DisplayName("Create reservation from student, professor and subject")
     void testCreateReservationFromStudentAndProfessorSubjectWithDefaultStatus() {
+        Professor professor = new Professor();
+        Subject subject = new Subject();
+        Student student = new Student();
+        ClassReservation classReservation = new ClassReservation(
+                professor,
+                subject,
+                student,
+                LocalDate.of(2023, 1, 1),
+                LocalTime.of(12, 0),
+                LocalTime.of(13, 0),
+                0.0,
+                100);
+
+        when(classReservationRepository.save(any())).thenReturn(classReservation);
+        assertEquals(classReservation, classReservationService.createReservation(
+                professor,
+                subject,
+                student,
+                LocalDate.of(2023, 1, 1),
+                LocalTime.of(12, 0),
+                LocalTime.of(13, 0),
+                0.0,
+                100));
+    }
+    @Test
+    @DisplayName("Create reservation from student, professor and subject")
+    void testCancelReservationFromStudentAndProfessorSubjectWithDefaultStatus() {
         Professor professor = new Professor();
         Subject subject = new Subject();
         Student student = new Student();

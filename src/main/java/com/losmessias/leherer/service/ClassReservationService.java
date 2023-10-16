@@ -1,6 +1,9 @@
 package com.losmessias.leherer.service;
 
 import com.losmessias.leherer.domain.*;
+import com.losmessias.leherer.domain.enumeration.AppUserRole;
+import com.losmessias.leherer.domain.enumeration.ReservationStatus;
+import com.losmessias.leherer.dto.ClassReservationCancel;
 import com.losmessias.leherer.repository.ClassReservationRepository;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ public class ClassReservationService {
     private final ClassReservationRepository classReservationRepository;
     private final ProfessorService professorService;
     private final SubjectService subjectService;
+    private final NotificationService notificationService;
 
     public List<ClassReservation> getAllReservations() {
         return classReservationRepository.findAll();
@@ -25,6 +29,23 @@ public class ClassReservationService {
 
     public ClassReservation getReservationById(Long id) {
         return classReservationRepository.findById(id).orElse(null);
+    }
+
+    public ClassReservation cancelReservation(ClassReservationCancel classReservationCancel){
+        ClassReservation classReservation = getReservationById(classReservationCancel.getId());
+        classReservation.setStatus(ReservationStatus.CANCELLED);
+        if (checkIfIsBetween48hsBefore(classReservation)){
+            classReservation.setPrice(classReservation.getPrice()/2);
+        }else{
+            classReservation.setPrice(0);
+        }
+        notificationService.cancelClassReservedNotification(classReservation, classReservationCancel.getRole());
+        return classReservationRepository.save(classReservation);
+
+    }
+
+    private boolean checkIfIsBetween48hsBefore(ClassReservation classReservation){
+        return classReservation.getDate().minusDays(2).isBefore(LocalDate.now()) || classReservation.getDate().minusDays(2).isEqual(LocalDate.now()) && classReservation.getStartingHour().isBefore(LocalTime.now());
     }
 
     public ClassReservation createReservation(Professor professor,
@@ -44,7 +65,10 @@ public class ClassReservationService {
                 startingTime,
                 endingTime,
                 duration,
-                price);
+                price
+        );
+        notificationService.generateClassReservedNotification(classReservation);
+
         return classReservationRepository.save(classReservation);
     }
 
@@ -96,5 +120,4 @@ public class ClassReservationService {
         Subject subject = subjectService.getSubjectById(subjectId);
         return classReservationRepository.findByProfessorAndSubject(professor, subject);
     }
-
 }

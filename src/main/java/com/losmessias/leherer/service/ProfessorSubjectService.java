@@ -1,13 +1,19 @@
 package com.losmessias.leherer.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.domain.ProfessorSubject;
 import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.domain.enumeration.SubjectStatus;
+import com.losmessias.leherer.dto.SubjectRequestDto;
 import com.losmessias.leherer.repository.ProfessorSubjectRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,6 +21,9 @@ import java.util.List;
 public class ProfessorSubjectService {
 
     private final ProfessorSubjectRepository professorSubjectRepository;
+    private final ProfessorService professorService;
+    private final SubjectService subjectService;
+    private final NotificationService notificationService;
 
     public List<ProfessorSubject> getAllProfessorSubjects() {
         return professorSubjectRepository.findAll();

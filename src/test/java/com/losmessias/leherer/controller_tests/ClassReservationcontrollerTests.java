@@ -219,6 +219,37 @@ public class ClassReservationcontrollerTests {
                         .with(csrf()))
                 .andExpect(status().isBadRequest());
     }
+    @Test
+    @WithMockUser
+    @DisplayName("Cancel a reservation with no Class Reservation id returns bad request")
+    void testCancelAReservationReturnsBadRequest() throws Exception {
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("id", null);
+        jsonContent.put("role", "STUDENT");
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/reservation/cancel")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Cancel a reservation return 200 OK")
+    void testCancelAReservationReturnsOk() throws Exception {
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("id", 1);
+        jsonContent.put("role", "STUDENT");
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/reservation/cancel")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isOk());
+    }
 
     @Test
     @WithMockUser

@@ -40,7 +40,7 @@ public class RegistrationServiceTests {
     @Mock
     private ProfessorService professorService;
     @Mock
-    private EmailSender emailSender;
+    private EmailService emailService;
     @Mock
     private JwtService jwtService;
     @InjectMocks
