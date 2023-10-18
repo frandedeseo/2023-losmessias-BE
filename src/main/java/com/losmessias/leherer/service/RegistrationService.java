@@ -1,14 +1,13 @@
 package com.losmessias.leherer.service;
 
 import com.losmessias.leherer.domain.*;
-import com.losmessias.leherer.dto.*;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
+import com.losmessias.leherer.dto.*;
 import com.losmessias.leherer.ext_interface.EmailSender;
 import com.losmessias.leherer.role.AppUserSex;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,8 +28,7 @@ public class RegistrationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request){
-
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -38,8 +36,8 @@ public class RegistrationService {
                 )
         );
         var appUser = appUserService.getAppUser(request.getEmail());
-        if (!appUser.isEnabled()){
-             throw new IllegalStateException("You have not confirmed your email address yet");
+        if (!appUser.isEnabled()) {
+            throw new IllegalStateException("You have not confirmed your email address yet");
         }
         return generateToken(appUser);
     }
@@ -51,12 +49,12 @@ public class RegistrationService {
         Long id;
         AppUserRole role;
         AppUserSex sex;
-        if (request.getSex().equals("Male")){
+        if (request.getSex().equals("Male")) {
             sex = AppUserSex.MALE;
-        }else{
+        } else {
             sex = AppUserSex.FEMALE;
         }
-        role=AppUserRole.STUDENT;
+        role = AppUserRole.STUDENT;
         Student student = studentService.create(
                 new Student(
                         request.getFirstName(),
@@ -68,7 +66,7 @@ public class RegistrationService {
                 )
         );
         id = student.getId();
-        
+
         AppUser appUser = new AppUser(
                 request.getEmail(),
                 request.getPassword(),
@@ -81,6 +79,7 @@ public class RegistrationService {
         String token = confirmationTokenService.generateConfirmationToken(appUser);
 
         String link = "http://localhost:3000?token=" + token;
+//        String link = "https://2023-losmessias.vercel.app/?token=" + token;
 
         emailSender.send(
                 request.getEmail(),
@@ -89,10 +88,11 @@ public class RegistrationService {
         return "Successful Registration";
     }
 
-    public String validateEmailNotTaken(String email){
+    public String validateEmailNotTaken(String email) {
         appUserService.validateEmailNotTaken(email);
         return "Email not taken";
     }
+
     public String registerProfessor(RegistrationProfessorRequest request) {
 
         appUserService.validateEmailNotTaken(request.getEmail());
@@ -100,12 +100,12 @@ public class RegistrationService {
         Long id;
         AppUserRole role;
         AppUserSex sex;
-        if (request.getSex().equals("Male")){
+        if (request.getSex().equals("Male")) {
             sex = AppUserSex.MALE;
-        }else {
+        } else {
             sex = AppUserSex.FEMALE;
         }
-        role =AppUserRole.PROFESSOR;
+        role = AppUserRole.PROFESSOR;
         Professor professor = professorService.saveProfessor(
                 new Professor(
                         request.getFirstName(),
@@ -125,7 +125,7 @@ public class RegistrationService {
                 id
         );
         List<Subject> subjectList = request.getSubjects();
-        for (Subject subject: subjectList) {
+        for (Subject subject : subjectList) {
             professorSubjectService.createAssociation(professor, subject);
         }
         appUserService.signUpUser(appUser);
@@ -133,7 +133,7 @@ public class RegistrationService {
         String token = confirmationTokenService.generateConfirmationToken(appUser);
 
         String link = "http://localhost:3000?token=" + token;
-
+//        String link = "https://2023-losmessias.vercel.app/?token=" + token;
         emailSender.send(
                 request.getEmail(),
                 buildEmail(request.getFirstName(), link, "Confirm yor email", "Welcome to Leherer! The place where your dreams come true. I would like to thank you for registering! "));
@@ -142,20 +142,21 @@ public class RegistrationService {
 
     }
 
-    public String sendEmailForPasswordChange(String email){
+    public String sendEmailForPasswordChange(String email) {
 
         AppUser appUser = appUserService.getAppUser(email);
 
         String firstName;
-        if (appUser.getAppUserRole() == AppUserRole.STUDENT){
+        if (appUser.getAppUserRole() == AppUserRole.STUDENT) {
             firstName = (studentService.getStudentById(appUser.getAssociationId())).getFirstName();
-        }else{
+        } else {
             firstName = (professorService.getProfessorById(appUser.getAssociationId())).getFirstName();
         }
 
         String token = confirmationTokenService.generateConfirmationToken(appUser);
 
         String link = "http://localhost:3000/recover-password?email="+email+"&token=" + token;
+//        String link = "https://2023-losmessias.vercel.app/recover-password?email="+email+"&token=" + token;
 
         emailSender.send(
                 email,
@@ -180,7 +181,7 @@ public class RegistrationService {
         return generateToken(appUser);
     }
 
-    public AuthenticationResponse generateToken(AppUser appUser){
+    public AuthenticationResponse generateToken(AppUser appUser) {
 
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("role", appUser.getAppUserRole());
@@ -200,6 +201,7 @@ public class RegistrationService {
 
         return "Email confirmed";
     }
+
     public String changePassword(ForgotPasswordDto request) {
 
         appUserService.changePassword(request.getEmail(), request.getPassword());
