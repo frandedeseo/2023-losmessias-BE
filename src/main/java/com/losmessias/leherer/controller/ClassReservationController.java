@@ -24,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/reservation")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class ClassReservationController {
 
@@ -73,7 +74,6 @@ public class ClassReservationController {
         )));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/create")
     public ResponseEntity<String> createReservation(@RequestBody ClassReservationDto classReservationDto) throws JsonProcessingException {
         if (classReservationDto.getProfessorId() == null)
@@ -97,7 +97,6 @@ public class ClassReservationController {
                     classReservationDto.getPrice())));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/createUnavailable")
     public ResponseEntity<String> createUnavailableReservation(@RequestBody UnavailableClassReservationDto classReservationDto) throws JsonProcessingException {
         if (classReservationDto.getProfessorId() == null)
@@ -112,7 +111,6 @@ public class ClassReservationController {
                 classReservationDto.getEndingHour())));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/createMultipleUnavailable")
     public ResponseEntity<String> createMultipleUnavailableReservations(@RequestBody UnavailableClassReservationDto classReservationDtos) throws JsonProcessingException {
         if (classReservationDtos.getProfessorId() == null) return ResponseEntity.badRequest().body("Professor id must be provided");
@@ -131,7 +129,6 @@ public class ClassReservationController {
                 classReservationDtos.getDuration())));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/customDaySummary")
     public ResponseEntity<String> getTodaySummary(LocalDate day) throws JsonProcessingException {
         if (day == null) {
@@ -142,7 +139,6 @@ public class ClassReservationController {
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(professorDailySummaries));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/todaySummary")
     public ResponseEntity<String> getTodaySummary() throws JsonProcessingException {
         List<ProfessorDailySummary> professorDailySummaries = classReservationService.getDailySummary(LocalDate.now());
@@ -150,7 +146,6 @@ public class ClassReservationController {
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(professorDailySummaries));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/findByProfessorAndSubject")
     public ResponseEntity<String> getReservationByProfessorAndSubject(@RequestParam Long professorId, @RequestParam Long subjectId) throws JsonProcessingException {
         if(professorId == null) return ResponseEntity.badRequest().body("Professor id must be provided");
@@ -175,7 +170,6 @@ public class ClassReservationController {
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationResponseDtos));
     }
 
-    @CrossOrigin
     @GetMapping("/findByProfessor")
     public ResponseEntity<String> getReservationByProfessor(@RequestParam Long professorId) throws JsonProcessingException {
         if(professorId == null) return ResponseEntity.badRequest().body("Professor id must be provided");
