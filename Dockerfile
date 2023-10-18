@@ -1,5 +1,5 @@
 # Usa una imagen de Java como base
-FROM openjdk:17-jre-slim
+FROM openjdk:17
 # Establece el directorio de trabajo en /app
 WORKDIR /app
 # Copia el archivo JAR de la aplicación a la imagen
