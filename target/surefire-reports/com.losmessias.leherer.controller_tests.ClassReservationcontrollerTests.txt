@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.losmessias.leherer.controller_tests.ClassReservationcontrollerTests
 -------------------------------------------------------------------------------
-Tests run: 30, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.849 s - in com.losmessias.leherer.controller_tests.ClassReservationcontrollerTests
+Tests run: 30, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.127 s - in com.losmessias.leherer.controller_tests.ClassReservationcontrollerTests

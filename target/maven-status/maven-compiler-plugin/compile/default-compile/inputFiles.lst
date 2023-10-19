@@ -34,7 +34,6 @@
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/service/ClassReservationService.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/dto/ProfessorDaySummaryDto.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/controller/ProfessorSubjectController.java
-/Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/security/config/WebSecurityConfig.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/security/config/SecurityConfiguration.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/controller/ClassReservationController.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/domain/enumeration/SubjectStatus.java
@@ -45,9 +44,9 @@
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/service/StudentService.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/dto/ForgotPasswordDto.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/repository/StudentRepository.java
-/Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/security/SecurityConfig.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/service/ProfessorSubjectService.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/dto/EmailRequestDto.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/repository/ClassReservationRepository.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/dto/SubjectRequestDto.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/repository/ConfirmationTokenRepository.java
+/Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/security/config/MailConfiguration.java
