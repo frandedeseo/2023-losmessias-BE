@@ -16,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/notification")
 @RequiredArgsConstructor
+@CrossOrigin
 public class NotificationController {
 
     private final NotificationService notificationService;
@@ -29,7 +30,7 @@ public class NotificationController {
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(notificationsStudent), HttpStatus.OK);
     }
     @GetMapping("/professor-all")
-    ResponseEntity<String> getProfessorNotifications(@RequestParam Long id) throws JsonProcessingException {
+    public ResponseEntity<String> getProfessorNotifications(@RequestParam Long id) throws JsonProcessingException {
         List<NotificationProfessor> notificationsProfessor = notificationService.getProfessorNotifications(id);
         if (notificationsProfessor.isEmpty())
             return new ResponseEntity<>("No notification found", HttpStatus.NOT_FOUND);
@@ -38,14 +39,14 @@ public class NotificationController {
     }
 
     @PostMapping("/open-student-notification")
-    ResponseEntity<String> setStudentNotificationToOpened(@RequestParam Long id) throws JsonProcessingException {
+    public ResponseEntity<String> setStudentNotificationToOpened(@RequestParam Long id) throws JsonProcessingException {
         if (id==null) return ResponseEntity.badRequest().body("Notification id must be provided");
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(notificationService.setStudentNotificationToOpened(id)));
     }
 
     @PostMapping("/open-professor-notification")
-    ResponseEntity<String> setProfessorNotificationToOpened(@RequestParam Long id) throws JsonProcessingException {
+    public ResponseEntity<String> setProfessorNotificationToOpened(@RequestParam Long id) throws JsonProcessingException {
         if (id==null) return ResponseEntity.badRequest().body("Notification id must be provided");
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(notificationService.setProfessorNotificationToOpened(id)));

@@ -25,13 +25,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/file")
 @RequiredArgsConstructor
+@CrossOrigin
 public class FileController {
 
     private final FileService fileService;
     private final LoadedDataService loadedDataService;
 
     @PostMapping("/uploadFile")
-    public UploadFileResponseDto uploadFile(@RequestParam("file") MultipartFile file) {
+    public UploadFileResponseDto uploadFile(@RequestParam MultipartFile file) {
         File fileReturned = fileService.storeFile(file);
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
