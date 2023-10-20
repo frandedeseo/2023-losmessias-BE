@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/professor")
 @RequiredArgsConstructor
 public class ProfessorController {
@@ -29,8 +29,6 @@ public class ProfessorController {
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(professors));
     }
 
-
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/{id}")
     public ResponseEntity<String> getProfessorById(@PathVariable Long id) throws JsonProcessingException {
         Professor professor = professorService.getProfessorById(id);
@@ -41,7 +39,6 @@ public class ProfessorController {
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(professor));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/register")
     public ResponseEntity<String> registerProfessor(@RequestBody Professor professor) throws JsonProcessingException {
         if (professor.getId() != null) {
@@ -52,8 +49,6 @@ public class ProfessorController {
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(professorSaved), HttpStatus.CREATED);
     }
 
-
-    @CrossOrigin(origins = "http://localhost:3000")
     @PatchMapping("/update/{id}")
     public ResponseEntity<String> updateProfessor(@PathVariable Long id, @RequestBody Professor professor) throws JsonProcessingException {
         if (id == null) {

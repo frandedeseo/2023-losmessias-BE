@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/professor-subject")
 @RequiredArgsConstructor
 public class ProfessorSubjectController {
@@ -53,11 +53,10 @@ public class ProfessorSubjectController {
         if (professor == null) return new ResponseEntity<>("No professor found", HttpStatus.NOT_FOUND);
         Subject subject = subjectService.getSubjectById(subjectId);
         if (subject == null) return new ResponseEntity<>("No subject found", HttpStatus.NOT_FOUND);
-        ProfessorSubject professorSubject = professorSubjectService.createAssociation(professor, subject);
+        professorSubjectService.createAssociation(professor, subject);
         return new ResponseEntity<>("Professor-subject created", HttpStatus.CREATED);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/approve")
     public ResponseEntity<String> approve(@RequestBody SubjectRequestDto subjectRequestDto) throws JsonProcessingException {
         Professor professor = professorService.getProfessorById(subjectRequestDto.getProfessorId());
@@ -86,7 +85,6 @@ public class ProfessorSubjectController {
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(approvedSubjects), HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/reject")
     public ResponseEntity<String> reject(@RequestBody SubjectRequestDto subjectRequestDto) throws JsonProcessingException {
         Professor professor = professorService.getProfessorById(subjectRequestDto.getProfessorId());
