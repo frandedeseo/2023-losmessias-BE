@@ -1,11 +1,15 @@
 package com.losmessias.leherer.controller;
 
 import com.losmessias.leherer.dto.*;
+import com.losmessias.leherer.service.JwtService;
 import com.losmessias.leherer.service.RegistrationService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.token.TokenService;
 import org.springframework.web.bind.annotation.*;
+
 
 @CrossOrigin(origins = "*")
 @RequestMapping("/api")
@@ -14,7 +18,9 @@ import org.springframework.web.bind.annotation.*;
 public class RegistrationController {
 
     private final RegistrationService registrationService;
+    private final JwtService jwtService;
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(path = "/registration")
     public String register(@RequestBody RegistrationRequest request) {
         return registrationService.register(request);
@@ -56,5 +62,13 @@ public class RegistrationController {
                 "\"" + registrationService.changePassword(request)
                 + "\"}";
         return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+    @GetMapping(path = "/is-token-expired")
+    public ResponseEntity<String> isTokenExpired(@RequestParam String token) {
+        if (jwtService.isTokenExpired(token)){
+            return new ResponseEntity<>("false", HttpStatus.CONFLICT);
+        }else{
+            return new ResponseEntity<>("true", HttpStatus.OK);
+        }
     }
 }
