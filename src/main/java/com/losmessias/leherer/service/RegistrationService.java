@@ -3,9 +3,9 @@ package com.losmessias.leherer.service;
 import com.losmessias.leherer.domain.*;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.dto.*;
-import com.losmessias.leherer.ext_interface.EmailSender;
 import com.losmessias.leherer.role.AppUserSex;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -21,12 +21,13 @@ public class RegistrationService {
 
     private final AppUserService appUserService;
     private final ConfirmationTokenService confirmationTokenService;
-    private final EmailSender emailSender;
     private final StudentService studentService;
     private final ProfessorService professorService;
     private final ProfessorSubjectService professorSubjectService;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
+    private final Environment environment;
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
@@ -78,13 +79,12 @@ public class RegistrationService {
 
         String token = confirmationTokenService.generateConfirmationToken(appUser);
 
-        String link = "http://localhost:3000?token=" + token;
-//        String link = "https://2023-losmessias.vercel.app/?token=" + token;
+        String link = "http://" + environment.getProperty("app.mail_response") + "?token=" + token;
 
-        emailSender.send(
+        emailService.sendWithHTML(
                 request.getEmail(),
-                buildEmail(request.getFirstName(), link, "Confirm yor email", "Welcome to Leherer! The place where your dreams come true. I would like to thank you for registering! "));
-
+                "Confirm your email",
+                buildEmail(request.getFirstName(), link, "Confirm yor email", "Welcome to Leherer! The place where you will learn to make your dreams come true. We would like to thank you for registering! "));
         return "Successful Registration";
     }
 
@@ -132,10 +132,11 @@ public class RegistrationService {
 
         String token = confirmationTokenService.generateConfirmationToken(appUser);
 
-        String link = "http://localhost:3000?token=" + token;
-//        String link = "https://2023-losmessias.vercel.app/?token=" + token;
-        emailSender.send(
+        String link = "http://" + environment.getProperty("app.mail_response") + "?token=" + token;
+
+        emailService.sendWithHTML(
                 request.getEmail(),
+                "Confirm your email",
                 buildEmail(request.getFirstName(), link, "Confirm yor email", "Welcome to Leherer! The place where your dreams come true. I would like to thank you for registering! "));
 
         return "Successful Registration";
@@ -155,11 +156,12 @@ public class RegistrationService {
 
         String token = confirmationTokenService.generateConfirmationToken(appUser);
 
-        String link = "http://localhost:3000/recover-password?email="+email+"&token=" + token;
-//        String link = "https://2023-losmessias.vercel.app/recover-password?email="+email+"&token=" + token;
+        String link = "http://" + environment.getProperty("app.mail_response") + "/recover-password?email=" + email + "&token=" + token;
 
-        emailSender.send(
+
+        emailService.sendWithHTML(
                 email,
+                "Confirm your Email for Password Change",
                 buildEmail(firstName, link, "Confirm your Email for Password Change", "Please do not be so silly to forget you password again! "));
 
         return "Confirm your email for password change";
