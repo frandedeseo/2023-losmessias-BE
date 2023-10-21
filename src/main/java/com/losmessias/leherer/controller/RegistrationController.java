@@ -11,6 +11,7 @@ import org.springframework.security.core.token.TokenService;
 import org.springframework.web.bind.annotation.*;
 
 
+
 @CrossOrigin(origins = "*")
 @RequestMapping("/api")
 @RestController
@@ -20,7 +21,6 @@ public class RegistrationController {
     private final RegistrationService registrationService;
     private final JwtService jwtService;
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping(path = "/registration")
     public String register(@RequestBody RegistrationRequest request) {
         return registrationService.register(request);
