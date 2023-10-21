@@ -50,8 +50,6 @@ public class RegistrationServiceTests {
     private RegistrationService registrationService;
     @Mock
     private Environment env;
-    @Mock
-    private EmailService emailService;
     private RegistrationRequest request2;
     private RegistrationProfessorRequest request1;
     private Professor professor1;

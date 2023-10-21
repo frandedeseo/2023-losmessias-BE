@@ -31,4 +31,18 @@ public class EmailService {
             throw new IllegalStateException("failed to send email");
         }
     }
+
+    public void sendSimpleMail(String to, String subject, String body) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+            helper.setText(body);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            LOGGER.error("failed to send email", e);
+            throw new IllegalStateException("failed to send email");
+        }
+    }
 }
