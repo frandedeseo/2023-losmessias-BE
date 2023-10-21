@@ -38,6 +38,7 @@ public class NotificationController {
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(notificationsProfessor), HttpStatus.OK);
     }
 
+
     @PostMapping("/open-student-notification")
     public ResponseEntity<String> setStudentNotificationToOpened(@RequestParam Long id) throws JsonProcessingException {
         if (id==null) return ResponseEntity.badRequest().body("Notification id must be provided");
