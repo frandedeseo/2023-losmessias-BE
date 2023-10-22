@@ -6,6 +6,7 @@
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/test/java/com/losmessias/leherer/service_tests/ConfirmationTokenServiceTest.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/test/java/com/losmessias/leherer/controller_tests/ClassReservationcontrollerTests.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/test/java/com/losmessias/leherer/LehererApplicationTests.java
+/Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/test/java/com/losmessias/leherer/integration_tests/NotificationTests.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/test/java/com/losmessias/leherer/repository_tests/ProfessorSubjectRepositoryTests.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/test/java/com/losmessias/leherer/controller_tests/SubjectControllerTests.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/test/java/com/losmessias/leherer/service_tests/AppUserServiceTest.java

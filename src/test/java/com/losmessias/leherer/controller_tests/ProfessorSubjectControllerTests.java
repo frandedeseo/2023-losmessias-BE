@@ -6,10 +6,7 @@ import com.losmessias.leherer.domain.ProfessorSubject;
 import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.domain.enumeration.SubjectStatus;
 import com.losmessias.leherer.dto.SubjectRequestDto;
-import com.losmessias.leherer.service.JwtService;
-import com.losmessias.leherer.service.ProfessorService;
-import com.losmessias.leherer.service.ProfessorSubjectService;
-import com.losmessias.leherer.service.SubjectService;
+import com.losmessias.leherer.service.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
@@ -48,6 +45,8 @@ public class ProfessorSubjectControllerTests {
     private SubjectService subjectService;
     @MockBean
     private JwtService jwtService;
+    @MockBean
+    private NotificationService notificationService;
 
     @Mock
     private SubjectRequestDto subjectRequestDtoMock;
