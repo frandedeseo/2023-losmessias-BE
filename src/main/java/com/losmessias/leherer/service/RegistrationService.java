@@ -29,6 +29,7 @@ public class RegistrationService {
     private final EmailService emailService;
     private final Environment environment;
 
+
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
