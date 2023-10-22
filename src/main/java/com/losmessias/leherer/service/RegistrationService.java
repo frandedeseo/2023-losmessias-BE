@@ -185,8 +185,26 @@ public class RegistrationService {
 
     public AuthenticationResponse generateToken(AppUser appUser) {
 
+        String name;
+        String surname;
         Map<String, Object> extraClaims = new HashMap<>();
+
+        if (appUser.getAppUserRole() == AppUserRole.STUDENT) {
+            Student student = studentService.getStudentById(appUser.getAssociationId());
+            name = student.getFirstName();
+            surname = student.getLastName();
+        }
+        else if (appUser.getAppUserRole() == AppUserRole.PROFESSOR){
+            Professor professor = professorService.getProfessorById(appUser.getAssociationId());
+            name = professor.getFirstName();
+            surname = professor.getLastName();
+        }else{
+            name = "null";
+            surname = "null";
+        }
         extraClaims.put("role", appUser.getAppUserRole());
+        extraClaims.put("name", name);
+        extraClaims.put("surname", surname);
         extraClaims.put("id", appUser.getAssociationId());
 
         var jwtToken = jwtService.generateToken(extraClaims, appUser);
