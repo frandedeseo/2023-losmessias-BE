@@ -98,8 +98,6 @@ public class ClassReservationController {
                     classReservationDto.getPrice())));
     }
 
-
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping ("/cancel")
     public ResponseEntity<String> cancelReservation(@RequestBody ClassReservationCancel classReservationCancel) throws JsonProcessingException {
         if (classReservationCancel.getId() == null) return ResponseEntity.badRequest().body("Class Reservation id must be provided");
@@ -107,7 +105,6 @@ public class ClassReservationController {
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationService.cancelReservation(classReservationCancel)));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/createUnavailable")
     public ResponseEntity<String> createUnavailableReservation(@RequestBody UnavailableClassReservationDto classReservationDto) throws JsonProcessingException {
         if (classReservationDto.getProfessorId() == null)

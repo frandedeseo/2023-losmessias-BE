@@ -35,6 +35,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/loadEmailForPasswordChange").permitAll()
                                 .requestMatchers("/api/validate-email").permitAll()
                                 .requestMatchers("/api/subject/all").permitAll()
+                                .requestMatchers("/api/is-token-expired").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
