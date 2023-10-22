@@ -1,5 +1,8 @@
 package com.losmessias.leherer.dto;
 
+import com.losmessias.leherer.domain.Professor;
+import com.losmessias.leherer.domain.Student;
+import com.losmessias.leherer.domain.Subject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,9 +15,9 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class ClassReservationResponseDto {
     private Long id;
-    private Long professorId;
-    private Long subjectId;
-    private Long studentId;
+    private Professor professor;
+    private Subject subject;
+    private Student student;
     private LocalDate day;
     private LocalTime startingHour;
     private LocalTime endingHour;

@@ -44,9 +44,9 @@ public class ClassReservationController {
                 .stream()
                 .map(classReservation -> new ClassReservationResponseDto(
                         classReservation.getId(),
-                        classReservation.getProfessor().getId(),
-                        classReservation.getSubject() == null ? null : classReservation.getSubject().getId(),
-                        classReservation.getStudent() == null ? null : classReservation.getStudent().getId(),
+                        classReservation.getProfessor(),
+                        classReservation.getSubject() == null ? null : classReservation.getSubject(),
+                        classReservation.getStudent() == null ? null : classReservation.getStudent(),
                         classReservation.getDate(),
                         classReservation.getStartingHour(),
                         classReservation.getEndingHour(),
@@ -64,9 +64,9 @@ public class ClassReservationController {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(new ClassReservationResponseDto(
                 classReservation.getId(),
-                classReservation.getProfessor().getId(),
-                classReservation.getSubject() == null ? null : classReservation.getSubject().getId(),
-                classReservation.getStudent() == null ? null : classReservation.getStudent().getId(),
+                classReservation.getProfessor(),
+                classReservation.getSubject() == null ? null : classReservation.getSubject(),
+                classReservation.getStudent() == null ? null : classReservation.getStudent(),
                 classReservation.getDate(),
                 classReservation.getStartingHour(),
                 classReservation.getEndingHour(),
@@ -166,9 +166,9 @@ public class ClassReservationController {
                 .stream()
                 .map(classReservation -> new ClassReservationResponseDto(
                         classReservation.getId(),
-                        classReservation.getProfessor().getId(),
-                        classReservation.getSubject() == null ? null : classReservation.getSubject().getId(),
-                        classReservation.getStudent() == null ? null : classReservation.getStudent().getId(),
+                        classReservation.getProfessor(),
+                        classReservation.getSubject() == null ? null : classReservation.getSubject(),
+                        classReservation.getStudent() == null ? null : classReservation.getStudent(),
                         classReservation.getDate(),
                         classReservation.getStartingHour(),
                         classReservation.getEndingHour(),
@@ -189,9 +189,9 @@ public class ClassReservationController {
                 .stream()
                 .map(classReservation -> new ClassReservationResponseDto(
                         classReservation.getId(),
-                        classReservation.getProfessor().getId(),
-                        classReservation.getSubject() == null ? null : classReservation.getSubject().getId(),
-                        classReservation.getStudent() == null ? null : classReservation.getStudent().getId(),
+                        classReservation.getProfessor(),
+                        classReservation.getSubject() == null ? null : classReservation.getSubject(),
+                        classReservation.getStudent() == null ? null : classReservation.getStudent(),
                         classReservation.getDate(),
                         classReservation.getStartingHour(),
                         classReservation.getEndingHour(),
@@ -212,9 +212,9 @@ public class ClassReservationController {
                 .stream()
                 .map(classReservation -> new ClassReservationResponseDto(
                         classReservation.getId(),
-                        classReservation.getProfessor().getId(),
-                        classReservation.getSubject() == null ? null : classReservation.getSubject().getId(),
-                        classReservation.getStudent() == null ? null : classReservation.getStudent().getId(),
+                        classReservation.getProfessor(),
+                        classReservation.getSubject() == null ? null : classReservation.getSubject(),
+                        classReservation.getStudent() == null ? null : classReservation.getStudent(),
                         classReservation.getDate(),
                         classReservation.getStartingHour(),
                         classReservation.getEndingHour(),
