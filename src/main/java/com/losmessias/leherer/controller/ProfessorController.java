@@ -60,4 +60,5 @@ public class ProfessorController {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(professorSaved));
     }
+
 }
