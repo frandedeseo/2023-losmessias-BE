@@ -40,7 +40,7 @@ public class FileController {
                 .path(fileReturned.getFileName())
                 .toUriString();
 
-        return new UploadFileResponseDto(fileReturned.getFileName(), fileDownloadUri,
+        return new UploadFileResponseDto(fileReturned.getId(), fileReturned.getFileName(), fileDownloadUri,
                 file.getContentType(), file.getSize());
     }
     @PostMapping("/setUploadInformation")
@@ -61,7 +61,6 @@ public class FileController {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(loadedDataService.getUploadedData(Id)));
     }
-
 
     @GetMapping("/downloadFile")
     public ResponseEntity<Resource> downloadFile(@RequestParam("id") Long Id) {
