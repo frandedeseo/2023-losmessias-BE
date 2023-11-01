@@ -17,8 +17,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -78,6 +77,7 @@ public class ClassReservationServiceTests {
                 0.0,
                 100));
     }
+
     @Test
     @DisplayName("Create reservation from student, professor and subject")
     void testCancelReservationFromStudentAndProfessorSubjectWithDefaultStatus() {
@@ -163,7 +163,14 @@ public class ClassReservationServiceTests {
             Professor professor = new Professor();
             Subject subject = new Subject();
             Student student = new Student();
-            classReservationService.createReservation(professor, subject, student, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(11, 0), 1.0, 100);
+            classReservationService.createReservation(professor,
+                    subject,
+                    student,
+                    LocalDate.of(2023, 1, 1),
+                    LocalTime.of(12, 0),
+                    LocalTime.of(11, 0),
+                    1.0,
+                    100);
         });
     }
 
@@ -191,5 +198,19 @@ public class ClassReservationServiceTests {
         List<ProfessorDailySummary> professorDailySummaries = new ArrayList<>();
         when(classReservationRepository.getProfessorDailySummaryByDay(LocalDate.of(2023, 1, 1))).thenReturn(professorDailySummaries);
         assertEquals(professorDailySummaries, classReservationService.getDailySummary(LocalDate.of(2023, 1, 1)));
+    }
+
+    @Test
+    @DisplayName("Get reservations for professor on day and time interval finds reservation")
+    void testGetReservationsForProfessorOnDayAndTime() {
+        when(classReservationRepository.countOverlappingReservations(1L, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0))).thenReturn(1);
+        assertTrue(classReservationService.existsReservationForProfessorOnDayAndTime(1L, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0)));
+    }
+
+    @Test
+    @DisplayName("Get reservations for professor on day and time interval finds none")
+    void testGetReservationsForProfessorOnDayAndTimeReturnsFalse() {
+        when(classReservationRepository.countOverlappingReservations(1L, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0))).thenReturn(0);
+        assertFalse(classReservationService.existsReservationForProfessorOnDayAndTime(1L, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0)));
     }
 }

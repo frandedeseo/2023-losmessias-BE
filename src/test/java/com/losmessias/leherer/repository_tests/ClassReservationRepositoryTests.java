@@ -63,7 +63,7 @@ public class ClassReservationRepositoryTests {
                 .student(student)
                 .date(LocalDate.of(2023, 1, 1))
                 .startingHour(LocalTime.of(9, 0))
-                .endingHour(LocalTime.of(10, 0))
+                .endingHour(LocalTime.of(14, 0))
                 .duration(1.0)
                 .price(100)
                 .status(ReservationStatus.CONFIRMED)
@@ -149,4 +149,28 @@ public class ClassReservationRepositoryTests {
         assertEquals(1, classReservationRepository.findByProfessorAndSubject(professor, subject).size());
     }
 
+    @Test
+    @Transactional
+    @Rollback
+    @DisplayName("Find by overlapping reservations")
+    public void shouldCountOverlappingReservations() {
+        classReservationRepository.save(classReservation);
+        ClassReservation classReservation2 = ClassReservation.builder()
+                .professor(professor)
+                .subject(subject)
+                .student(student)
+                .date(LocalDate.of(2023, 1, 1))
+                .startingHour(LocalTime.of(10, 0))
+                .endingHour(LocalTime.of(11, 0))
+                .duration(1.0)
+                .price(100)
+                .status(ReservationStatus.CONFIRMED)
+                .build();
+        classReservationRepository.save(classReservation2);
+        assertEquals(2, classReservationRepository.countOverlappingReservations(
+                professor.getId(),
+                classReservation.getDate(),
+                classReservation.getStartingHour(),
+                classReservation.getEndingHour()));
+    }
 }
