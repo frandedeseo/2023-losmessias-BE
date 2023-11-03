@@ -1,6 +1,10 @@
 package com.losmessias.leherer.service;
 
 import com.losmessias.leherer.domain.*;
+import com.losmessias.leherer.domain.enumeration.AppUserRole;
+import com.losmessias.leherer.domain.enumeration.ReservationStatus;
+import com.losmessias.leherer.dto.ClassReservationCancel;
+import com.losmessias.leherer.dto.ProfessorStaticsDto;
 import com.losmessias.leherer.repository.ClassReservationRepository;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
 import lombok.RequiredArgsConstructor;
@@ -8,8 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Period;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +22,7 @@ public class ClassReservationService {
     private final ClassReservationRepository classReservationRepository;
     private final ProfessorService professorService;
     private final SubjectService subjectService;
+    private final NotificationService notificationService;
 
     public List<ClassReservation> getAllReservations() {
         return classReservationRepository.findAll();
@@ -25,6 +30,23 @@ public class ClassReservationService {
 
     public ClassReservation getReservationById(Long id) {
         return classReservationRepository.findById(id).orElse(null);
+    }
+
+    public ClassReservation cancelReservation(ClassReservationCancel classReservationCancel){
+        ClassReservation classReservation = getReservationById(classReservationCancel.getId());
+        classReservation.setStatus(ReservationStatus.CANCELLED);
+        if (checkIfIsBetween48hsBefore(classReservation)){
+            classReservation.setPrice(classReservation.getPrice()/2);
+        }else{
+            classReservation.setPrice(0);
+        }
+        notificationService.cancelClassReservedNotification(classReservation, classReservationCancel.getRole());
+        return classReservationRepository.save(classReservation);
+
+    }
+
+    private boolean checkIfIsBetween48hsBefore(ClassReservation classReservation){
+        return classReservation.getDate().minusDays(2).isBefore(LocalDate.now()) || classReservation.getDate().minusDays(2).isEqual(LocalDate.now()) && classReservation.getStartingHour().isBefore(LocalTime.now());
     }
 
     public ClassReservation createReservation(Professor professor,
@@ -44,7 +66,10 @@ public class ClassReservationService {
                 startingTime,
                 endingTime,
                 duration,
-                price);
+                price
+        );
+        notificationService.generateClassReservedNotification(classReservation);
+
         return classReservationRepository.save(classReservation);
     }
 
@@ -97,4 +122,66 @@ public class ClassReservationService {
         return classReservationRepository.findByProfessorAndSubject(professor, subject);
     }
 
+    public List<ProfessorStaticsDto> getStatics(Long id){
+
+        List<ClassReservation> classes = classReservationRepository.getClassReservationByProfessorAndOrderByDate(id);
+
+        Integer amountOfMonths = Period.between(classes.get(0).getDate(), classes.get(classes.size() -1).getDate()).getMonths() + 1;
+
+        List<ClassReservation> currentMonth = new ArrayList<>();
+        List<ClassReservation> prevMonth= new ArrayList<>();
+        for (ClassReservation res: classes){
+            if (res.getDate().getYear() == LocalDate.now().getYear()){
+                if (res.getDate().getMonthValue() == LocalDate.now().getMonthValue()){
+                    currentMonth.add(res);
+                }else if (res.getDate().getMonthValue() == LocalDate.now().getMonthValue() - 1) {
+                    prevMonth.add(res);
+                }
+            }
+        }
+
+        ProfessorStaticsDto average = getProfessorStatic(classes);
+
+        ProfessorStaticsDto currMonthStatics = getProfessorStatic(currentMonth);
+        ProfessorStaticsDto prevMonthStatics = getProfessorStatic(prevMonth);
+
+        Integer finalAmountOfMonths = amountOfMonths;
+        average.getClassesPerSubject().replaceAll((k, v) -> v / finalAmountOfMonths);
+        ProfessorStaticsDto average_statics = new ProfessorStaticsDto(
+                (double) average.getTotalClasses() /amountOfMonths,
+                average.getClassesPerSubject(),
+                average.getIncomes()/amountOfMonths,
+                average.getCancelledClasses() /amountOfMonths
+        );
+        List<ProfessorStaticsDto> returnedList = new ArrayList<>();
+        returnedList.add(currMonthStatics);
+        returnedList.add(prevMonthStatics);
+        returnedList.add(average_statics);
+        return returnedList;
+    }
+    private ProfessorStaticsDto getProfessorStatic(List<ClassReservation> classes){
+        HashMap<String, Double> classesPerSubject = new HashMap<>();
+        Double amountOfClasses = (double) classes.size();
+        Double incomes = 0.0;
+        Double amountOfCancelledClasses = 0.0;
+        for (ClassReservation res: classes){
+            incomes+=res.getPrice();
+
+            if (res.getStatus()==ReservationStatus.CANCELLED){
+                amountOfCancelledClasses+=1;
+            }
+
+            if (classesPerSubject.get(res.getSubject().getName()) == null){
+                classesPerSubject.put(res.getSubject().getName(), 1.0);
+            }else{
+                classesPerSubject.put(res.getSubject().getName(), (Double) classesPerSubject.get(res.getSubject().getName()) + 1);
+            }
+        }
+        return new ProfessorStaticsDto(
+                amountOfClasses,
+                classesPerSubject,
+                incomes,
+                amountOfCancelledClasses
+        );
+    }
 }

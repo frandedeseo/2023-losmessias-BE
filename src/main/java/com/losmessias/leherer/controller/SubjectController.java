@@ -12,17 +12,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/subject")
 @RequiredArgsConstructor
 public class SubjectController {
 
     private final SubjectService subjectService;
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/all")
     public ResponseEntity<String> getSubject() throws JsonProcessingException {
         List<Subject> subjects = subjectService.getAllSubjects();
-        if(subjects.isEmpty()) return new ResponseEntity<>("No subjects found", HttpStatus.NOT_FOUND);
+        if (subjects.isEmpty()) return new ResponseEntity<>("No subjects found", HttpStatus.NOT_FOUND);
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(subjects), HttpStatus.OK);
     }
@@ -30,15 +30,14 @@ public class SubjectController {
     @GetMapping("/{id}")
     public ResponseEntity<String> getSubjectById(@PathVariable Long id) throws JsonProcessingException {
         Subject subject = subjectService.getSubjectById(id);
-        if(subject == null) return new ResponseEntity<>("No subject found", HttpStatus.NOT_FOUND);
+        if (subject == null) return new ResponseEntity<>("No subject found", HttpStatus.NOT_FOUND);
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(subject), HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/create")
     public ResponseEntity<String> createSubject(@RequestBody Subject subject) throws JsonProcessingException {
-        if(subject.getId() != null) return ResponseEntity.badRequest().body("Subject ID must be null");
+        if (subject.getId() != null) return ResponseEntity.badRequest().body("Subject ID must be null");
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(subjectService.create(subject)), HttpStatus.CREATED);
     }

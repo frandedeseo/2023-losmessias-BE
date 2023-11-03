@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/student")
 @RequiredArgsConstructor
 public class StudentController {
@@ -21,7 +22,6 @@ public class StudentController {
     private final StudentService studentService;
     private final ClassReservationService classReservationService;
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/all")
     public ResponseEntity<String> getAllStudents() throws JsonProcessingException {
         List<Student> students = studentService.getAllStudents();
@@ -32,7 +32,6 @@ public class StudentController {
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(students));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/{id}")
     public ResponseEntity<String> getStudentById(@PathVariable Long id) throws JsonProcessingException {
         Student student = studentService.getStudentById(id);
@@ -43,7 +42,6 @@ public class StudentController {
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(student));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/create")
     public ResponseEntity<String> addStudent(@RequestBody Student student) throws JsonProcessingException {
         if (student.getId() != null) {
@@ -54,7 +52,6 @@ public class StudentController {
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(studentSaved), HttpStatus.CREATED);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/addReservation")
     public ResponseEntity<String> addReservationToStudent(Long studentId, Long reservationId) throws JsonProcessingException {
         Student student = studentService.getStudentById(studentId);
@@ -66,7 +63,6 @@ public class StudentController {
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(studentSaved));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PatchMapping("/update/{id}")
     public ResponseEntity<String> updateStudent(@PathVariable Long id, @RequestBody Student student) {
         if (id == null) {

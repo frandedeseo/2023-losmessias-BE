@@ -22,6 +22,7 @@ public class SecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -33,10 +34,8 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/authentication").permitAll()
                                 .requestMatchers("/api/loadEmailForPasswordChange").permitAll()
                                 .requestMatchers("/api/validate-email").permitAll()
-                                .requestMatchers("/api/subject/**").permitAll()
-                                .requestMatchers("/api/student/**").permitAll()
-                                .requestMatchers("/api/professor/**").permitAll()
-                                .requestMatchers("/api/professor-subject/**").permitAll()
+                                .requestMatchers("/api/subject/all").permitAll()
+                                .requestMatchers("/api/is-token-expired").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
