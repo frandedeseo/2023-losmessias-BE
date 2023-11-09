@@ -4,6 +4,7 @@ import com.losmessias.leherer.domain.enumeration.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import javax.swing.text.StyledEditorKit;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -47,6 +48,8 @@ public class ClassReservation {
     private ReservationStatus status;
     @Column
     private Integer price;
+    @Column
+    private Boolean feedbackDone;
 
     public ClassReservation(Professor professor,
                             Subject subject,
@@ -65,6 +68,7 @@ public class ClassReservation {
         this.duration = duration;
         this.price = price;
         this.status = ReservationStatus.CONFIRMED;
+        this.feedbackDone = false;
     }
 
     //Unavailable reservation initialization
