@@ -1,6 +1,7 @@
 package com.losmessias.leherer.service;
 
 import com.losmessias.leherer.domain.Professor;
+import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.repository.ProfessorRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,10 @@ public class ProfessorService {
         return professorRepository.findById(id).orElse(null);
     }
 
+    public void setFeedback(Professor professor, Double rating, Boolean material, Boolean punctuality, Boolean educated ){
+        professor.setFeedback(rating, material, punctuality, educated);
+        professorRepository.save(professor);
+    }
     public Professor updateProfessor(Long id, Professor professor) {
         Professor professorToUpdate = professorRepository.findById(id).orElse(null);
         professorToUpdate.setFirstName(professor.getFirstName() != null ? professor.getFirstName() : professorToUpdate.getFirstName());

@@ -33,6 +33,11 @@ public class StudentService {
         return studentRepository.save(student);
     }
 
+    public void setFeedback(Student student, Double rating, Boolean material, Boolean punctuality, Boolean educated ){
+        student.setFeedback(rating, material, punctuality, educated);
+        studentRepository.save(student);
+    }
+
     public Student updateStudent(Long id, Student student) {
         Student studentToUpdate = studentRepository.findById(id).orElse(null);
         studentToUpdate.setFirstName(student.getFirstName() != null ? student.getFirstName() : studentToUpdate.getFirstName());

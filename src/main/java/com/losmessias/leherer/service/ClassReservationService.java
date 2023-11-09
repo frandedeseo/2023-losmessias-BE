@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Period;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -74,11 +75,19 @@ public class ClassReservationService {
     }
 
     public List<ClassReservation> getReservationsByProfessorId(Long id) {
-        return classReservationRepository.findByProfessorId(id);
+        return getUnCancelledReservation(classReservationRepository.findByProfessorId(id));
+    }
+    private List<ClassReservation> getUnCancelledReservation(List<ClassReservation> classes){
+        List<ClassReservation> classesUnCancelled = new ArrayList<>();
+        classes
+                .stream()
+                .filter(clase -> clase.getStatus() != ReservationStatus.CANCELLED)
+                .forEach(classesUnCancelled::add);
+        return classesUnCancelled;
     }
 
     public List<ClassReservation> getReservationsByStudentId(Long id) {
-        return classReservationRepository.findByStudentId(id);
+        return getUnCancelledReservation(classReservationRepository.findByStudentId(id));
     }
 
     public List<ClassReservation> getReservationsBySubjectId(Long id) {
