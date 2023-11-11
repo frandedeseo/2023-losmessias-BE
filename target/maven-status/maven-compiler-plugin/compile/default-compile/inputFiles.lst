@@ -71,6 +71,7 @@
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/service/NotificationService.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/dto/SubjectRequestDto.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/controller/FileController.java
+/Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/dto/ProfessorStaticsDto.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/repository/CommentRepository.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/repository/ConfirmationTokenRepository.java
 /Users/augustoramseyer/Downloads/GitHub/2023-losmessias-BE/src/main/java/com/losmessias/leherer/security/config/MailConfiguration.java

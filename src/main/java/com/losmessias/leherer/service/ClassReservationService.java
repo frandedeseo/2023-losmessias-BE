@@ -32,12 +32,12 @@ public class ClassReservationService {
         return classReservationRepository.findById(id).orElse(null);
     }
 
-    public ClassReservation cancelReservation(ClassReservationCancel classReservationCancel){
+    public ClassReservation cancelReservation(ClassReservationCancel classReservationCancel) {
         ClassReservation classReservation = getReservationById(classReservationCancel.getId());
         classReservation.setStatus(ReservationStatus.CANCELLED);
-        if (checkIfIsBetween48hsBefore(classReservation)){
-            classReservation.setPrice(classReservation.getPrice()/2);
-        }else{
+        if (checkIfIsBetween48hsBefore(classReservation)) {
+            classReservation.setPrice(classReservation.getPrice() / 2);
+        } else {
             classReservation.setPrice(0);
         }
         notificationService.cancelClassReservedNotification(classReservation, classReservationCancel.getRole());
@@ -45,7 +45,7 @@ public class ClassReservationService {
 
     }
 
-    private boolean checkIfIsBetween48hsBefore(ClassReservation classReservation){
+    private boolean checkIfIsBetween48hsBefore(ClassReservation classReservation) {
         return classReservation.getDate().minusDays(2).isBefore(LocalDate.now()) || classReservation.getDate().minusDays(2).isEqual(LocalDate.now()) && classReservation.getStartingHour().isBefore(LocalTime.now());
     }
 
@@ -57,7 +57,9 @@ public class ClassReservationService {
                                               LocalTime endingTime,
                                               Double duration,
                                               Integer price) {
-        if(startingTime.isAfter(endingTime)) throw new IllegalArgumentException("Starting time must be before ending time");
+        if (startingTime.isAfter(endingTime))
+            throw new IllegalArgumentException("Starting time must be before ending time");
+
         ClassReservation classReservation = new ClassReservation(
                 professor,
                 subject,
@@ -68,9 +70,22 @@ public class ClassReservationService {
                 duration,
                 price
         );
+
         notificationService.generateClassReservedNotification(classReservation);
 
         return classReservationRepository.save(classReservation);
+    }
+
+    public boolean existsReservationForProfessorOnDayAndTime(Long professor,
+                                                             LocalDate day,
+                                                             LocalTime startingTime,
+                                                             LocalTime endingTime) {
+        int overlapping = classReservationRepository.countOverlappingReservations(
+                professor,
+                day,
+                startingTime,
+                endingTime);
+        return overlapping > 0;
     }
 
     public List<ClassReservation> getReservationsByProfessorId(Long id) {
@@ -86,14 +101,16 @@ public class ClassReservationService {
     }
 
     public ClassReservation createUnavailableReservation(Professor professor, LocalDate day, LocalTime startingTime, LocalTime endingTime) {
-        if (startingTime.isAfter(endingTime)) throw new IllegalArgumentException("Starting time must be before ending time");
+        if (startingTime.isAfter(endingTime))
+            throw new IllegalArgumentException("Starting time must be before ending time");
         Double duration = (endingTime.getHour() - startingTime.getHour()) + ((endingTime.getMinute() - startingTime.getMinute()) / 60.0);
         ClassReservation classReservation = new ClassReservation(professor, day, startingTime, endingTime, duration);
         return classReservationRepository.save(classReservation);
     }
 
     public List<ClassReservation> createMultipleUnavailableReservationsFor(Professor professor, LocalDate day, LocalTime startingTime, LocalTime endingTime, Double duration) {
-        if (startingTime.isAfter(endingTime)) throw new IllegalArgumentException("Starting time must be before ending time");
+        if (startingTime.isAfter(endingTime))
+            throw new IllegalArgumentException("Starting time must be before ending time");
         List<LocalTime> intervals = generateTimeIntervals(startingTime, endingTime);
         List<ClassReservation> unavailableReservations = new ArrayList<>();
         for (LocalTime interval : intervals) {
@@ -122,19 +139,19 @@ public class ClassReservationService {
         return classReservationRepository.findByProfessorAndSubject(professor, subject);
     }
 
-    public List<ProfessorStaticsDto> getStatics(Long id){
+    public List<ProfessorStaticsDto> getStatics(Long id) {
 
         List<ClassReservation> classes = classReservationRepository.getClassReservationByProfessorAndOrderByDate(id);
 
-        Integer amountOfMonths = Period.between(classes.get(0).getDate(), classes.get(classes.size() -1).getDate()).getMonths() + 1;
+        Integer amountOfMonths = Period.between(classes.get(0).getDate(), classes.get(classes.size() - 1).getDate()).getMonths() + 1;
 
         List<ClassReservation> currentMonth = new ArrayList<>();
-        List<ClassReservation> prevMonth= new ArrayList<>();
-        for (ClassReservation res: classes){
-            if (res.getDate().getYear() == LocalDate.now().getYear()){
-                if (res.getDate().getMonthValue() == LocalDate.now().getMonthValue()){
+        List<ClassReservation> prevMonth = new ArrayList<>();
+        for (ClassReservation res : classes) {
+            if (res.getDate().getYear() == LocalDate.now().getYear()) {
+                if (res.getDate().getMonthValue() == LocalDate.now().getMonthValue()) {
                     currentMonth.add(res);
-                }else if (res.getDate().getMonthValue() == LocalDate.now().getMonthValue() - 1) {
+                } else if (res.getDate().getMonthValue() == LocalDate.now().getMonthValue() - 1) {
                     prevMonth.add(res);
                 }
             }
@@ -148,10 +165,10 @@ public class ClassReservationService {
         Integer finalAmountOfMonths = amountOfMonths;
         average.getClassesPerSubject().replaceAll((k, v) -> v / finalAmountOfMonths);
         ProfessorStaticsDto average_statics = new ProfessorStaticsDto(
-                (double) average.getTotalClasses() /amountOfMonths,
+                (double) average.getTotalClasses() / amountOfMonths,
                 average.getClassesPerSubject(),
-                average.getIncomes()/amountOfMonths,
-                average.getCancelledClasses() /amountOfMonths
+                average.getIncomes() / amountOfMonths,
+                average.getCancelledClasses() / amountOfMonths
         );
         List<ProfessorStaticsDto> returnedList = new ArrayList<>();
         returnedList.add(currMonthStatics);
@@ -159,21 +176,22 @@ public class ClassReservationService {
         returnedList.add(average_statics);
         return returnedList;
     }
-    private ProfessorStaticsDto getProfessorStatic(List<ClassReservation> classes){
+
+    private ProfessorStaticsDto getProfessorStatic(List<ClassReservation> classes) {
         HashMap<String, Double> classesPerSubject = new HashMap<>();
         Double amountOfClasses = (double) classes.size();
         Double incomes = 0.0;
         Double amountOfCancelledClasses = 0.0;
-        for (ClassReservation res: classes){
-            incomes+=res.getPrice();
+        for (ClassReservation res : classes) {
+            incomes += res.getPrice();
 
-            if (res.getStatus()==ReservationStatus.CANCELLED){
-                amountOfCancelledClasses+=1;
+            if (res.getStatus() == ReservationStatus.CANCELLED) {
+                amountOfCancelledClasses += 1;
             }
 
-            if (classesPerSubject.get(res.getSubject().getName()) == null){
+            if (classesPerSubject.get(res.getSubject().getName()) == null) {
                 classesPerSubject.put(res.getSubject().getName(), 1.0);
-            }else{
+            } else {
                 classesPerSubject.put(res.getSubject().getName(), (Double) classesPerSubject.get(res.getSubject().getName()) + 1);
             }
         }
