@@ -2,10 +2,10 @@ package com.losmessias.leherer.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.losmessias.leherer.repository.ProfessorRepository;
+import com.losmessias.leherer.role.AppUserSex;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.WhereJoinTable;
-import com.losmessias.leherer.role.AppUserSex;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -64,6 +64,8 @@ public class Professor {
     @JsonIgnore
     @OneToMany(mappedBy = "professor", fetch = FetchType.LAZY)
     private List<ClassReservation> classReservations;
+    @ElementCollection
+    private List<Long> pendingClassesFeedbacks;
 
     public Professor(String firstName, String lastName, String email, String location, String phone, AppUserSex appUserSex) {
         this.firstName = firstName;
@@ -87,13 +89,20 @@ public class Professor {
 
     public void receiveFeedback(Double rating, Boolean material, Boolean punctuality, Boolean educated) {
         this.avgRating = (this.avgRating * this.amountOfRatings + rating) / (this.amountOfRatings + 1);
-        if (material)
-            this.sumMaterial = this.sumMaterial + 1;
-        if (punctuality)
-            this.sumPunctuality = this.sumPunctuality + 1;
-        if (educated)
-            this.sumEducated = this.sumEducated + 1;
+        if (material) this.sumMaterial = this.sumMaterial + 1;
+        if (punctuality) this.sumPunctuality = this.sumPunctuality + 1;
+        if (educated) this.sumEducated = this.sumEducated + 1;
         this.amountOfRatings = this.amountOfRatings + 1;
+        professorRepository.save(this);
+    }
+
+    public void addPendingClassFeedback(Long feedbackId) {
+        this.pendingClassesFeedbacks.add(feedbackId);
+    }
+
+    public void giveFeedbackFor(Long feedbackId) {
+        // TODO: check if feedbackId is in pendingFeedbacks
+        this.pendingClassesFeedbacks.remove(feedbackId);
         professorRepository.save(this);
     }
 

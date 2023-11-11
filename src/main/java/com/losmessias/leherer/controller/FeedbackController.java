@@ -10,7 +10,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/valorization")
+@RequestMapping("/api/feedback")
 @RequiredArgsConstructor
 @CrossOrigin
 public class FeedbackController {
@@ -19,8 +19,10 @@ public class FeedbackController {
 
     @PostMapping("/giveFeedback")
     public Feedback giveFeedback(@RequestBody FeedbackDto feedbackDto) {
+        //TODO: check if class exists and if it has concluded
+        //TODO: check if student has taken the class
+        //TODO: check if professor has given the class
         return feedbackService.giveFeedback(feedbackDto);
-
     }
 
     @GetMapping("/getAllFeedbacks")
