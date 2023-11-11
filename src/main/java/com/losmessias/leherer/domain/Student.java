@@ -1,6 +1,7 @@
 package com.losmessias.leherer.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.losmessias.leherer.repository.StudentRepository;
 import com.losmessias.leherer.role.AppUserSex;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,7 +38,6 @@ public class Student {
     @JsonIgnore
     @OneToMany(mappedBy = "student")
     private List<ClassReservation> classReservations;
-
     @Column
     private Double avgRating;
     @Column
@@ -47,7 +47,10 @@ public class Student {
     @Column
     private Integer sumEducated;
     @Column
-    private Integer lengthOfRating;
+    private Integer amountOfRatings;
+
+    @Transient
+    private StudentRepository studentRepository;
 
     public Student(String firstName, String lastName, String email, String location, String phone, AppUserSex appUserSex) {
         this.firstName = firstName;
@@ -57,8 +60,8 @@ public class Student {
         this.classReservations = new ArrayList<>();
         this.phone = phone;
         this.sex = appUserSex;
-        this.avgRating = -1.0;
-        this.lengthOfRating = 0;
+        this.avgRating = 0.0;
+        this.amountOfRatings = 0;
         this.sumMaterial = 0;
         this.sumPunctuality = 0;
         this.sumEducated = 0;
@@ -68,12 +71,16 @@ public class Student {
         this.classReservations.add(classReservation);
     }
 
-    public void setFeedback(Double rating, Boolean material, Boolean punctuality, Boolean educated ){
-        this.avgRating = (this.avgRating*this.lengthOfRating + rating)/ (this.lengthOfRating + 1);
-        if (material){ this.sumMaterial = this.sumMaterial + 1;}
-        if (punctuality){ this.sumPunctuality = this.sumPunctuality + 1;}
-        if (educated){ this.sumEducated = this.sumEducated + 1;}
-        this.lengthOfRating = this.lengthOfRating +1;
+    public void receiveFeedback(Double rating, Boolean material, Boolean punctuality, Boolean educated) {
+        this.avgRating = (this.avgRating * this.amountOfRatings + rating) / (this.amountOfRatings + 1);
+        if (material)
+            this.sumMaterial = this.sumMaterial + 1;
+        if (punctuality)
+            this.sumPunctuality = this.sumPunctuality + 1;
+        if (educated)
+            this.sumEducated = this.sumEducated + 1;
+        this.amountOfRatings = this.amountOfRatings + 1;
+        studentRepository.save(this);
     }
 
     @Override
@@ -87,7 +94,7 @@ public class Student {
                 '}';
     }
 
-    public String toJson(){
+    public String toJson() {
         return "{" +
                 "\"id\":" + id +
                 ", \"firstName\":\"" + firstName + '\"' +

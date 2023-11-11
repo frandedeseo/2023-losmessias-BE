@@ -3,8 +3,6 @@ package com.losmessias.leherer.domain;
 import com.losmessias.leherer.domain.enumeration.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.*;
-
-import javax.swing.text.StyledEditorKit;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
