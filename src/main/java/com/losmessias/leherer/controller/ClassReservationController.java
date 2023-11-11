@@ -5,7 +5,7 @@ import com.losmessias.leherer.domain.ClassReservation;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.domain.Subject;
-import com.losmessias.leherer.dto.ClassReservationCancel;
+import com.losmessias.leherer.dto.ClassReservationCancelDto;
 import com.losmessias.leherer.dto.ClassReservationDto;
 import com.losmessias.leherer.dto.ClassReservationResponseDto;
 import com.losmessias.leherer.dto.UnavailableClassReservationDto;
@@ -99,10 +99,10 @@ public class ClassReservationController {
     }
 
     @PostMapping ("/cancel")
-    public ResponseEntity<String> cancelReservation(@RequestBody ClassReservationCancel classReservationCancel) throws JsonProcessingException {
-        if (classReservationCancel.getId() == null) return ResponseEntity.badRequest().body("Class Reservation id must be provided");
+    public ResponseEntity<String> cancelReservation(@RequestBody ClassReservationCancelDto classReservationCancelDto) throws JsonProcessingException {
+        if (classReservationCancelDto.getId() == null) return ResponseEntity.badRequest().body("Class Reservation id must be provided");
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationService.cancelReservation(classReservationCancel)));
+        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationService.cancelReservation(classReservationCancelDto)));
     }
 
     @PostMapping("/createUnavailable")

@@ -31,10 +31,6 @@ public class ProfessorService {
         return professorRepository.findById(id).orElse(null);
     }
 
-    public void setFeedback(Professor professor, Double rating, Boolean material, Boolean punctuality, Boolean educated ){
-        professor.receiveFeedback(rating, material, punctuality, educated);
-        professorRepository.save(professor);
-    }
     public Professor updateProfessor(Long id, Professor professor) {
         Professor professorToUpdate = professorRepository.findById(id).orElse(null);
         professorToUpdate.setFirstName(professor.getFirstName() != null ? professor.getFirstName() : professorToUpdate.getFirstName());

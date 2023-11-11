@@ -25,28 +25,25 @@ public class FeedbackService {
     public Feedback giveFeedback(FeedbackDto feedbackDto) {
         Student student = studentService.getStudentById(feedbackDto.getStudentId());
         Professor professor = professorService.getProfessorById(feedbackDto.getProfessorId());
-        if (feedbackDto.getRoleReceptor() == AppUserRole.STUDENT)
+
+        if (feedbackDto.getRoleReceptor() == AppUserRole.STUDENT) {
+            professor.giveFeedbackFor(feedbackDto.getClassId());
             student.receiveFeedback(feedbackDto.getRating(),
                     feedbackDto.getMaterial(),
                     feedbackDto.getPunctuality(),
                     feedbackDto.getEducated());
-//            studentService.setFeedback(student, feedbackDto.getRating(), feedbackDto.getMaterial(), feedbackDto.getPunctuality(), feedbackDto.getEducated());
-        else
+        } else {
+            student.giveFeedbackFor(feedbackDto.getClassId());
             professor.receiveFeedback(feedbackDto.getRating(),
                     feedbackDto.getMaterial(),
                     feedbackDto.getPunctuality(),
                     feedbackDto.getEducated());
-//            professorService.setFeedback(professor, feedbackDto.getRating(), feedbackDto.getMaterial(), feedbackDto.getPunctuality(), feedbackDto.getEducated());
+        }
 
         Set<FeedbackOptions> feedbackOptions = new HashSet<>();
-        if (feedbackDto.getEducated())
-            feedbackOptions.add(FeedbackOptions.EDUCATED);
-
-        if (feedbackDto.getPunctuality())
-            feedbackOptions.add(FeedbackOptions.PUNCTUALITY);
-
-        if (feedbackDto.getMaterial())
-            feedbackOptions.add(FeedbackOptions.MATERIAL);
+        if (feedbackDto.getEducated()) feedbackOptions.add(FeedbackOptions.EDUCATED);
+        if (feedbackDto.getPunctuality()) feedbackOptions.add(FeedbackOptions.PUNCTUALITY);
+        if (feedbackDto.getMaterial()) feedbackOptions.add(FeedbackOptions.MATERIAL);
 
         Feedback feedback = new Feedback(student, professor, feedbackDto.getRoleReceptor(), feedbackOptions, feedbackDto.getRating());
         feedbackRepository.save(feedback);
@@ -56,4 +53,5 @@ public class FeedbackService {
     public List<Feedback> getAllFeedbacks() {
         return feedbackRepository.findAll();
     }
+    //TODO: get feedback by role
 }

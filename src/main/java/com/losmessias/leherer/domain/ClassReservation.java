@@ -3,6 +3,7 @@ package com.losmessias.leherer.domain;
 import com.losmessias.leherer.domain.enumeration.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -46,8 +47,6 @@ public class ClassReservation {
     private ReservationStatus status;
     @Column
     private Integer price;
-    @Column
-    private Boolean feedbackDone;
 
     public ClassReservation(Professor professor,
                             Subject subject,
@@ -66,11 +65,10 @@ public class ClassReservation {
         this.duration = duration;
         this.price = price;
         this.status = ReservationStatus.CONFIRMED;
-        this.feedbackDone = false;
     }
 
     //Unavailable reservation initialization
-    public ClassReservation(Professor professor,LocalDate date, LocalTime startingHour, LocalTime endingHour, Double duration){
+    public ClassReservation(Professor professor, LocalDate date, LocalTime startingHour, LocalTime endingHour, Double duration) {
         this.professor = professor;
         this.date = date;
         this.startingHour = startingHour;

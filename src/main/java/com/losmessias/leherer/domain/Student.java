@@ -48,7 +48,8 @@ public class Student {
     private Integer sumEducated;
     @Column
     private Integer amountOfRatings;
-
+    @ElementCollection
+    private List<Long> pendingClassesFeedbacks;
     @Transient
     private StudentRepository studentRepository;
 
@@ -73,13 +74,20 @@ public class Student {
 
     public void receiveFeedback(Double rating, Boolean material, Boolean punctuality, Boolean educated) {
         this.avgRating = (this.avgRating * this.amountOfRatings + rating) / (this.amountOfRatings + 1);
-        if (material)
-            this.sumMaterial = this.sumMaterial + 1;
-        if (punctuality)
-            this.sumPunctuality = this.sumPunctuality + 1;
-        if (educated)
-            this.sumEducated = this.sumEducated + 1;
-        this.amountOfRatings = this.amountOfRatings + 1;
+        if (material) this.sumMaterial++;
+        if (punctuality) this.sumPunctuality++;
+        if (educated) this.sumEducated++;
+        this.amountOfRatings++;
+        studentRepository.save(this);
+    }
+
+    public void addPendingClassFeedback(Long feedbackId) {
+        this.pendingClassesFeedbacks.add(feedbackId);
+    }
+
+    public void giveFeedbackFor(Long feedbackId) {
+        // TODO: check if feedbackId is in pendingFeedbacks
+        this.pendingClassesFeedbacks.remove(feedbackId);
         studentRepository.save(this);
     }
 

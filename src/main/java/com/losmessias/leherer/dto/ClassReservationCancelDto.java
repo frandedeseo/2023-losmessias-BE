@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClassReservationCancel {
+public class ClassReservationCancelDto {
     private Long id;
     private AppUserRole role;
 }

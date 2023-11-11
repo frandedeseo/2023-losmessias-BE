@@ -12,9 +12,9 @@ public class FeedbackDto {
     private Long studentId;
     private Long professorId;
     private AppUserRole roleReceptor;
+    private Long classId;
     private Double rating;
     private Boolean material;
     private Boolean punctuality;
     private Boolean educated;
-
 }

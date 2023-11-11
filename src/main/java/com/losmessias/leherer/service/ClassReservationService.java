@@ -1,9 +1,8 @@
 package com.losmessias.leherer.service;
 
 import com.losmessias.leherer.domain.*;
-import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.domain.enumeration.ReservationStatus;
-import com.losmessias.leherer.dto.ClassReservationCancel;
+import com.losmessias.leherer.dto.ClassReservationCancelDto;
 import com.losmessias.leherer.dto.ProfessorStaticsDto;
 import com.losmessias.leherer.repository.ClassReservationRepository;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
@@ -14,7 +13,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Period;
 import java.util.*;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -33,15 +31,15 @@ public class ClassReservationService {
         return classReservationRepository.findById(id).orElse(null);
     }
 
-    public ClassReservation cancelReservation(ClassReservationCancel classReservationCancel){
-        ClassReservation classReservation = getReservationById(classReservationCancel.getId());
+    public ClassReservation cancelReservation(ClassReservationCancelDto classReservationCancelDto){
+        ClassReservation classReservation = getReservationById(classReservationCancelDto.getId());
         classReservation.setStatus(ReservationStatus.CANCELLED);
         if (checkIfIsBetween48hsBefore(classReservation)){
             classReservation.setPrice(classReservation.getPrice()/2);
         }else{
             classReservation.setPrice(0);
         }
-        notificationService.cancelClassReservedNotification(classReservation, classReservationCancel.getRole());
+        notificationService.cancelClassReservedNotification(classReservation, classReservationCancelDto.getRole());
         return classReservationRepository.save(classReservation);
 
     }
