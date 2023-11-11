@@ -1,8 +1,7 @@
 package com.losmessias.leherer.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.losmessias.leherer.domain.enumeration.Feedback;
-import com.losmessias.leherer.domain.enumeration.Rating;
+import com.losmessias.leherer.repository.ProfessorRepository;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.WhereJoinTable;
@@ -49,7 +48,10 @@ public class Professor {
     @Column
     private Integer sumEducated;
     @Column
-    private Integer lengthOfRating;
+    private Integer amountOfRatings;
+
+    @Transient
+    private ProfessorRepository professorRepository;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -72,8 +74,8 @@ public class Professor {
         this.subjects = new HashSet<>();
         this.classReservations = new ArrayList<>();
         this.sex = appUserSex;
-        this.avgRating = -1.0;
-        this.lengthOfRating = 0;
+        this.avgRating = 0.0;
+        this.amountOfRatings = 0;
         this.sumMaterial = 0;
         this.sumPunctuality = 0;
         this.sumEducated = 0;
@@ -83,12 +85,16 @@ public class Professor {
         this.subjects.add(subject);
     }
 
-    public void setFeedback(Double rating, Boolean material, Boolean punctuality, Boolean educated ){
-        this.avgRating = (this.avgRating*this.lengthOfRating + rating)/ (this.lengthOfRating + 1);
-        if (material){ this.sumMaterial = this.sumMaterial + 1;}
-        if (punctuality){ this.sumPunctuality = this.sumPunctuality + 1;}
-        if (educated){ this.sumEducated = this.sumEducated + 1;}
-        this.lengthOfRating = this.lengthOfRating +1;
+    public void receiveFeedback(Double rating, Boolean material, Boolean punctuality, Boolean educated) {
+        this.avgRating = (this.avgRating * this.amountOfRatings + rating) / (this.amountOfRatings + 1);
+        if (material)
+            this.sumMaterial = this.sumMaterial + 1;
+        if (punctuality)
+            this.sumPunctuality = this.sumPunctuality + 1;
+        if (educated)
+            this.sumEducated = this.sumEducated + 1;
+        this.amountOfRatings = this.amountOfRatings + 1;
+        professorRepository.save(this);
     }
 
 

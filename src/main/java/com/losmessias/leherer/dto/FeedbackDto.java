@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ValorizationDto {
+public class FeedbackDto {
     private Long studentId;
     private Long professorId;
     private AppUserRole roleReceptor;

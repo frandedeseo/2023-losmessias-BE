@@ -1,9 +1,7 @@
 package com.losmessias.leherer.service;
 
 import com.losmessias.leherer.domain.ClassReservation;
-import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.domain.Student;
-import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,7 +32,7 @@ public class StudentService {
     }
 
     public void setFeedback(Student student, Double rating, Boolean material, Boolean punctuality, Boolean educated ){
-        student.setFeedback(rating, material, punctuality, educated);
+        student.receiveFeedback(rating, material, punctuality, educated);
         studentRepository.save(student);
     }
 

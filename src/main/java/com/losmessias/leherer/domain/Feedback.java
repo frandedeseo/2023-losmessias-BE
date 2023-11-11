@@ -1,14 +1,11 @@
 package com.losmessias.leherer.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
-import com.losmessias.leherer.domain.enumeration.Feedback;
-import com.losmessias.leherer.domain.enumeration.Rating;
+import com.losmessias.leherer.domain.enumeration.FeedbackOptions;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -17,8 +14,8 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "valorization")
-public class Valorization {
+@Table(name = "feedback")
+public class Feedback {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
@@ -36,17 +33,18 @@ public class Valorization {
     @Column
     private AppUserRole receptorRole;
     @ElementCollection
-    private Set<Feedback> feedbacks;
+    private Set<FeedbackOptions> feedbackOptions;
     @Column
     private LocalDateTime dateTimeOfFeedback;
     @Column
     private Double rating;
 
-    public Valorization(Student student, Professor professor, AppUserRole role, Set<Feedback> feedbacks, Double rating){
+    public Feedback(Student student, Professor professor, AppUserRole role, Set<FeedbackOptions> feedbackOptions, Double rating){
         this.student = student;
         this.professor = professor;
         this.receptorRole = role;
-        this.feedbacks = feedbacks;
+        this.feedbackOptions = feedbackOptions;
+        // TODO: check if rating is between 0 and 3, and is a multiple of 0.5
         this.rating = rating;
         this.dateTimeOfFeedback = LocalDateTime.now();
     }
