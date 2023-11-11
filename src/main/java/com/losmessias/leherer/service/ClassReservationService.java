@@ -1,7 +1,6 @@
 package com.losmessias.leherer.service;
 
 import com.losmessias.leherer.domain.*;
-import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.domain.enumeration.ReservationStatus;
 import com.losmessias.leherer.dto.ClassReservationCancel;
 import com.losmessias.leherer.dto.ProfessorStaticsDto;
@@ -108,7 +107,7 @@ public class ClassReservationService {
         return classReservationRepository.save(classReservation);
     }
 
-    public List<ClassReservation> createMultipleUnavailableReservationsFor(Professor professor, LocalDate day, LocalTime startingTime, LocalTime endingTime, Double duration) {
+    public List<ClassReservation> createMultipleUnavailableReservationsFor(Professor professor, LocalDate day, LocalTime startingTime, LocalTime endingTime) {
         if (startingTime.isAfter(endingTime))
             throw new IllegalArgumentException("Starting time must be before ending time");
         List<LocalTime> intervals = generateTimeIntervals(startingTime, endingTime);
@@ -162,8 +161,7 @@ public class ClassReservationService {
         ProfessorStaticsDto currMonthStatics = getProfessorStatic(currentMonth);
         ProfessorStaticsDto prevMonthStatics = getProfessorStatic(prevMonth);
 
-        Integer finalAmountOfMonths = amountOfMonths;
-        average.getClassesPerSubject().replaceAll((k, v) -> v / finalAmountOfMonths);
+        average.getClassesPerSubject().replaceAll((k, v) -> v / amountOfMonths);
         ProfessorStaticsDto average_statics = new ProfessorStaticsDto(
                 (double) average.getTotalClasses() / amountOfMonths,
                 average.getClassesPerSubject(),

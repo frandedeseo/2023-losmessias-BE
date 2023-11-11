@@ -366,7 +366,7 @@ public class ClassReservationcontrollerTests {
         classReservationList.add(new ClassReservation());
         classReservationList.add(new ClassReservation());
         when(professorService.getProfessorById(1L)).thenReturn(professor);
-        when(classReservationService.createMultipleUnavailableReservationsFor(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0), 1.0)).thenReturn(classReservationList);
+        when(classReservationService.createMultipleUnavailableReservationsFor(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0))).thenReturn(classReservationList);
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/reservation/createMultipleUnavailable")
                         .contentType("application/json")

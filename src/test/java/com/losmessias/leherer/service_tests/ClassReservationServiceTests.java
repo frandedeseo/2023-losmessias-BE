@@ -153,7 +153,7 @@ public class ClassReservationServiceTests {
         classReservations.add(new ClassReservation(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(12, 30), 0.5));
         classReservations.add(new ClassReservation(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 30), LocalTime.of(13, 0), 0.5));
         when(classReservationRepository.saveAll(any())).thenReturn(classReservations);
-        assertEquals(classReservations, classReservationService.createMultipleUnavailableReservationsFor(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0), 1.0));
+        assertEquals(classReservations, classReservationService.createMultipleUnavailableReservationsFor(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0)));
     }
 
     @Test
@@ -188,7 +188,7 @@ public class ClassReservationServiceTests {
     void testCreateUnavailableReservationsForProfessorWithInvalidTimeInterval() {
         assertThrowsExactly(IllegalArgumentException.class, () -> {
             Professor professor = new Professor();
-            classReservationService.createMultipleUnavailableReservationsFor(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(11, 0), 1.0);
+            classReservationService.createMultipleUnavailableReservationsFor(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(11, 0));
         });
     }
 
