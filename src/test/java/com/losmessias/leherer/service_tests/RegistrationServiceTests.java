@@ -115,38 +115,12 @@ public class RegistrationServiceTests {
 
     }
 
-    //    @Test
-//    @DisplayName("Confirm the registration by the email token")
-//    void testConfirmEmailToken() {
-//        String token = "token";
-//
-//        when(confirmationTokenService.validateToken(token)).thenReturn(new ConfirmationToken(
-//                "token", LocalDateTime.now(), LocalDateTime.now(), user1
-//        ));
-//        AuthenticationResponse authenticationResponseExpected = AuthenticationResponse.builder()
-//                .token("jwtToken")
-//                .build();
-//        when(jwtService.generateToken(any())).thenReturn("jwtToken");
-//        AuthenticationResponse authenticationResponse = registrationService.confirmEmailToken("token");
-//
-//        assertEquals(authenticationResponseExpected, authenticationResponse);
-//    }
     @Test
     @DisplayName("Confirm the token for Password change was activated successfully")
     void testConfirmChangePasswordToken() {
         String message = registrationService.confirmChangePasswordToken("token");
 
         assertEquals("Email confirmed", message);
-    }
-/**
- @Test
- @DisplayName("The password was changed successfully")
- void testChangePassword(){
- ForgotPasswordDto request = new ForgotPasswordDto("fran@gmail.com", "fran123");
 
- when(appUserService.encodePassword(any())).thenReturn("password");
- String message = registrationService.changePassword(request);
- assertEquals(message, "Password changed successfully");
- }
- */
+    }
 }
