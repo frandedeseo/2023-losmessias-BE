@@ -45,7 +45,7 @@ public class FeedbackService {
 
         Set<FeedbackOptions> feedbackOptions = new HashSet<>();
         if (material) feedbackOptions.add(FeedbackOptions.MATERIAL);
-        if (educated) feedbackOptions.add(FeedbackOptions.EDUCATED);
+        if (educated) feedbackOptions.add(FeedbackOptions.POLITE);
         if (punctuality) feedbackOptions.add(FeedbackOptions.PUNCTUALITY);
 
         Feedback feedback = new Feedback(student, professor, feedbackDto.getRoleReceptor(), feedbackOptions, feedbackDto.getRating());

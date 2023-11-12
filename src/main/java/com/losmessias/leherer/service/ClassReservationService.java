@@ -120,7 +120,7 @@ public class ClassReservationService {
         return classReservationRepository.save(classReservation);
     }
 
-    public List<ClassReservation> createMultipleUnavailableReservationsFor(Professor professor, LocalDate day, LocalTime startingTime, LocalTime endingTime, Double duration) {
+    public List<ClassReservation> createMultipleUnavailableReservationsFor(Professor professor, LocalDate day, LocalTime startingTime, LocalTime endingTime) {
         if (startingTime.isAfter(endingTime))
             throw new IllegalArgumentException("Starting time must be before ending time");
         List<LocalTime> intervals = generateTimeIntervals(startingTime, endingTime);
@@ -212,5 +212,10 @@ public class ClassReservationService {
                 incomes,
                 amountOfCancelledClasses
         );
+    }
+
+    public List<ClassReservation> getReservationsByDateAndEndingTime(LocalDate date, LocalTime endingHour) {
+        System.out.println("date: "+date+" endingHour: "+endingHour);
+        return classReservationRepository.findByDateAndEndingHour(date,endingHour);
     }
 }

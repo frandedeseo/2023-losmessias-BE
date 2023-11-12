@@ -47,7 +47,7 @@ public class Student {
     private Integer sumEducated;
     @Column
     private Integer amountOfRatings;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<Long> pendingClassesFeedbacks;
 
     public Student(String firstName, String lastName, String email, String location, String phone, AppUserSex appUserSex) {
@@ -63,6 +63,7 @@ public class Student {
         this.sumMaterial = 0;
         this.sumPunctuality = 0;
         this.sumEducated = 0;
+        this.pendingClassesFeedbacks = new ArrayList<>();
     }
 
     public void addReservation(ClassReservation classReservation) {
@@ -77,13 +78,12 @@ public class Student {
         this.amountOfRatings++;
     }
 
-    public void addPendingClassFeedback(Long feedbackId) {
-        this.pendingClassesFeedbacks.add(feedbackId);
+    public void addPendingClassFeedback(Long classId) {
+        if (!this.pendingClassesFeedbacks.contains(classId))this.pendingClassesFeedbacks.add(classId);
     }
 
-    public void giveFeedbackFor(Long feedbackId) {
-        // TODO: check if feedbackId is in pendingFeedbacks
-        this.pendingClassesFeedbacks.remove(feedbackId);
+    public void giveFeedbackFor(Long classId) {
+        this.pendingClassesFeedbacks.remove(classId);
     }
 
     public boolean canMakeAReservation() {

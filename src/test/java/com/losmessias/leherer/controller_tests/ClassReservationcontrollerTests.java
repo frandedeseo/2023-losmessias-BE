@@ -34,8 +34,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.jsonwebtoken.Jwts;
-
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(ClassReservationController.class)
 public class ClassReservationcontrollerTests {
@@ -201,6 +199,8 @@ public class ClassReservationcontrollerTests {
         jsonContent.put("price", 100);
 
         when(classReservationService.existsReservationForProfessorOnDayAndTime(any(), any(), any(), any())).thenReturn(true);
+        when(studentService.getStudentById(1L)).thenReturn(studentTest);
+        when(studentService.getStudentById(1L).canMakeAReservation()).thenReturn(true);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/reservation/create")

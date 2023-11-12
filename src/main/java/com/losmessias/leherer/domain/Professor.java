@@ -61,7 +61,7 @@ public class Professor {
     @JsonIgnore
     @OneToMany(mappedBy = "professor", fetch = FetchType.LAZY)
     private List<ClassReservation> classReservations;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<Long> pendingClassesFeedbacks;
 
     public Professor(String firstName, String lastName, String email, String location, String phone, AppUserSex appUserSex) {
@@ -78,6 +78,7 @@ public class Professor {
         this.sumMaterial = 0;
         this.sumPunctuality = 0;
         this.sumEducated = 0;
+        this.pendingClassesFeedbacks = new ArrayList<>();
     }
 
     public void addSubject(Subject subject) {
@@ -92,13 +93,12 @@ public class Professor {
         this.amountOfRatings = this.amountOfRatings + 1;
     }
 
-    public void addPendingClassFeedback(Long feedbackId) {
-        this.pendingClassesFeedbacks.add(feedbackId);
+    public void addPendingClassFeedback(Long classId) {
+        if (!this.pendingClassesFeedbacks.contains(classId))this.pendingClassesFeedbacks.add(classId);
     }
 
-    public void giveFeedbackFor(Long feedbackId) {
-        // TODO: check if feedbackId is in pendingFeedbacks
-        this.pendingClassesFeedbacks.remove(feedbackId);
+    public void giveFeedbackFor(Long classId) {
+        this.pendingClassesFeedbacks.remove(classId);
     }
 
 
@@ -108,7 +108,6 @@ public class Professor {
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", subjects=" + subjects +
                 '}';
     }
 
