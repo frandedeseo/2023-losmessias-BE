@@ -1,7 +1,6 @@
 package com.losmessias.leherer.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.losmessias.leherer.repository.StudentRepository;
 import com.losmessias.leherer.role.AppUserSex;
 import jakarta.persistence.*;
 import lombok.*;
@@ -50,8 +49,6 @@ public class Student {
     private Integer amountOfRatings;
     @ElementCollection
     private List<Long> pendingClassesFeedbacks;
-    @Transient
-    private StudentRepository studentRepository;
 
     public Student(String firstName, String lastName, String email, String location, String phone, AppUserSex appUserSex) {
         this.firstName = firstName;
@@ -78,7 +75,6 @@ public class Student {
         if (punctuality) this.sumPunctuality++;
         if (educated) this.sumEducated++;
         this.amountOfRatings++;
-        studentRepository.save(this);
     }
 
     public void addPendingClassFeedback(Long feedbackId) {
@@ -88,7 +84,10 @@ public class Student {
     public void giveFeedbackFor(Long feedbackId) {
         // TODO: check if feedbackId is in pendingFeedbacks
         this.pendingClassesFeedbacks.remove(feedbackId);
-        studentRepository.save(this);
+    }
+
+    public boolean canMakeAReservation() {
+        return this.pendingClassesFeedbacks.isEmpty();
     }
 
     @Override

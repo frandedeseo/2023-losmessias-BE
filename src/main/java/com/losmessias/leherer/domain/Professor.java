@@ -50,9 +50,6 @@ public class Professor {
     @Column
     private Integer amountOfRatings;
 
-    @Transient
-    private ProfessorRepository professorRepository;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "professor_subject",
@@ -93,7 +90,6 @@ public class Professor {
         if (punctuality) this.sumPunctuality = this.sumPunctuality + 1;
         if (educated) this.sumEducated = this.sumEducated + 1;
         this.amountOfRatings = this.amountOfRatings + 1;
-        professorRepository.save(this);
     }
 
     public void addPendingClassFeedback(Long feedbackId) {
@@ -103,7 +99,6 @@ public class Professor {
     public void giveFeedbackFor(Long feedbackId) {
         // TODO: check if feedbackId is in pendingFeedbacks
         this.pendingClassesFeedbacks.remove(feedbackId);
-        professorRepository.save(this);
     }
 
 
