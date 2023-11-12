@@ -1,6 +1,9 @@
 package com.losmessias.leherer.service_tests;
 
-import com.losmessias.leherer.domain.*;
+import com.losmessias.leherer.domain.ClassReservation;
+import com.losmessias.leherer.domain.Professor;
+import com.losmessias.leherer.domain.Student;
+import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.repository.ClassReservationRepository;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
 import com.losmessias.leherer.service.ClassReservationService;
