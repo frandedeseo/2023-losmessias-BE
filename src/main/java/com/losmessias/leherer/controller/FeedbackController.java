@@ -2,11 +2,16 @@ package com.losmessias.leherer.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.losmessias.leherer.domain.Feedback;
+import com.losmessias.leherer.domain.Professor;
+import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.dto.FeedbackDto;
 import com.losmessias.leherer.service.FeedbackService;
+import com.losmessias.leherer.service.ProfessorService;
+import com.losmessias.leherer.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,4 +35,5 @@ public class FeedbackController {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(feedbackService.getAllFeedbacks()));
     }
+
 }

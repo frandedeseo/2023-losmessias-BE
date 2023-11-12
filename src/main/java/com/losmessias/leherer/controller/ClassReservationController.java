@@ -70,6 +70,8 @@ public class ClassReservationController {
         Professor professor = professorService.getProfessorById(classReservationDto.getProfessorId());
         Subject subject = subjectService.getSubjectById(classReservationDto.getSubjectId());
         Student student = studentService.getStudentById(classReservationDto.getStudentId());
+        if (!student.canMakeAReservation())
+            return new ResponseEntity<>("Student must give feedback before making a reservation", HttpStatus.BAD_REQUEST);
         if (classReservationService.existsReservationForProfessorOnDayAndTime(
                 classReservationDto.getProfessorId(),
                 classReservationDto.getDay(),
@@ -89,7 +91,7 @@ public class ClassReservationController {
                 classReservationDto.getPrice())));
     }
 
-    @PostMapping ("/cancel")
+    @PostMapping("/cancel")
     public ResponseEntity<String> cancelReservation(@RequestBody ClassReservationCancelDto classReservationCancelDto) throws JsonProcessingException {
         if (classReservationCancelDto.getId() == null) return ResponseEntity.badRequest().body("Class Reservation id must be provided");
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
@@ -192,6 +194,7 @@ public class ClassReservationController {
                 )).toList();
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationResponseDtos));
     }
+
     @GetMapping("/getStatistics")
     public ResponseEntity<String> getStatistics(@RequestParam Long professorId) throws JsonProcessingException {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();

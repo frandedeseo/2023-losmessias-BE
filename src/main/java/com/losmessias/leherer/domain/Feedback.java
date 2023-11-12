@@ -49,4 +49,17 @@ public class Feedback {
         this.dateTimeOfFeedback = LocalDateTime.now();
     }
 
+    @Override
+    public String toString() {
+        return "Feedback{" +
+                "id=" + id +
+                ", student=" + student +
+                ", professor=" + professor +
+                ", receptorRole=" + receptorRole +
+                ", feedbackOptions=" + feedbackOptions +
+                ", dateTimeOfFeedback=" + dateTimeOfFeedback +
+                ", rating=" + rating +
+                '}';
+    }
+
 }
