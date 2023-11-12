@@ -133,7 +133,7 @@ public class ClassReservationService {
 
         List<ClassReservation> classes = classReservationRepository.getClassReservationByProfessorAndOrderByDate(id);
 
-        Integer amountOfMonths = Period.between(classes.get(0).getDate(), classes.get(classes.size() -1).getDate()).getMonths() + 1;
+        Integer amountOfMonths = Period.between(classes.get(0).getDate(), LocalDate.now()).getMonths() + 1;
 
         List<ClassReservation> currentMonth = new ArrayList<>();
         List<ClassReservation> prevMonth= new ArrayList<>();
@@ -148,7 +148,6 @@ public class ClassReservationService {
         }
 
         ProfessorStaticsDto average = getProfessorStatic(classes);
-
         ProfessorStaticsDto currMonthStatics = getProfessorStatic(currentMonth);
         ProfessorStaticsDto prevMonthStatics = getProfessorStatic(prevMonth);
 

@@ -41,7 +41,7 @@ public class FeedbackService {
         }
 
         Set<FeedbackOptions> feedbackOptions = new HashSet<>();
-        if (feedbackDto.getEducated()) feedbackOptions.add(FeedbackOptions.EDUCATED);
+        if (feedbackDto.getEducated()) feedbackOptions.add(FeedbackOptions.POLITE);
         if (feedbackDto.getPunctuality()) feedbackOptions.add(FeedbackOptions.PUNCTUALITY);
         if (feedbackDto.getMaterial()) feedbackOptions.add(FeedbackOptions.MATERIAL);
 

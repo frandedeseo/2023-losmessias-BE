@@ -1,6 +1,8 @@
 package com.losmessias.leherer.service_tests;
 
 import com.losmessias.leherer.domain.*;
+import com.losmessias.leherer.domain.enumeration.ReservationStatus;
+import com.losmessias.leherer.dto.ProfessorStaticsDto;
 import com.losmessias.leherer.repository.ClassReservationRepository;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
 import com.losmessias.leherer.service.ClassReservationService;
@@ -15,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -191,5 +194,247 @@ public class ClassReservationServiceTests {
         List<ProfessorDailySummary> professorDailySummaries = new ArrayList<>();
         when(classReservationRepository.getProfessorDailySummaryByDay(LocalDate.of(2023, 1, 1))).thenReturn(professorDailySummaries);
         assertEquals(professorDailySummaries, classReservationService.getDailySummary(LocalDate.of(2023, 1, 1)));
+    }
+
+    @Test
+    @DisplayName("get professor stadistics with three classes in this month")
+    void testGetStatics() {
+        List<ClassReservation> classes = new ArrayList<>();
+        Professor professor = new Professor();
+        Subject subject = new Subject("Biology");
+        Student student = new Student();
+        classes.add(
+                new ClassReservation(
+                        professor,
+                        subject,
+                        student,
+                        LocalDate.of(2023, 11, 1),
+                        LocalTime.of(12, 0),
+                        LocalTime.of(13, 0),
+                        0.0,
+                        100
+                )
+        );
+        classes.add(
+                new ClassReservation(
+                        professor,
+                        subject,
+                        student,
+                        LocalDate.of(2023, 11, 1),
+                        LocalTime.of(12, 0),
+                        LocalTime.of(13, 0),
+                        0.0,
+                        100
+                )
+        );
+        classes.add(
+                new ClassReservation(
+                    professor,
+                    subject,
+                    student,
+                    LocalDate.of(2023, 11, 1),
+                    LocalTime.of(12, 0),
+                    LocalTime.of(13, 0),
+                    0.0,
+                    100
+                )
+        );
+
+        HashMap<String, Double> classesPerSubjectCurr = new HashMap<>();
+        classesPerSubjectCurr.put("Biology", 3.0);
+
+
+        ProfessorStaticsDto currMonthStatics = new ProfessorStaticsDto(
+                3.0,
+                classesPerSubjectCurr,
+                300.0,
+                0.0
+        );
+        ProfessorStaticsDto prevMonthStatics = new ProfessorStaticsDto(
+                0.0,
+                new HashMap<String, Double>(),
+                0.0,
+                0.0
+        );
+        ProfessorStaticsDto average_statics = new ProfessorStaticsDto(
+                3.0,
+                classesPerSubjectCurr,
+                300.0,
+                0.0
+        );
+
+        List<ProfessorStaticsDto> returnedList = new ArrayList<>();
+        returnedList.add(currMonthStatics);
+        returnedList.add(prevMonthStatics);
+        returnedList.add(average_statics);
+
+        when(classReservationRepository.getClassReservationByProfessorAndOrderByDate(any())).thenReturn(classes);
+        assertEquals(returnedList , classReservationService.getStatics(1L));
+
+    }
+    @Test
+    @DisplayName("get professor stadistics with one class in previous month and two in this month")
+    void testGetStaticsOneClassPreviousMonthTwoThisMonth() {
+        List<ClassReservation> classes = new ArrayList<>();
+        Professor professor = new Professor();
+        Subject subject = new Subject("Biology");
+        Student student = new Student();
+        classes.add(
+                new ClassReservation(
+                        professor,
+                        subject,
+                        student,
+                        LocalDate.of(2023, 10, 1),
+                        LocalTime.of(12, 0),
+                        LocalTime.of(13, 0),
+                        0.0,
+                        100
+                )
+        );
+        classes.add(
+                new ClassReservation(
+                        professor,
+                        subject,
+                        student,
+                        LocalDate.of(2023, 11, 1),
+                        LocalTime.of(12, 0),
+                        LocalTime.of(13, 0),
+                        0.0,
+                        100
+                )
+        );
+        classes.add(
+                new ClassReservation(
+                        professor,
+                        subject,
+                        student,
+                        LocalDate.of(2023, 11, 1),
+                        LocalTime.of(12, 0),
+                        LocalTime.of(13, 0),
+                        0.0,
+                        100
+                )
+        );
+
+        HashMap<String, Double> classesPerSubjectCurr = new HashMap<>();
+        classesPerSubjectCurr.put("Biology", 2.0);
+
+        HashMap<String, Double> classesPerSubjectPrev = new HashMap<>();
+        classesPerSubjectPrev.put("Biology", 1.0);
+
+        HashMap<String, Double> classesPerSubjectAvg = new HashMap<>();
+        classesPerSubjectAvg.put("Biology", 1.5);
+
+        ProfessorStaticsDto currMonthStatics = new ProfessorStaticsDto(
+                2.0,
+                classesPerSubjectCurr,
+                200.0,
+                0.0
+        );
+        ProfessorStaticsDto prevMonthStatics = new ProfessorStaticsDto(
+                1.0,
+                classesPerSubjectPrev,
+                100.0,
+                0.0
+        );
+        ProfessorStaticsDto average_statics = new ProfessorStaticsDto(
+                1.5,
+                classesPerSubjectAvg,
+                150.0,
+                0.0
+        );
+
+        List<ProfessorStaticsDto> returnedList = new ArrayList<>();
+        returnedList.add(currMonthStatics);
+        returnedList.add(prevMonthStatics);
+        returnedList.add(average_statics);
+
+        when(classReservationRepository.getClassReservationByProfessorAndOrderByDate(any())).thenReturn(classes);
+        assertEquals(returnedList , classReservationService.getStatics(1L));
+
+    }
+
+    @Test
+    @DisplayName("get professor stadistics with one class two month ago and one the previous month and where cancelled")
+    void testGetStaticsOneClassTwoMonthAgoTwoPreviousMonthAndWhereCancelled() {
+        List<ClassReservation> classes = new ArrayList<>();
+        Professor professor = new Professor();
+        Subject subject = new Subject("Biology");
+        Student student = new Student();
+        ClassReservation class1 = new ClassReservation(
+                        professor,
+                        subject,
+                        student,
+                        LocalDate.of(2023, 9, 1),
+                        LocalTime.of(12, 0),
+                        LocalTime.of(13, 0),
+                        0.0,
+                        100
+                );
+        class1.setStatus(ReservationStatus.CANCELLED);
+
+        ClassReservation class2 = new ClassReservation(
+                        professor,
+                        subject,
+                        student,
+                        LocalDate.of(2023, 10, 1),
+                        LocalTime.of(12, 0),
+                        LocalTime.of(13, 0),
+                        0.0,
+                        100
+        );
+        class2.setStatus(ReservationStatus.CANCELLED);
+
+        ClassReservation class3 = new ClassReservation(
+                        professor,
+                        subject,
+                        student,
+                        LocalDate.of(2023, 10, 29),
+                        LocalTime.of(12, 0),
+                        LocalTime.of(13, 0),
+                        0.0,
+                        100
+        );
+        class3.setStatus(ReservationStatus.CANCELLED);
+
+        classes.add(class1);
+        classes.add(class2);
+        classes.add(class3);
+
+        HashMap<String, Double> classesPerSubjectCurr = new HashMap<>();
+
+        HashMap<String, Double> classesPerSubjectPrev = new HashMap<>();
+        classesPerSubjectPrev.put("Biology", 2.0);
+
+        HashMap<String, Double> classesPerSubjectAvg = new HashMap<>();
+        classesPerSubjectAvg.put("Biology", 1.0);
+
+        ProfessorStaticsDto currMonthStatics = new ProfessorStaticsDto(
+                0.0,
+                classesPerSubjectCurr,
+                0.0,
+                0.0
+        );
+        ProfessorStaticsDto prevMonthStatics = new ProfessorStaticsDto(
+                2.0,
+                classesPerSubjectPrev,
+                200.0,
+                2.0
+        );
+        ProfessorStaticsDto average_statics = new ProfessorStaticsDto(
+                1.0,
+                classesPerSubjectAvg,
+                100.0,
+                1.0
+        );
+
+        List<ProfessorStaticsDto> returnedList = new ArrayList<>();
+        returnedList.add(currMonthStatics);
+        returnedList.add(prevMonthStatics);
+        returnedList.add(average_statics);
+
+        when(classReservationRepository.getClassReservationByProfessorAndOrderByDate(any())).thenReturn(classes);
+        assertEquals(returnedList , classReservationService.getStatics(1L));
+
     }
 }
