@@ -4,7 +4,6 @@ import com.losmessias.leherer.domain.Feedback;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
-import com.losmessias.leherer.domain.enumeration.FeedbackOptions;
 import com.losmessias.leherer.dto.FeedbackDto;
 import com.losmessias.leherer.repository.FeedbackRepository;
 import com.losmessias.leherer.repository.ProfessorRepository;
@@ -23,7 +22,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.mockito.Mockito.when;
 

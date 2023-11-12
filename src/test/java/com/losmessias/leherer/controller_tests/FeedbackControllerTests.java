@@ -3,7 +3,6 @@ package com.losmessias.leherer.controller_tests;
 import com.losmessias.leherer.controller.FeedbackController;
 import com.losmessias.leherer.service.FeedbackService;
 import com.losmessias.leherer.service.JwtService;
-import lombok.With;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,12 +33,12 @@ public class FeedbackControllerTests {
     @Test
     @DisplayName("Get feedback without authentication returns bad request")
     public void getFeedbackWithoutAuthenticationReturnsBadRequest() throws Exception {
-         mockMvc.perform(get("/api/feedback/getAllFeedbacks"))
-                 .andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/feedback/getAllFeedbacks"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser(username = "admin", roles={"ADMIN"})
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Get feedback with authentication returns ok")
     public void getFeedbackWithAuthenticationReturnsOk() throws Exception {
         mockMvc.perform(get("/api/feedback/getAllFeedbacks"))

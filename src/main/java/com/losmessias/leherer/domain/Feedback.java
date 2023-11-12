@@ -39,7 +39,7 @@ public class Feedback {
     @Column
     private Double rating;
 
-    public Feedback(Student student, Professor professor, AppUserRole role, Set<FeedbackOptions> feedbackOptions, Double rating){
+    public Feedback(Student student, Professor professor, AppUserRole role, Set<FeedbackOptions> feedbackOptions, Double rating) {
         this.student = student;
         this.professor = professor;
         this.receptorRole = role;
