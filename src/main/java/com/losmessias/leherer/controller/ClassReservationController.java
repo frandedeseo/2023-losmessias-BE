@@ -195,9 +195,4 @@ public class ClassReservationController {
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationResponseDtos));
     }
 
-    @GetMapping("/getStatistics")
-    public ResponseEntity<String> getStatistics(@RequestParam Long professorId) throws JsonProcessingException {
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationService.getStatics(professorId)));
-    }
 }
