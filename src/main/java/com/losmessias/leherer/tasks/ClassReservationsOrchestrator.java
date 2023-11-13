@@ -40,8 +40,12 @@ public class ClassReservationsOrchestrator {
         LocalTime endingTime = LocalTime.of(endingTimeInGMTMinus3.toLocalTime().getHour(), endingTimeInGMTMinus3.toLocalTime().getMinute());
         log.info("Executing on: " + endingDate + " - " + endingTime);
         List<ClassReservation> classReservations = classReservationService.getReservationsByDateAndEndingTime(endingDate, endingTime);
+        if (classReservations.isEmpty()) {
+            log.info("No class reservations found for this time");
+            return;
+        }
         classReservations.forEach(classReservation -> {
-            log.info("Found class reservation: " + classReservation.getId() + " at " + dateFormat.format(classReservation.getDate()));
+            log.info("Found class reservation: " + classReservation.getId() + " at " + classReservation.getDate() + " - " + classReservation.getEndingHour());
             Student student = classReservation.getStudent();
             Professor professor = classReservation.getProfessor();
 
