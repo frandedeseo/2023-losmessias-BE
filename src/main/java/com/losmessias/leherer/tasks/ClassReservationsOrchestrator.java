@@ -31,8 +31,8 @@ public class ClassReservationsOrchestrator {
 
     @Scheduled(cron = "0 0/30 * * * *")
     public void reserveClasses() {
-        // LocalDate -4 due to de Render Hosting time zone
-        LocalTime endingTime = LocalTime.of(LocalTime.now().getHour() - 4, LocalTime.now().getMinute());
+        // LocalDate -3 due to de Render Hosting time zone
+        LocalTime endingTime = LocalTime.of(LocalTime.now().getHour() - 3, LocalTime.now().getMinute());
         List<ClassReservation> classReservations = classReservationService.getReservationsByDateAndEndingTime(LocalDate.now(), endingTime);
         classReservations.forEach(classReservation -> {
             log.info("Found class reservation: " + classReservation.getId() + " at " + dateFormat.format(classReservation.getDate()));
