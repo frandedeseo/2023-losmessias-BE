@@ -14,7 +14,9 @@ import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -29,11 +31,17 @@ public class ClassReservationsOrchestrator {
     private final StudentRepository studentRepository;
     private final ProfessorRepository professorRepository;
 
-    @Scheduled(cron = "0 0/30 * * * *")
+    //    @Scheduled(cron = "0 0/30 * * * *")
+    @Scheduled(cron = "0/10 * * * * *")
     public void reserveClasses() {
         // LocalDate -3 due to de Render Hosting time zone
-        LocalTime endingTime = LocalTime.of(LocalTime.now().getHour() - 3, LocalTime.now().getMinute());
-        List<ClassReservation> classReservations = classReservationService.getReservationsByDateAndEndingTime(LocalDate.now(), endingTime);
+        LocalDateTime endingTimeInGMT = LocalDateTime.now();
+        LocalDateTime endingTimeInGMTMinus3 = convertToGMTMinus3(endingTimeInGMT);
+        LocalDate endingDate = endingTimeInGMTMinus3.toLocalDate();
+        LocalTime endingTime = LocalTime.of(endingTimeInGMTMinus3.toLocalTime().getHour(), endingTimeInGMTMinus3.toLocalTime().getMinute());
+        log.info("Executing on: " + endingDate + " - " + endingTime);
+//        log.info("LocalDate : " + LocalDate.now() + " LocalTime : " + LocalTime.now());
+        List<ClassReservation> classReservations = classReservationService.getReservationsByDateAndEndingTime(endingDate, endingTime);
         classReservations.forEach(classReservation -> {
             log.info("Found class reservation: " + classReservation.getId() + " at " + dateFormat.format(classReservation.getDate()));
             Student student = classReservation.getStudent();
@@ -50,7 +58,15 @@ public class ClassReservationsOrchestrator {
             professorRepository.save(professor);
             classReservationRepository.save(classReservation);
         });
-        log.info("LocalDate : " + LocalDate.now() + " LocalTime : " + LocalTime.now());
+    }
+
+    private static LocalDateTime convertToGMTMinus3(LocalDateTime gmtDateTime) {
+        // Set the time zone to GMT
+        ZoneId gmtZone = ZoneId.of("GMT");
+        // Convert the GMT time to GMT-3
+        return gmtDateTime.atZone(gmtZone)
+                .withZoneSameInstant(ZoneId.of("GMT-3"))
+                .toLocalDateTime();
     }
 
 }

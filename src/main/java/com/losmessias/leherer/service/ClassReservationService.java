@@ -215,7 +215,6 @@ public class ClassReservationService {
     }
 
     public List<ClassReservation> getReservationsByDateAndEndingTime(LocalDate date, LocalTime endingHour) {
-        System.out.println("date: "+date+" endingHour: "+endingHour);
         return classReservationRepository.findByDateAndEndingHour(date,endingHour);
     }
 }
