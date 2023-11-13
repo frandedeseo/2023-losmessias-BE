@@ -31,7 +31,7 @@ public class ClassReservationsOrchestrator {
     private final StudentRepository studentRepository;
     private final ProfessorRepository professorRepository;
 
-        @Scheduled(cron = "0 0/30 * * * *")
+    @Scheduled(cron = "0 0/30 * * * *")
     public void reserveClasses() {
         // LocalDate -3 due to de Render Hosting time zone
         LocalDateTime endingTimeInGMT = LocalDateTime.now();
