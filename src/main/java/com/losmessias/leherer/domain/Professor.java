@@ -1,7 +1,6 @@
 package com.losmessias.leherer.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.losmessias.leherer.repository.ProfessorRepository;
 import com.losmessias.leherer.role.AppUserSex;
 import jakarta.persistence.*;
 import lombok.*;
@@ -46,7 +45,7 @@ public class Professor {
     @Column
     private Integer sumPunctuality;
     @Column
-    private Integer sumEducated;
+    private Integer sumPolite;
     @Column
     private Integer amountOfRatings;
 
@@ -77,7 +76,7 @@ public class Professor {
         this.amountOfRatings = 0;
         this.sumMaterial = 0;
         this.sumPunctuality = 0;
-        this.sumEducated = 0;
+        this.sumPolite = 0;
         this.pendingClassesFeedbacks = new ArrayList<>();
     }
 
@@ -85,12 +84,12 @@ public class Professor {
         this.subjects.add(subject);
     }
 
-    public void receiveFeedback(Double rating, Boolean material, Boolean punctuality, Boolean educated) {
+    public void receiveFeedback(Double rating, Boolean material, Boolean punctuality, Boolean polite) {
         this.avgRating = (this.avgRating * this.amountOfRatings + rating) / (this.amountOfRatings + 1);
-        if (material) this.sumMaterial = this.sumMaterial + 1;
-        if (punctuality) this.sumPunctuality = this.sumPunctuality + 1;
-        if (educated) this.sumEducated = this.sumEducated + 1;
-        this.amountOfRatings = this.amountOfRatings + 1;
+        if (material) this.sumMaterial++;
+        if (punctuality) this.sumPunctuality++;
+        if (polite) this.sumPolite++;
+        this.amountOfRatings++;
     }
 
     public void addPendingClassFeedback(Long classId) {

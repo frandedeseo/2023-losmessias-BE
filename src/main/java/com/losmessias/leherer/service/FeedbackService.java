@@ -31,21 +31,21 @@ public class FeedbackService {
         Professor professor = professorService.getProfessorById(feedbackDto.getProfessorId());
         Boolean material = feedbackDto.getMaterial() != null ? feedbackDto.getMaterial() : false;
         Boolean punctuality = feedbackDto.getPunctuality() != null ? feedbackDto.getPunctuality() : false;
-        Boolean educated = feedbackDto.getEducated() != null ? feedbackDto.getEducated() : false;
+        Boolean polite = feedbackDto.getPolite() != null ? feedbackDto.getPolite() : false;
 
         if (feedbackDto.getRoleReceptor() == AppUserRole.STUDENT) {
             professor.giveFeedbackFor(feedbackDto.getClassId());
-            student.receiveFeedback(feedbackDto.getRating(), material, punctuality, educated);
+            student.receiveFeedback(feedbackDto.getRating(), material, punctuality, polite);
         } else {
             student.giveFeedbackFor(feedbackDto.getClassId());
-            professor.receiveFeedback(feedbackDto.getRating(), material, punctuality, educated);
+            professor.receiveFeedback(feedbackDto.getRating(), material, punctuality, polite);
         }
         professorRepository.save(professor);
         studentRepository.save(student);
 
         Set<FeedbackOptions> feedbackOptions = new HashSet<>();
         if (material) feedbackOptions.add(FeedbackOptions.MATERIAL);
-        if (educated) feedbackOptions.add(FeedbackOptions.POLITE);
+        if (polite) feedbackOptions.add(FeedbackOptions.POLITE);
         if (punctuality) feedbackOptions.add(FeedbackOptions.PUNCTUALITY);
 
         Feedback feedback = new Feedback(student, professor, feedbackDto.getRoleReceptor(), feedbackOptions, feedbackDto.getRating());

@@ -44,7 +44,7 @@ public class Student {
     @Column
     private Integer sumPunctuality;
     @Column
-    private Integer sumEducated;
+    private Integer sumPolite;
     @Column
     private Integer amountOfRatings;
     @ElementCollection(fetch = FetchType.EAGER)
@@ -62,7 +62,7 @@ public class Student {
         this.amountOfRatings = 0;
         this.sumMaterial = 0;
         this.sumPunctuality = 0;
-        this.sumEducated = 0;
+        this.sumPolite = 0;
         this.pendingClassesFeedbacks = new ArrayList<>();
     }
 
@@ -70,11 +70,11 @@ public class Student {
         this.classReservations.add(classReservation);
     }
 
-    public void receiveFeedback(Double rating, Boolean material, Boolean punctuality, Boolean educated) {
+    public void receiveFeedback(Double rating, Boolean material, Boolean punctuality, Boolean polite) {
         this.avgRating = (this.avgRating * this.amountOfRatings + rating) / (this.amountOfRatings + 1);
         if (material) this.sumMaterial++;
         if (punctuality) this.sumPunctuality++;
-        if (educated) this.sumEducated++;
+        if (polite) this.sumPolite++;
         this.amountOfRatings++;
     }
 
