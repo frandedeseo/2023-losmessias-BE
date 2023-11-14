@@ -46,4 +46,6 @@ public interface ClassReservationRepository extends JpaRepository<ClassReservati
                                      @Param("startingTime") LocalTime startingTime,
                                      @Param("endingTime") LocalTime endingTime);
 
+    List<ClassReservation> findByDateAndEndingHour(LocalDate date, LocalTime endingHour);
+
 }

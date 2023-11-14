@@ -1,9 +1,11 @@
 package com.losmessias.leherer.service;
 
-import com.losmessias.leherer.domain.*;
-import com.losmessias.leherer.domain.enumeration.AppUserRole;
+import com.losmessias.leherer.domain.ClassReservation;
+import com.losmessias.leherer.domain.Professor;
+import com.losmessias.leherer.domain.Student;
+import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.domain.enumeration.ReservationStatus;
-import com.losmessias.leherer.dto.ClassReservationCancel;
+import com.losmessias.leherer.dto.ClassReservationCancelDto;
 import com.losmessias.leherer.dto.ProfessorStaticsDto;
 import com.losmessias.leherer.repository.ClassReservationRepository;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
@@ -13,7 +15,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Period;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,15 +36,15 @@ public class ClassReservationService {
         return classReservationRepository.findById(id).orElse(null);
     }
 
-    public ClassReservation cancelReservation(ClassReservationCancel classReservationCancel) {
-        ClassReservation classReservation = getReservationById(classReservationCancel.getId());
+    public ClassReservation cancelReservation(ClassReservationCancelDto classReservationCancelDto) {
+        ClassReservation classReservation = getReservationById(classReservationCancelDto.getId());
         classReservation.setStatus(ReservationStatus.CANCELLED);
         if (checkIfIsBetween48hsBefore(classReservation)) {
             classReservation.setPrice(classReservation.getPrice() / 2);
         } else {
             classReservation.setPrice(0);
         }
-        notificationService.cancelClassReservedNotification(classReservation, classReservationCancel.getRole());
+        notificationService.cancelClassReservedNotification(classReservation, classReservationCancelDto.getRole());
         return classReservationRepository.save(classReservation);
 
     }
@@ -59,7 +63,6 @@ public class ClassReservationService {
                                               Integer price) {
         if (startingTime.isAfter(endingTime))
             throw new IllegalArgumentException("Starting time must be before ending time");
-
         ClassReservation classReservation = new ClassReservation(
                 professor,
                 subject,
@@ -89,11 +92,20 @@ public class ClassReservationService {
     }
 
     public List<ClassReservation> getReservationsByProfessorId(Long id) {
-        return classReservationRepository.findByProfessorId(id);
+        return getUnCancelledReservation(classReservationRepository.findByProfessorId(id));
+    }
+
+    private List<ClassReservation> getUnCancelledReservation(List<ClassReservation> classes) {
+        List<ClassReservation> classesUnCancelled = new ArrayList<>();
+        classes
+                .stream()
+                .filter(clase -> clase.getStatus() != ReservationStatus.CANCELLED)
+                .forEach(classesUnCancelled::add);
+        return classesUnCancelled;
     }
 
     public List<ClassReservation> getReservationsByStudentId(Long id) {
-        return classReservationRepository.findByStudentId(id);
+        return getUnCancelledReservation(classReservationRepository.findByStudentId(id));
     }
 
     public List<ClassReservation> getReservationsBySubjectId(Long id) {
@@ -108,7 +120,7 @@ public class ClassReservationService {
         return classReservationRepository.save(classReservation);
     }
 
-    public List<ClassReservation> createMultipleUnavailableReservationsFor(Professor professor, LocalDate day, LocalTime startingTime, LocalTime endingTime, Double duration) {
+    public List<ClassReservation> createMultipleUnavailableReservationsFor(Professor professor, LocalDate day, LocalTime startingTime, LocalTime endingTime) {
         if (startingTime.isAfter(endingTime))
             throw new IllegalArgumentException("Starting time must be before ending time");
         List<LocalTime> intervals = generateTimeIntervals(startingTime, endingTime);
@@ -162,8 +174,7 @@ public class ClassReservationService {
         ProfessorStaticsDto currMonthStatics = getProfessorStatic(currentMonth);
         ProfessorStaticsDto prevMonthStatics = getProfessorStatic(prevMonth);
 
-        Integer finalAmountOfMonths = amountOfMonths;
-        average.getClassesPerSubject().replaceAll((k, v) -> v / finalAmountOfMonths);
+        average.getClassesPerSubject().replaceAll((k, v) -> v / amountOfMonths);
         ProfessorStaticsDto average_statics = new ProfessorStaticsDto(
                 (double) average.getTotalClasses() / amountOfMonths,
                 average.getClassesPerSubject(),
@@ -201,5 +212,9 @@ public class ClassReservationService {
                 incomes,
                 amountOfCancelledClasses
         );
+    }
+
+    public List<ClassReservation> getReservationsByDateAndEndingTime(LocalDate date, LocalTime endingHour) {
+        return classReservationRepository.findByDateAndEndingHour(date,endingHour);
     }
 }

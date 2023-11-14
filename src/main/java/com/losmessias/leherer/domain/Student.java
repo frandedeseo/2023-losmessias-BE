@@ -37,6 +37,18 @@ public class Student {
     @JsonIgnore
     @OneToMany(mappedBy = "student")
     private List<ClassReservation> classReservations;
+    @Column
+    private Double avgRating;
+    @Column
+    private Integer sumMaterial;
+    @Column
+    private Integer sumPunctuality;
+    @Column
+    private Integer sumPolite;
+    @Column
+    private Integer amountOfRatings;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<Long> pendingClassesFeedbacks;
 
     public Student(String firstName, String lastName, String email, String location, String phone, AppUserSex appUserSex) {
         this.firstName = firstName;
@@ -46,10 +58,36 @@ public class Student {
         this.classReservations = new ArrayList<>();
         this.phone = phone;
         this.sex = appUserSex;
+        this.avgRating = 0.0;
+        this.amountOfRatings = 0;
+        this.sumMaterial = 0;
+        this.sumPunctuality = 0;
+        this.sumPolite = 0;
+        this.pendingClassesFeedbacks = new ArrayList<>();
     }
 
     public void addReservation(ClassReservation classReservation) {
         this.classReservations.add(classReservation);
+    }
+
+    public void receiveFeedback(Double rating, Boolean material, Boolean punctuality, Boolean polite) {
+        this.avgRating = (this.avgRating * this.amountOfRatings + rating) / (this.amountOfRatings + 1);
+        if (material) this.sumMaterial++;
+        if (punctuality) this.sumPunctuality++;
+        if (polite) this.sumPolite++;
+        this.amountOfRatings++;
+    }
+
+    public void addPendingClassFeedback(Long classId) {
+        if (!this.pendingClassesFeedbacks.contains(classId))this.pendingClassesFeedbacks.add(classId);
+    }
+
+    public void giveFeedbackFor(Long classId) {
+        this.pendingClassesFeedbacks.remove(classId);
+    }
+
+    public boolean canMakeAReservation() {
+        return this.pendingClassesFeedbacks.isEmpty();
     }
 
     @Override
@@ -63,7 +101,7 @@ public class Student {
                 '}';
     }
 
-    public String toJson(){
+    public String toJson() {
         return "{" +
                 "\"id\":" + id +
                 ", \"firstName\":\"" + firstName + '\"' +

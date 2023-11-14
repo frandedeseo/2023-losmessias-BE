@@ -68,7 +68,7 @@ public class ClassReservation {
     }
 
     //Unavailable reservation initialization
-    public ClassReservation(Professor professor,LocalDate date, LocalTime startingHour, LocalTime endingHour, Double duration){
+    public ClassReservation(Professor professor, LocalDate date, LocalTime startingHour, LocalTime endingHour, Double duration) {
         this.professor = professor;
         this.date = date;
         this.startingHour = startingHour;
