@@ -1,28 +1,32 @@
 package com.losmessias.leherer.service_tests;
 
 import com.losmessias.leherer.domain.*;
+import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.domain.enumeration.ReservationStatus;
+import com.losmessias.leherer.dto.ClassReservationCancelDto;
 import com.losmessias.leherer.dto.ProfessorStaticsDto;
 import com.losmessias.leherer.repository.ClassReservationRepository;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
 import com.losmessias.leherer.service.ClassReservationService;
 import com.losmessias.leherer.service.NotificationService;
+import org.junit.Before;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -194,6 +198,31 @@ public class ClassReservationServiceTests {
         List<ProfessorDailySummary> professorDailySummaries = new ArrayList<>();
         when(classReservationRepository.getProfessorDailySummaryByDay(LocalDate.of(2023, 1, 1))).thenReturn(professorDailySummaries);
         assertEquals(professorDailySummaries, classReservationService.getDailySummary(LocalDate.of(2023, 1, 1)));
+    }
+
+    @Test
+    @DisplayName("Cancel class after 48hs before")
+    void cancelClassAfter(){
+        Professor professor = new Professor();
+        Subject subject = new Subject("Biology");
+        Student student = new Student();
+
+        ClassReservation class1 = new ClassReservation(
+                professor,
+                subject,
+                student,
+                LocalDate.of(2023, 11, 13),
+                LocalTime.of(12, 0),
+                LocalTime.of(13, 0),
+                0.0,
+                100
+        );
+
+        ClassReservationCancelDto cancelDto = new ClassReservationCancelDto(class1.getId(), AppUserRole.PROFESSOR);
+
+        when(classReservationRepository.findById(any())).thenReturn(Optional.of(class1));
+        class1.setPrice(50);
+        assertEquals(class1 , classReservationService.cancelReservation(cancelDto));
     }
 
     @Test

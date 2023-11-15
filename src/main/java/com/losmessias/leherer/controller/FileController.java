@@ -44,8 +44,9 @@ public class FileController {
                 file.getContentType(), file.getSize());
     }
     @PostMapping("/setUploadInformation")
-    public void setUploadInformation(@RequestBody UploadInformationDto info) {
-        fileService.setUploadInformation(info);
+    public ResponseEntity<String> setUploadInformation(@RequestBody UploadInformationDto info) throws JsonProcessingException {
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(fileService.setUploadInformation(info)));
     }
 
 //    @PostMapping("/uploadMultipleFiles")

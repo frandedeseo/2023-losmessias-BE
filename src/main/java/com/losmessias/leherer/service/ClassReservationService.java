@@ -7,6 +7,7 @@ import com.losmessias.leherer.dto.ProfessorStaticsDto;
 import com.losmessias.leherer.repository.ClassReservationRepository;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -40,7 +41,8 @@ public class ClassReservationService {
             classReservation.setPrice(0);
         }
         notificationService.cancelClassReservedNotification(classReservation, classReservationCancelDto.getRole());
-        return classReservationRepository.save(classReservation);
+        classReservationRepository.save(classReservation);
+        return classReservation;
 
     }
 
