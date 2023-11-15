@@ -1,7 +1,6 @@
 package com.losmessias.leherer.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.losmessias.leherer.repository.StudentRepository;
 import com.losmessias.leherer.role.AppUserSex;
 import jakarta.persistence.*;
 import lombok.*;
@@ -45,13 +44,11 @@ public class Student {
     @Column
     private Integer sumPunctuality;
     @Column
-    private Integer sumEducated;
+    private Integer sumPolite;
     @Column
     private Integer amountOfRatings;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<Long> pendingClassesFeedbacks;
-    @Transient
-    private StudentRepository studentRepository;
 
     public Student(String firstName, String lastName, String email, String location, String phone, AppUserSex appUserSex) {
         this.firstName = firstName;
@@ -65,30 +62,32 @@ public class Student {
         this.amountOfRatings = 0;
         this.sumMaterial = 0;
         this.sumPunctuality = 0;
-        this.sumEducated = 0;
+        this.sumPolite = 0;
+        this.pendingClassesFeedbacks = new ArrayList<>();
     }
 
     public void addReservation(ClassReservation classReservation) {
         this.classReservations.add(classReservation);
     }
 
-    public void receiveFeedback(Double rating, Boolean material, Boolean punctuality, Boolean educated) {
+    public void receiveFeedback(Double rating, Boolean material, Boolean punctuality, Boolean polite) {
         this.avgRating = (this.avgRating * this.amountOfRatings + rating) / (this.amountOfRatings + 1);
         if (material) this.sumMaterial++;
         if (punctuality) this.sumPunctuality++;
-        if (educated) this.sumEducated++;
+        if (polite) this.sumPolite++;
         this.amountOfRatings++;
-        studentRepository.save(this);
     }
 
-    public void addPendingClassFeedback(Long feedbackId) {
-        this.pendingClassesFeedbacks.add(feedbackId);
+    public void addPendingClassFeedback(Long classId) {
+        if (!this.pendingClassesFeedbacks.contains(classId))this.pendingClassesFeedbacks.add(classId);
     }
 
-    public void giveFeedbackFor(Long feedbackId) {
-        // TODO: check if feedbackId is in pendingFeedbacks
-        this.pendingClassesFeedbacks.remove(feedbackId);
-        studentRepository.save(this);
+    public void giveFeedbackFor(Long classId) {
+        this.pendingClassesFeedbacks.remove(classId);
+    }
+
+    public boolean canMakeAReservation() {
+        return this.pendingClassesFeedbacks.isEmpty();
     }
 
     @Override

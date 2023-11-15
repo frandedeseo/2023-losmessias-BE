@@ -16,5 +16,5 @@ public class FeedbackDto {
     private Double rating;
     private Boolean material;
     private Boolean punctuality;
-    private Boolean educated;
+    private Boolean polite;
 }

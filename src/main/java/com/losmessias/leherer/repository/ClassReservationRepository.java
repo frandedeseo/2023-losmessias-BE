@@ -7,9 +7,11 @@ import com.losmessias.leherer.domain.enumeration.ReservationStatus;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -28,9 +30,22 @@ public interface ClassReservationRepository extends JpaRepository<ClassReservati
     List<ProfessorDailySummary> getProfessorDailySummaryByDay(LocalDate day);
 
     @Query("SELECT c FROM ClassReservation c WHERE c.professor.id = ?1 ORDER BY c.date ASC ")
-    List <ClassReservation> getClassReservationByProfessorAndOrderByDate(Long id);
+    List<ClassReservation> getClassReservationByProfessorAndOrderByDate(Long id);
 
 
     List<ClassReservation> findByProfessorAndSubject(Professor professor, Subject subject);
+
+    @Query("SELECT COUNT(c) FROM ClassReservation c " +
+            "WHERE c.professor.id = :professorId " +
+            "AND c.date = :day " +
+            "AND ((c.startingHour >= :startingTime AND c.startingHour < :endingTime) " +
+            "OR (c.endingHour > :startingTime AND c.endingHour <= :endingTime) " +
+            "OR (c.startingHour <= :startingTime AND c.endingHour >= :endingTime))")
+    int countOverlappingReservations(@Param("professorId") Long professorId,
+                                     @Param("day") LocalDate day,
+                                     @Param("startingTime") LocalTime startingTime,
+                                     @Param("endingTime") LocalTime endingTime);
+
+    List<ClassReservation> findByDateAndEndingHour(LocalDate date, LocalTime endingHour);
 
 }
