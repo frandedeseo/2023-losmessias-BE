@@ -101,7 +101,7 @@ public class ClassReservationService {
         List<ClassReservation> classesUnCancelled = new ArrayList<>();
         classes
                 .stream()
-                .filter(clase -> clase.getStatus() != ReservationStatus.CANCELLED && clase.getStatus() != ReservationStatus.NOT_AVAILABLE)
+                .filter(clase -> clase.getStatus() != ReservationStatus.CANCELLED)
                 .forEach(classesUnCancelled::add);
         return classesUnCancelled;
     }
