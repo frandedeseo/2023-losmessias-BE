@@ -29,7 +29,7 @@ public interface ClassReservationRepository extends JpaRepository<ClassReservati
             "GROUP BY c.professor.id, c.subject.id")
     List<ProfessorDailySummary> getProfessorDailySummaryByDay(LocalDate day);
 
-    @Query("SELECT c FROM ClassReservation c WHERE c.professor.id = ?1 ORDER BY c.date ASC ")
+    @Query("SELECT c FROM ClassReservation c WHERE c.professor.id = ?1 AND (c.status = 'CONFIRMED' OR c.status = 'CONCLUDED' OR c.status = 'CANCELLED')  ORDER BY c.date ASC ")
     List<ClassReservation> getClassReservationByProfessorAndOrderByDate(Long id);
 
 
