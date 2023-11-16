@@ -30,7 +30,8 @@ public class NotificationService {
                 .orElseThrow(IllegalArgumentException::new));
         NotificationProfessor notificationProfessor = notificationProfessorOptional.get();
         notificationProfessor.setOpened(true);
-        return notificationProfessorRepository.save(notificationProfessor);
+        notificationProfessorRepository.save(notificationProfessor);
+        return notificationProfessor;
     }
 
     public NotificationStudent setStudentNotificationToOpened(Long id) {
@@ -38,9 +39,10 @@ public class NotificationService {
                 .orElseThrow(IllegalArgumentException::new));
         NotificationStudent notificationStudent = notificationStudentOptional.get();
         notificationStudent.setOpened(true);
-        return notificationStudentRepository.save(notificationStudent);
+        notificationStudentRepository.save(notificationStudent);
+        return notificationStudent;
     }
-    public void generateClassReservedNotification(ClassReservation classReservation){
+    public String generateClassReservedNotification(ClassReservation classReservation){
         Student student = classReservation.getStudent();
         Professor professor = classReservation.getProfessor();
 
@@ -59,9 +61,10 @@ public class NotificationService {
         emailService.sendWithHTML(student.getEmail(), "Class Reservation confirmed", studentBody);
         String professorBody = buildEmail(professor.getFirstName(), "Class Reservation confirmed", textProfessor);
         emailService.sendWithHTML(professor.getEmail(), "Class Reservation confirmed", professorBody);
+        return "Notifications sent successfully";
     }
 
-    public void cancelClassReservedNotification(ClassReservation classReservation, AppUserRole role){
+    public String cancelClassReservedNotification(ClassReservation classReservation, AppUserRole role){
 
         Student student = classReservation.getStudent();
         Professor professor = classReservation.getProfessor();
@@ -81,19 +84,21 @@ public class NotificationService {
             String professorBody = buildEmail(professor.getFirstName(), "Class Reservation confirmed", textProfessor);
             emailService.sendWithHTML(professor.getEmail(), "Class Reservation confirmed", professorBody);
         }
+        return "Notification sent successfully";
     }
 
-    public void lecturedApprovedByAdminNotification(List<ProfessorSubject> approvedSubjects ){
+    public String lecturedApprovedByAdminNotification(List<ProfessorSubject> approvedSubjects ){
         ProfessorSubject approvedSubject = approvedSubjects.get(0);
         Professor professor = approvedSubject.getProfessor();
         String textProfessor = professor.getFirstName() + ", " + approvedSubject.getSubject().getName() + " has has been approved!";
         NotificationProfessor notificationProfessor = new NotificationProfessor(professor, textProfessor);
-            notificationProfessorRepository.save(notificationProfessor);
+        notificationProfessorRepository.save(notificationProfessor);
         String professorBody = buildEmail(professor.getFirstName(), "Approval of Subject", textProfessor);
         emailService.sendWithHTML(professor.getEmail(), "Approval of Subject", professorBody);
+        return "Notification sent successfully";
     }
 
-    public void lecturedRejectedByAdminNotification(List<ProfessorSubject> rejectedSubjects ){
+    public String lecturedRejectedByAdminNotification(List<ProfessorSubject> rejectedSubjects ){
         ProfessorSubject rejectedSubject = rejectedSubjects.get(0);
         Professor professor = rejectedSubject.getProfessor();
         String textProfessor = professor.getFirstName() + ", " + rejectedSubject.getSubject().getName() + " has has been rejected!";
@@ -101,6 +106,7 @@ public class NotificationService {
         notificationProfessorRepository.save(notificationProfessor);
         String professorBody = buildEmail(professor.getFirstName(), "Disapproval of Subject", textProfessor);
         emailService.sendWithHTML(professor.getEmail(), "Disapproval of Subject", professorBody);
+        return "Notification sent successfully";
     }
 
     private String buildEmail(String name, String title, String text) {

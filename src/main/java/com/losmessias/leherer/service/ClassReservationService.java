@@ -10,6 +10,7 @@ import com.losmessias.leherer.dto.ProfessorStaticsDto;
 import com.losmessias.leherer.repository.ClassReservationRepository;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -45,7 +46,8 @@ public class ClassReservationService {
             classReservation.setPrice(0);
         }
         notificationService.cancelClassReservedNotification(classReservation, classReservationCancelDto.getRole());
-        return classReservationRepository.save(classReservation);
+        classReservationRepository.save(classReservation);
+        return classReservation;
 
     }
 
@@ -99,7 +101,7 @@ public class ClassReservationService {
         List<ClassReservation> classesUnCancelled = new ArrayList<>();
         classes
                 .stream()
-                .filter(clase -> clase.getStatus() != ReservationStatus.CANCELLED)
+                .filter(clase -> clase.getStatus() != ReservationStatus.CANCELLED && clase.getStatus() != ReservationStatus.NOT_AVAILABLE)
                 .forEach(classesUnCancelled::add);
         return classesUnCancelled;
     }
@@ -155,7 +157,7 @@ public class ClassReservationService {
 
         List<ClassReservation> classes = classReservationRepository.getClassReservationByProfessorAndOrderByDate(id);
 
-        Integer amountOfMonths = Period.between(classes.get(0).getDate(), classes.get(classes.size() - 1).getDate()).getMonths() + 1;
+        Integer amountOfMonths = Period.between(classes.get(0).getDate(), LocalDate.now()).getMonths() + 1;
 
         List<ClassReservation> currentMonth = new ArrayList<>();
         List<ClassReservation> prevMonth = new ArrayList<>();
@@ -170,7 +172,6 @@ public class ClassReservationService {
         }
 
         ProfessorStaticsDto average = getProfessorStatic(classes);
-
         ProfessorStaticsDto currMonthStatics = getProfessorStatic(currentMonth);
         ProfessorStaticsDto prevMonthStatics = getProfessorStatic(prevMonth);
 
