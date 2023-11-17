@@ -5,7 +5,7 @@ import com.losmessias.leherer.domain.ClassReservation;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.domain.Subject;
-import com.losmessias.leherer.dto.ClassReservationCancel;
+import com.losmessias.leherer.dto.ClassReservationCancelDto;
 import com.losmessias.leherer.dto.ClassReservationDto;
 import com.losmessias.leherer.dto.ClassReservationResponseDto;
 import com.losmessias.leherer.dto.UnavailableClassReservationDto;
@@ -37,23 +37,7 @@ public class ClassReservationController {
     @GetMapping("/all")
     public ResponseEntity<String> getAllReservations() throws JsonProcessingException {
         List<ClassReservation> classReservations = classReservationService.getAllReservations();
-        if (classReservations.isEmpty())
-            return new ResponseEntity<>("No reservations found", HttpStatus.NOT_FOUND);
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        List<ClassReservationResponseDto> classReservationResponseDtos = classReservations
-                .stream()
-                .map(classReservation -> new ClassReservationResponseDto(
-                        classReservation.getId(),
-                        classReservation.getProfessor(),
-                        classReservation.getSubject() == null ? null : classReservation.getSubject(),
-                        classReservation.getStudent() == null ? null : classReservation.getStudent(),
-                        classReservation.getDate(),
-                        classReservation.getStartingHour(),
-                        classReservation.getEndingHour(),
-                        classReservation.getPrice() == null ? null : classReservation.getPrice(),
-                        classReservation.getStatus().toString()
-                )).toList();
-        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationResponseDtos));
+        return getClassReservationsResponse(classReservations);
     }
 
     @GetMapping("/{id}")
@@ -86,23 +70,32 @@ public class ClassReservationController {
         Professor professor = professorService.getProfessorById(classReservationDto.getProfessorId());
         Subject subject = subjectService.getSubjectById(classReservationDto.getSubjectId());
         Student student = studentService.getStudentById(classReservationDto.getStudentId());
+        if (!student.canMakeAReservation())
+            return new ResponseEntity<>("Student must give feedback before making a reservation", HttpStatus.BAD_REQUEST);
+        if (classReservationService.existsReservationForProfessorOnDayAndTime(
+                classReservationDto.getProfessorId(),
+                classReservationDto.getDay(),
+                classReservationDto.getStartingHour(),
+                classReservationDto.getEndingHour()))
+            return ResponseEntity.badRequest().body("There is already a class reserved for this professor at this time");
+
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-            return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationService.createReservation(
-                    professor,
-                    subject,
-                    student,
-                    classReservationDto.getDay(),
-                    classReservationDto.getStartingHour(),
-                    classReservationDto.getEndingHour(),
-                    classReservationDto.getDuration(),
-                    classReservationDto.getPrice())));
+        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationService.createReservation(
+                professor,
+                subject,
+                student,
+                classReservationDto.getDay(),
+                classReservationDto.getStartingHour(),
+                classReservationDto.getEndingHour(),
+                classReservationDto.getDuration(),
+                classReservationDto.getPrice())));
     }
 
-    @PostMapping ("/cancel")
-    public ResponseEntity<String> cancelReservation(@RequestBody ClassReservationCancel classReservationCancel) throws JsonProcessingException {
-        if (classReservationCancel.getId() == null) return ResponseEntity.badRequest().body("Class Reservation id must be provided");
+    @PostMapping("/cancel")
+    public ResponseEntity<String> cancelReservation(@RequestBody ClassReservationCancelDto classReservationCancelDto) throws JsonProcessingException {
+        if (classReservationCancelDto.getId() == null) return ResponseEntity.badRequest().body("Class Reservation id must be provided");
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationService.cancelReservation(classReservationCancel)));
+        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationService.cancelReservation(classReservationCancelDto)));
     }
 
     @PostMapping("/createUnavailable")
@@ -133,8 +126,7 @@ public class ClassReservationController {
                 professor,
                 classReservationDtos.getDay(),
                 classReservationDtos.getStartingHour(),
-                classReservationDtos.getEndingHour(),
-                classReservationDtos.getDuration())));
+                classReservationDtos.getEndingHour())));
     }
 
     @GetMapping("/customDaySummary")
@@ -156,76 +148,51 @@ public class ClassReservationController {
 
     @GetMapping("/findByProfessorAndSubject")
     public ResponseEntity<String> getReservationByProfessorAndSubject(@RequestParam Long professorId, @RequestParam Long subjectId) throws JsonProcessingException {
-        if(professorId == null) return ResponseEntity.badRequest().body("Professor id must be provided");
-        if(subjectId == null) return ResponseEntity.badRequest().body("Subject id must be provided");
+        if (professorId == null) return ResponseEntity.badRequest().body("Professor id must be provided");
+        if (subjectId == null) return ResponseEntity.badRequest().body("Subject id must be provided");
         List<ClassReservation> classReservations = classReservationService.getByProfessorAndSubject(professorId, subjectId);
-        if (classReservations.isEmpty())
-            return new ResponseEntity<>("No reservations found", HttpStatus.NOT_FOUND);
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        List<ClassReservationResponseDto> classReservationResponseDtos = classReservations
-                .stream()
-                .map(classReservation -> new ClassReservationResponseDto(
-                        classReservation.getId(),
-                        classReservation.getProfessor(),
-                        classReservation.getSubject() == null ? null : classReservation.getSubject(),
-                        classReservation.getStudent() == null ? null : classReservation.getStudent(),
-                        classReservation.getDate(),
-                        classReservation.getStartingHour(),
-                        classReservation.getEndingHour(),
-                        classReservation.getPrice() == null ? null : classReservation.getPrice(),
-                        classReservation.getStatus().toString()
-                )).toList();
-        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationResponseDtos));
+        return getClassReservationsResponse(classReservations);
     }
+
 
     @GetMapping("/findByProfessor")
     public ResponseEntity<String> getReservationByProfessor(@RequestParam Long professorId) throws JsonProcessingException {
-        if(professorId == null) return ResponseEntity.badRequest().body("Professor id must be provided");
+        if (professorId == null) return ResponseEntity.badRequest().body("Professor id must be provided");
         List<ClassReservation> classReservations = classReservationService.getReservationsByProfessorId(professorId);
-        if (classReservations.isEmpty())
-            return new ResponseEntity<>("No reservations found", HttpStatus.NOT_FOUND);
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        List<ClassReservationResponseDto> classReservationResponseDtos = classReservations
-                .stream()
-                .map(classReservation -> new ClassReservationResponseDto(
-                        classReservation.getId(),
-                        classReservation.getProfessor(),
-                        classReservation.getSubject() == null ? null : classReservation.getSubject(),
-                        classReservation.getStudent() == null ? null : classReservation.getStudent(),
-                        classReservation.getDate(),
-                        classReservation.getStartingHour(),
-                        classReservation.getEndingHour(),
-                        classReservation.getPrice() == null ? null : classReservation.getPrice(),
-                        classReservation.getStatus().toString()
-                )).toList();
-        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationResponseDtos));
+        return getClassReservationsResponse(classReservations);
     }
 
     @GetMapping("/findByStudent")
     public ResponseEntity<String> getReservationByStudent(@RequestParam Long studentId) throws JsonProcessingException {
-        if(studentId == null) return ResponseEntity.badRequest().body("Student id must be provided");
+        if (studentId == null) return ResponseEntity.badRequest().body("Student id must be provided");
         List<ClassReservation> classReservations = classReservationService.getReservationsByStudentId(studentId);
-        if (classReservations.isEmpty())
-            return new ResponseEntity<>("No reservations found", HttpStatus.NOT_FOUND);
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        List<ClassReservationResponseDto> classReservationResponseDtos = classReservations
-                .stream()
-                .map(classReservation -> new ClassReservationResponseDto(
-                        classReservation.getId(),
-                        classReservation.getProfessor(),
-                        classReservation.getSubject() == null ? null : classReservation.getSubject(),
-                        classReservation.getStudent() == null ? null : classReservation.getStudent(),
-                        classReservation.getDate(),
-                        classReservation.getStartingHour(),
-                        classReservation.getEndingHour(),
-                        classReservation.getPrice() == null ? null : classReservation.getPrice(),
-                        classReservation.getStatus().toString()
-                )).toList();
-        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationResponseDtos));
+        return getClassReservationsResponse(classReservations);
     }
+
     @GetMapping("/getStatistics")
     public ResponseEntity<String> getStatistics(@RequestParam Long professorId) throws JsonProcessingException {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationService.getStatics(professorId)));
     }
+
+    private ResponseEntity<String> getClassReservationsResponse(List<ClassReservation> classReservations) throws JsonProcessingException {
+        if (classReservations.isEmpty())
+            return new ResponseEntity<>("No reservations found", HttpStatus.NOT_FOUND);
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        List<ClassReservationResponseDto> classReservationResponseDtos = classReservations
+                .stream()
+                .map(classReservation -> new ClassReservationResponseDto(
+                        classReservation.getId(),
+                        classReservation.getProfessor(),
+                        classReservation.getSubject() == null ? null : classReservation.getSubject(),
+                        classReservation.getStudent() == null ? null : classReservation.getStudent(),
+                        classReservation.getDate(),
+                        classReservation.getStartingHour(),
+                        classReservation.getEndingHour(),
+                        classReservation.getPrice() == null ? null : classReservation.getPrice(),
+                        classReservation.getStatus().toString()
+                )).toList();
+        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationResponseDtos));
+    }
+
 }

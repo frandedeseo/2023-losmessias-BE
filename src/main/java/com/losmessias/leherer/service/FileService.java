@@ -47,7 +47,7 @@ public class FileService {
         }
     }
 
-    public void setUploadInformation(UploadInformationDto info){
+    public LoadedData setUploadInformation(UploadInformationDto info){
 
         LoadedData file = getFile(info.getIdFile());
 
@@ -55,8 +55,8 @@ public class FileService {
         file.setRole(info.getRole());
         file.setClassReservation(classReservationService.getReservationById(info.getClassReservation()));
         file.setUploadedDateTime(info.getUploadedDateTime());
-
         loadedDataRepository.save(file);
+        return file;
     }
 
     public File getFile(Long fileId) {

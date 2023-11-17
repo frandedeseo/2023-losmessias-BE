@@ -1,9 +1,7 @@
 package com.losmessias.leherer.service;
 
 import com.losmessias.leherer.domain.ClassReservation;
-import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.domain.Student;
-import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
