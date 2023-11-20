@@ -3,6 +3,7 @@ package com.losmessias.leherer.controller_tests;
 import com.losmessias.leherer.controller.ProfessorController;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.role.AppUserSex;
+import com.losmessias.leherer.service.ClassReservationService;
 import com.losmessias.leherer.service.JwtService;
 import com.losmessias.leherer.service.ProfessorService;
 import org.json.JSONObject;
@@ -35,6 +36,8 @@ public class ProfessorControllerTests {
 
     @MockBean
     private ProfessorService professorService;
+    @MockBean
+    private ClassReservationService classReservationService;
     @MockBean
     private JwtService jwtService;
 
