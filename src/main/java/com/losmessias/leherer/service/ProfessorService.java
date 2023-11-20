@@ -1,6 +1,8 @@
 package com.losmessias.leherer.service;
 
+import com.losmessias.leherer.domain.ClassReservation;
 import com.losmessias.leherer.domain.Professor;
+import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.repository.ProfessorRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +42,12 @@ public class ProfessorService {
         professorToUpdate.setPhone(professor.getPhone() != null ? professor.getPhone() : professorToUpdate.getPhone());
         professorToUpdate.setLocation(professor.getLocation() != null ? professor.getLocation() : professorToUpdate.getLocation());
         return professorRepository.save(professorToUpdate);
+    }
+
+    public void removeFeedbackFromConcludedClass(Long professorId, List<ClassReservation> classes) {
+        Professor professor = getProfessorById(professorId);
+        professor.removePendingClassFeedback(classes);
+        professorRepository.save(professor);
     }
 
 }
