@@ -31,6 +31,15 @@ public class ClassReservationsOrchestrator {
     private final StudentRepository studentRepository;
     private final ProfessorRepository professorRepository;
 
+    private static LocalDateTime convertToGMTMinus3(LocalDateTime gmtDateTime) {
+        // Set the time zone to GMT
+        ZoneId gmtZone = ZoneId.of("GMT");
+        // Convert the GMT time to GMT-3
+        return gmtDateTime.atZone(gmtZone)
+                .withZoneSameInstant(ZoneId.of("GMT-3"))
+                .toLocalDateTime();
+    }
+
     @Scheduled(cron = "0 0/30 * * * *")
     public void reserveClasses() {
         // LocalDate -3 due to de Render Hosting time zone
@@ -45,30 +54,23 @@ public class ClassReservationsOrchestrator {
             return;
         }
         classReservations.forEach(classReservation -> {
-            log.info("Found class reservation: " + classReservation.getId() + " at " + classReservation.getDate() + " - " + classReservation.getEndingHour());
-            Student student = classReservation.getStudent();
-            Professor professor = classReservation.getProfessor();
+            if (classReservation.getStatus() == ReservationStatus.CONFIRMED) {
+                log.info("Found class reservation: " + classReservation.getId() + " at " + classReservation.getDate() + " - " + classReservation.getEndingHour());
+                Student student = classReservation.getStudent();
+                Professor professor = classReservation.getProfessor();
 
-            log.info("Adding pending feedback to student \""
-                    + student.getFirstName() + " " + student.getLastName() +
-                    "\" and professor \"" + professor.getFirstName() + " " + professor.getLastName() + "\"");
+                log.info("Adding pending feedback to student \""
+                        + student.getFirstName() + " " + student.getLastName() +
+                        "\" and professor \"" + professor.getFirstName() + " " + professor.getLastName() + "\"");
 
-            student.addPendingClassFeedback(classReservation.getId());
-            professor.addPendingClassFeedback(classReservation.getId());
-            classReservation.setStatus(ReservationStatus.CONCLUDED);
-            studentRepository.save(student);
-            professorRepository.save(professor);
-            classReservationRepository.save(classReservation);
+                student.addPendingClassFeedback(classReservation.getId());
+                professor.addPendingClassFeedback(classReservation.getId());
+                classReservation.setStatus(ReservationStatus.CONCLUDED);
+                studentRepository.save(student);
+                professorRepository.save(professor);
+                classReservationRepository.save(classReservation);
+            }
         });
-    }
-
-    private static LocalDateTime convertToGMTMinus3(LocalDateTime gmtDateTime) {
-        // Set the time zone to GMT
-        ZoneId gmtZone = ZoneId.of("GMT");
-        // Convert the GMT time to GMT-3
-        return gmtDateTime.atZone(gmtZone)
-                .withZoneSameInstant(ZoneId.of("GMT-3"))
-                .toLocalDateTime();
     }
 
 }
