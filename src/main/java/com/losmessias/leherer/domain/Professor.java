@@ -6,10 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.WhereJoinTable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -95,6 +92,11 @@ public class Professor {
     public void addPendingClassFeedback(Long classId) {
         if (!this.pendingClassesFeedbacks.contains(classId))this.pendingClassesFeedbacks.add(classId);
     }
+
+    public void removePendingClassFeedback(List<ClassReservation> classes) {
+        classes.forEach(cla -> this.pendingClassesFeedbacks.removeIf(id -> Objects.equals(cla.getId(), id)));
+    }
+
 
     public void giveFeedbackFor(Long classId) {
         this.pendingClassesFeedbacks.remove(classId);

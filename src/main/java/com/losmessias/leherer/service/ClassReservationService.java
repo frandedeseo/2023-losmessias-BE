@@ -218,4 +218,10 @@ public class ClassReservationService {
     public List<ClassReservation> getReservationsByDateAndEndingTime(LocalDate date, LocalTime endingHour) {
         return classReservationRepository.findByDateAndEndingHour(date,endingHour);
     }
+
+    public void removeFeedbackFromConcludedClass(Long professorId, Long studentId) {
+        professorService.getProfessorById(professorId);
+        List<ClassReservation> classes = getReservationsByStudentId(studentId);
+        professorService.removeFeedbackFromConcludedClass(professorId, classes);
+    }
 }

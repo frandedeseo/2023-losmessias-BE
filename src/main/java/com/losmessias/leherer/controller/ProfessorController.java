@@ -2,6 +2,7 @@ package com.losmessias.leherer.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.losmessias.leherer.domain.Professor;
+import com.losmessias.leherer.service.ClassReservationService;
 import com.losmessias.leherer.service.ProfessorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import java.util.List;
 public class ProfessorController {
 
     private final ProfessorService professorService;
+    private final ClassReservationService classReservationService;
 
     @GetMapping("/all")
     public ResponseEntity<String> getProfessor() throws JsonProcessingException {
@@ -47,6 +49,10 @@ public class ProfessorController {
         Professor professorSaved = professorService.saveProfessor(professor);
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(professorSaved), HttpStatus.CREATED);
+    }
+    @PostMapping("/removeFeedback/professor={professorId}&student={studentId}")
+    public void removeFeedbackFromConcludedClass(@PathVariable Long professorId, @PathVariable Long studentId) {
+        classReservationService.removeFeedbackFromConcludedClass(professorId, studentId);
     }
 
     @PatchMapping("/update/{id}")
