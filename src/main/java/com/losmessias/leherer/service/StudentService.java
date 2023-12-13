@@ -1,7 +1,9 @@
 package com.losmessias.leherer.service;
 
 import com.losmessias.leherer.domain.ClassReservation;
+import com.losmessias.leherer.domain.FeedbackReceived;
 import com.losmessias.leherer.domain.Student;
+import com.losmessias.leherer.repository.FeedbackReceivedRepository;
 import com.losmessias.leherer.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import java.util.List;
 public class StudentService {
 
     private final StudentRepository studentRepository;
+    private final FeedbackReceivedRepository feedbackReceivedRepository;
 
     public List<Student> getAllStudents() {
         return studentRepository.findAll();
@@ -23,22 +26,7 @@ public class StudentService {
     }
 
     public Student create(Student student) {
+        feedbackReceivedRepository.save(student.getFeedbackReceived());
         return studentRepository.save(student);
-    }
-
-    public Student addReservationTo(Student student, ClassReservation classReservation) {
-        student.addReservation(classReservation);
-        return studentRepository.save(student);
-    }
-
-    public Student updateStudent(Long id, Student student) {
-        Student studentToUpdate = studentRepository.findById(id).orElse(null);
-        studentToUpdate.setFirstName(student.getFirstName() != null ? student.getFirstName() : studentToUpdate.getFirstName());
-        studentToUpdate.setLastName(student.getLastName() != null ? student.getLastName() : studentToUpdate.getLastName());
-        studentToUpdate.setEmail(student.getEmail() != null ? student.getEmail() : studentToUpdate.getEmail());
-        studentToUpdate.setLocation(student.getLocation() != null ? student.getLocation() : studentToUpdate.getLocation());
-        studentToUpdate.setPhone(student.getPhone() != null ? student.getPhone() : studentToUpdate.getPhone());
-        studentToUpdate.setClassReservations(student.getClassReservations() != null ? student.getClassReservations() : studentToUpdate.getClassReservations());
-        return studentRepository.save(studentToUpdate);
     }
 }

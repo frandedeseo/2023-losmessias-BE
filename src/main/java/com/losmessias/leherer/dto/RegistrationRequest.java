@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import com.losmessias.leherer.role.AppUserSex;
 
 @Getter
 @AllArgsConstructor
@@ -17,5 +18,5 @@ public class RegistrationRequest {
     private final String role;
     private final String location;
     private final String phone;
-    private final String sex;
+    private final AppUserSex sex;
 }

@@ -1,9 +1,7 @@
 package com.losmessias.leherer.service;
 
-import com.losmessias.leherer.domain.ClassReservation;
-import com.losmessias.leherer.domain.Professor;
-import com.losmessias.leherer.domain.Student;
-import com.losmessias.leherer.domain.Subject;
+import com.losmessias.leherer.domain.*;
+import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.domain.enumeration.ReservationStatus;
 import com.losmessias.leherer.dto.ClassReservationCancelDto;
 import com.losmessias.leherer.dto.ProfessorStaticsDto;
@@ -19,6 +17,7 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -29,10 +28,6 @@ public class ClassReservationService {
     private final SubjectService subjectService;
     private final NotificationService notificationService;
 
-    public List<ClassReservation> getAllReservations() {
-        return classReservationRepository.findAll();
-    }
-
     public ClassReservation getReservationById(Long id) {
         return classReservationRepository.findById(id).orElse(null);
     }
@@ -40,12 +35,21 @@ public class ClassReservationService {
     public ClassReservation cancelReservation(ClassReservationCancelDto classReservationCancelDto) {
         ClassReservation classReservation = getReservationById(classReservationCancelDto.getId());
         classReservation.setStatus(ReservationStatus.CANCELLED);
+        AppUser appUser;
         if (checkIfIsBetween48hsBefore(classReservation)) {
             classReservation.setPrice(classReservation.getPrice() / 2);
         } else {
             classReservation.setPrice(0);
         }
-        notificationService.cancelClassReservedNotification(classReservation, classReservationCancelDto.getRole());
+        if (Objects.equals(classReservationCancelDto.getIdCancelsUser(), classReservation.getStudent().getId())){
+            appUser = classReservation.getStudent();
+            notificationService.cancelClassReservedNotification(classReservation, appUser);
+        }else if(Objects.equals(classReservationCancelDto.getIdCancelsUser(), classReservation.getProfessor().getId())){
+            appUser = classReservation.getProfessor();
+            notificationService.cancelClassReservedNotification(classReservation, appUser);
+        }else{
+            //TODO throw exception
+        }
         classReservationRepository.save(classReservation);
         return classReservation;
 
@@ -61,10 +65,7 @@ public class ClassReservationService {
                                               LocalDate day,
                                               LocalTime startingTime,
                                               LocalTime endingTime,
-                                              Double duration,
                                               Integer price) {
-        if (startingTime.isAfter(endingTime))
-            throw new IllegalArgumentException("Starting time must be before ending time");
         ClassReservation classReservation = new ClassReservation(
                 professor,
                 subject,
@@ -72,7 +73,6 @@ public class ClassReservationService {
                 day,
                 startingTime,
                 endingTime,
-                duration,
                 price
         );
 
@@ -93,8 +93,8 @@ public class ClassReservationService {
         return overlapping > 0;
     }
 
-    public List<ClassReservation> getReservationsByProfessorId(Long id) {
-        return getUnCancelledReservation(classReservationRepository.findByProfessorId(id));
+    public List<ClassReservation> getReservationsByAppUserId(Long id) {
+        return getUnCancelledReservation(classReservationRepository.findByStudentIdOrProfessorId(id, id));
     }
 
     private List<ClassReservation> getUnCancelledReservation(List<ClassReservation> classes) {
@@ -106,35 +106,29 @@ public class ClassReservationService {
         return classesUnCancelled;
     }
 
-    public List<ClassReservation> getReservationsByStudentId(Long id) {
-        return getUnCancelledReservation(classReservationRepository.findByStudentId(id));
-    }
-
-    public List<ClassReservation> getReservationsBySubjectId(Long id) {
-        return classReservationRepository.findBySubjectId(id);
-    }
-
     public ClassReservation createUnavailableReservation(Professor professor, LocalDate day, LocalTime startingTime, LocalTime endingTime) {
         if (startingTime.isAfter(endingTime))
             throw new IllegalArgumentException("Starting time must be before ending time");
-        Double duration = (endingTime.getHour() - startingTime.getHour()) + ((endingTime.getMinute() - startingTime.getMinute()) / 60.0);
-        ClassReservation classReservation = new ClassReservation(professor, day, startingTime, endingTime, duration);
+        ClassReservation classReservation = new ClassReservation(professor, day, startingTime, endingTime);
         return classReservationRepository.save(classReservation);
     }
 
+/*
+    public List<ClassReservation> getAllReservations() {
+        return classReservationRepository.findAll();
+    }
     public List<ClassReservation> createMultipleUnavailableReservationsFor(Professor professor, LocalDate day, LocalTime startingTime, LocalTime endingTime) {
         if (startingTime.isAfter(endingTime))
             throw new IllegalArgumentException("Starting time must be before ending time");
         List<LocalTime> intervals = generateTimeIntervals(startingTime, endingTime);
         List<ClassReservation> unavailableReservations = new ArrayList<>();
         for (LocalTime interval : intervals) {
-            ClassReservation classReservation = new ClassReservation(professor, day, interval, interval.plusMinutes(30), 0.5);
+            ClassReservation classReservation = new ClassReservation(professor, day, interval, interval.plusMinutes(30));
             unavailableReservations.add(classReservation);
         }
         return classReservationRepository.saveAll(unavailableReservations);
     }
-
-    private List<LocalTime> generateTimeIntervals(LocalTime startTime, LocalTime endTime) {
+   private List<LocalTime> generateTimeIntervals(LocalTime startTime, LocalTime endTime) {
         List<LocalTime> intervals = new ArrayList<>();
         while (startTime.isBefore(endTime)) {
             intervals.add(startTime);
@@ -143,15 +137,19 @@ public class ClassReservationService {
         return intervals;
     }
 
-    public List<ProfessorDailySummary> getDailySummary(LocalDate day) {
-        return classReservationRepository.getProfessorDailySummaryByDay(day);
-    }
-
     public List<ClassReservation> getByProfessorAndSubject(Long professorId, Long subjectId) {
         Professor professor = professorService.getProfessorById(professorId);
         Subject subject = subjectService.getSubjectById(subjectId);
         return classReservationRepository.findByProfessorAndSubject(professor, subject);
     }
+
+    */
+
+    public List<ProfessorDailySummary> getDailySummary(LocalDate day) {
+        return classReservationRepository.getProfessorDailySummaryByDay(day);
+    }
+
+
 
     public List<ProfessorStaticsDto> getStatics(Long id) {
 
@@ -220,8 +218,7 @@ public class ClassReservationService {
     }
 
     public void removeFeedbackFromConcludedClass(Long professorId, Long studentId) {
-        professorService.getProfessorById(professorId);
-        List<ClassReservation> classes = getReservationsByStudentId(studentId);
+        List<ClassReservation> classes = getReservationsByAppUserId(studentId);
         professorService.removeFeedbackFromConcludedClass(professorId, classes);
     }
 }

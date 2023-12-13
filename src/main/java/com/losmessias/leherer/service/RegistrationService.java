@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,7 @@ public class RegistrationService {
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
     private final Environment environment;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -48,35 +50,19 @@ public class RegistrationService {
 
         appUserService.validateEmailNotTaken(request.getEmail());
 
-        Long id;
-        AppUserRole role;
-        AppUserSex sex;
-        if (request.getSex().equals("Male")) {
-            sex = AppUserSex.MALE;
-        } else {
-            sex = AppUserSex.FEMALE;
-        }
-        role = AppUserRole.STUDENT;
         Student student = studentService.create(
                 new Student(
+                        request.getEmail(),
+                        bCryptPasswordEncoder.encode(request.getPassword()),
                         request.getFirstName(),
                         request.getLastName(),
-                        request.getEmail(),
                         request.getLocation(),
                         request.getPhone(),
-                        sex
+                        request.getSex()
                 )
         );
-        id = student.getId();
 
-        AppUser appUser = new AppUser(
-                request.getEmail(),
-                request.getPassword(),
-                role,
-                id
-        );
-
-        appUserService.signUpUser(appUser);
+        AppUser appUser = appUserService.getAppUser(request.getEmail());
 
         String token = confirmationTokenService.generateConfirmationToken(appUser);
 
@@ -98,38 +84,23 @@ public class RegistrationService {
 
         appUserService.validateEmailNotTaken(request.getEmail());
 
-        Long id;
-        AppUserRole role;
-        AppUserSex sex;
-        if (request.getSex().equals("Male")) {
-            sex = AppUserSex.MALE;
-        } else {
-            sex = AppUserSex.FEMALE;
-        }
-        role = AppUserRole.PROFESSOR;
         Professor professor = professorService.saveProfessor(
                 new Professor(
+                        request.getEmail(),
+                        bCryptPasswordEncoder.encode(request.getPassword()),
                         request.getFirstName(),
                         request.getLastName(),
-                        request.getEmail(),
                         request.getLocation(),
                         request.getPhone(),
-                        sex
+                        request.getSex()
                 )
         );
-        id = professor.getId();
 
-        AppUser appUser = new AppUser(
-                request.getEmail(),
-                request.getPassword(),
-                role,
-                id
-        );
         List<Subject> subjectList = request.getSubjects();
         for (Subject subject : subjectList) {
             professorSubjectService.createAssociation(professor, subject);
         }
-        appUserService.signUpUser(appUser);
+        AppUser appUser = appUserService.getAppUser( request.getEmail());
 
         String token = confirmationTokenService.generateConfirmationToken(appUser);
 
@@ -148,13 +119,6 @@ public class RegistrationService {
 
         AppUser appUser = appUserService.getAppUser(email);
 
-        String firstName;
-        if (appUser.getAppUserRole() == AppUserRole.STUDENT) {
-            firstName = (studentService.getStudentById(appUser.getAssociationId())).getFirstName();
-        } else {
-            firstName = (professorService.getProfessorById(appUser.getAssociationId())).getFirstName();
-        }
-
         String token = confirmationTokenService.generateConfirmationToken(appUser);
 
         String link = "http://" + environment.getProperty("app.mail_response") + "/recover-password?email=" + email + "&token=" + token;
@@ -163,10 +127,9 @@ public class RegistrationService {
         emailService.sendWithHTML(
                 email,
                 "Confirm your Email for Password Change",
-                buildEmail(firstName, link, "Confirm your Email for Password Change", "Please do not be so silly to forget you password again! "));
+                buildEmail(appUser.getFirstName(), link, "Confirm your Email for Password Change", "Please do not be so silly to forget you password again! "));
 
         return "Confirm your email for password change";
-
     }
 
 
@@ -186,27 +149,12 @@ public class RegistrationService {
 
     public AuthenticationResponse generateToken(AppUser appUser) {
 
-        String name;
-        String surname;
         Map<String, Object> extraClaims = new HashMap<>();
 
-        if (appUser.getAppUserRole() == AppUserRole.STUDENT) {
-            Student student = studentService.getStudentById(appUser.getAssociationId());
-            name = student.getFirstName();
-            surname = student.getLastName();
-        }
-        else if (appUser.getAppUserRole() == AppUserRole.PROFESSOR){
-            Professor professor = professorService.getProfessorById(appUser.getAssociationId());
-            name = professor.getFirstName();
-            surname = professor.getLastName();
-        }else{
-            name = "null";
-            surname = "null";
-        }
-        extraClaims.put("role", appUser.getAppUserRole());
-        extraClaims.put("name", name);
-        extraClaims.put("surname", surname);
-        extraClaims.put("id", appUser.getAssociationId());
+        extraClaims.put("role", appUser.getRole());
+        extraClaims.put("name", appUser.getFirstName());
+        extraClaims.put("surname", appUser.getLastName());
+        extraClaims.put("id", appUser.getId());
 
         var jwtToken = jwtService.generateToken(extraClaims, appUser);
 
@@ -221,13 +169,6 @@ public class RegistrationService {
         confirmationTokenService.validateToken(token);
 
         return "Email confirmed";
-    }
-
-    public String changePassword(ForgotPasswordDto request) {
-
-        appUserService.changePassword(request.getEmail(), request.getPassword());
-
-        return "Password changed successfully";
     }
 
     private String buildEmail(String name, String link, String title, String text) {

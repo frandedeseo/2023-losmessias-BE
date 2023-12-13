@@ -16,11 +16,8 @@ import java.util.List;
 
 @Repository
 public interface ClassReservationRepository extends JpaRepository<ClassReservation, Long> {
-    List<ClassReservation> findByProfessorId(Long id);
 
-    List<ClassReservation> findByStudentId(Long id);
-
-    List<ClassReservation> findBySubjectId(Long id);
+    List<ClassReservation> findByStudentIdOrProfessorId(Long studentId, Long professorId);
 
     @Query("SELECT  c.professor AS professor, c.subject AS subject,  SUM(c.price) AS totalIncome, SUM(c.duration) AS totalHours " +
             "FROM ClassReservation c " +

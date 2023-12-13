@@ -29,7 +29,6 @@ import java.util.List;
 public class FileController {
 
     private final FileService fileService;
-    private final LoadedDataService loadedDataService;
 
     @PostMapping("/uploadFile")
     public UploadFileResponseDto uploadFile(@RequestParam MultipartFile file) {
@@ -56,12 +55,6 @@ public class FileController {
 //                .map(this::uploadFile)
 //                .collect(Collectors.toList());
 //    }
-
-    @GetMapping("/get-uploaded-data")
-    public ResponseEntity<String> getUploadedData(@RequestParam("id") Long Id) throws JsonProcessingException {
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(loadedDataService.getUploadedData(Id)));
-    }
 
     @GetMapping("/downloadFile")
     public ResponseEntity<Resource> downloadFile(@RequestParam("id") Long Id) {

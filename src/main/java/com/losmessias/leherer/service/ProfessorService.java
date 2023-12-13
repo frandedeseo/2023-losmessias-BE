@@ -20,28 +20,12 @@ public class ProfessorService {
         return professorRepository.findAll();
     }
 
-    public Professor addSubjectTo(Professor professor, Subject subject) {
-        professor.addSubject(subject);
-        return professorRepository.save(professor);
-    }
-
     public Professor saveProfessor(Professor professor) {
         return professorRepository.save(professor);
     }
 
     public Professor getProfessorById(Long id) {
         return professorRepository.findById(id).orElse(null);
-    }
-
-    public Professor updateProfessor(Long id, Professor professor) {
-        Professor professorToUpdate = professorRepository.findById(id).orElse(null);
-        professorToUpdate.setFirstName(professor.getFirstName() != null ? professor.getFirstName() : professorToUpdate.getFirstName());
-        professorToUpdate.setLastName(professor.getLastName() != null ? professor.getLastName() : professorToUpdate.getLastName());
-        professorToUpdate.setSubjects(professor.getSubjects() != null ? professor.getSubjects() : professorToUpdate.getSubjects());
-        professorToUpdate.setEmail(professor.getEmail() != null ? professor.getEmail() : professorToUpdate.getEmail());
-        professorToUpdate.setPhone(professor.getPhone() != null ? professor.getPhone() : professorToUpdate.getPhone());
-        professorToUpdate.setLocation(professor.getLocation() != null ? professor.getLocation() : professorToUpdate.getLocation());
-        return professorRepository.save(professorToUpdate);
     }
 
     public void removeFeedbackFromConcludedClass(Long professorId, List<ClassReservation> classes) {

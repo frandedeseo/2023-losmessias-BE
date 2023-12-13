@@ -22,9 +22,21 @@ public class SecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
+    private static final String[] WHITELIST = {
+            "/v2/api-docs",
+            "/v3/api-docs/**",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/doc/swagger-ui.html",
+            "/doc/swagger-ui/**",
+            "/webjars/**"
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
@@ -35,6 +47,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/validate-email").permitAll()
                                 .requestMatchers("/api/subject/all").permitAll()
                                 .requestMatchers("/api/is-token-expired").permitAll()
+                                .requestMatchers(WHITELIST).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

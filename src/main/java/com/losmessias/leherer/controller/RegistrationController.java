@@ -56,13 +56,6 @@ public class RegistrationController {
         return ResponseEntity.ok(registrationService.validateEmailNotTaken(email));
     }
 
-    @PostMapping(path = "/changePassword")
-    public ResponseEntity<String> changePassword(@RequestBody ForgotPasswordDto request) {
-        String message = "{\"message\":" +
-                "\"" + registrationService.changePassword(request)
-                + "\"}";
-        return new ResponseEntity<>(message, HttpStatus.OK);
-    }
     @GetMapping(path = "/is-token-expired")
     public ResponseEntity<String> isTokenExpired(@RequestParam String token) {
         if (jwtService.isTokenExpired(token)){

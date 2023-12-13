@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FeedbackDto {
-    private Long studentId;
-    private Long professorId;
-    private AppUserRole roleReceptor;
+    private Long senderId;
+    private Long receiverId;
     private Long classId;
     private Double rating;
     private Boolean material;

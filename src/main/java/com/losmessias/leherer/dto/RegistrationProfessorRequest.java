@@ -1,6 +1,7 @@
 package com.losmessias.leherer.dto;
 
 import com.losmessias.leherer.domain.Subject;
+import com.losmessias.leherer.role.AppUserSex;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,6 @@ public class RegistrationProfessorRequest {
     private final String role;
     private final String location;
     private final String phone;
-    private final String sex;
+    private final AppUserSex sex;
     private final List<Subject> subjects;
 }

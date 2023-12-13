@@ -23,15 +23,19 @@ public class FeedbackController {
     private final ClassReservationService classReservationService;
 
     @PostMapping("/giveFeedback")
-    public ResponseEntity<String> giveFeedback(@RequestBody FeedbackDto feedbackDto) throws JsonProcessingException {
+    public ResponseEntity<String> giveFeedback(@RequestBody FeedbackDto feedbackDto) throws JsonProcessingException, InstantiationException {
         ClassReservation classReservation = classReservationService.getReservationById(feedbackDto.getClassId());
         if (classReservation == null) return new ResponseEntity<>("Class not found", HttpStatus.NOT_FOUND);
+        //TODO Después ver bien cómo chequeamos esto
         if (classReservation.getStatus() != ReservationStatus.CONCLUDED)
             return new ResponseEntity<>("Class has not concluded yet", HttpStatus.BAD_REQUEST);
-        if (!classReservation.getStudent().getId().equals(feedbackDto.getStudentId()))
+        if (!classReservation.getStudent().getId().equals(feedbackDto.getSenderId()))
             return new ResponseEntity<>("Student has not taken the class", HttpStatus.BAD_REQUEST);
-        if (!classReservation.getProfessor().getId().equals(feedbackDto.getProfessorId()))
+        if (!classReservation.getProfessor().getId().equals(feedbackDto.getReceiverId()))
             return new ResponseEntity<>("Professor has not given the class", HttpStatus.BAD_REQUEST);
+        feedbackDto.setMaterial(feedbackDto.getMaterial() != null ? feedbackDto.getMaterial() : false);
+        feedbackDto.setPunctuality( feedbackDto.getPunctuality() != null ? feedbackDto.getPunctuality() : false);
+        feedbackDto.setPolite(feedbackDto.getPolite() != null ? feedbackDto.getPolite() : false);
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(feedbackService.giveFeedback(feedbackDto)));
     }

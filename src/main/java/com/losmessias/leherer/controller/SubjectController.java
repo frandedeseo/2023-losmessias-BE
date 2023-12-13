@@ -27,14 +27,6 @@ public class SubjectController {
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(subjects), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<String> getSubjectById(@PathVariable Long id) throws JsonProcessingException {
-        Subject subject = subjectService.getSubjectById(id);
-        if (subject == null) return new ResponseEntity<>("No subject found", HttpStatus.NOT_FOUND);
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(subject), HttpStatus.OK);
-    }
-
     @PostMapping("/create")
     public ResponseEntity<String> createSubject(@RequestBody Subject subject) throws JsonProcessingException {
         if (subject.getId() != null) return ResponseEntity.badRequest().body("Subject ID must be null");
