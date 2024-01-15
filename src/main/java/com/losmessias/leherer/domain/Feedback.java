@@ -4,19 +4,21 @@ import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.domain.enumeration.FeedbackOptions;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Table(name = "feedback")
+@EntityListeners(AuditingEntityListener.class)
 public class Feedback {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
@@ -24,20 +26,25 @@ public class Feedback {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "sender_id")
+    @JoinColumn(nullable = false, name = "sender_id")
     private AppUser sender;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "receiver_id")
+    @JoinColumn(nullable = false, name = "receiver_id")
     private AppUser receiver;
 
-    @Column
+    @Column(nullable = false)
     private AppUserRole receptorRole;
+
     @ElementCollection
+    @Column(nullable = false)
     private Set<FeedbackOptions> feedbackOptions;
-    @Column
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
     private LocalDateTime dateTimeOfFeedback;
-    @Column
+
+    @Column(nullable = false)
     private Double rating;
 
     public Feedback(AppUser sender, AppUser receiver, Set<FeedbackOptions> feedbackOptions, Double rating) throws InstantiationException {
@@ -46,7 +53,6 @@ public class Feedback {
         this.receiver = receiver;
         this.feedbackOptions = feedbackOptions;
         this.rating = verifyRating(rating);
-        this.dateTimeOfFeedback = LocalDateTime.now();
     }
 
     private Double verifyRating(Double rating) throws InstantiationException {

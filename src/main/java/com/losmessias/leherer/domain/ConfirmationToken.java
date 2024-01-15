@@ -1,54 +1,48 @@
 package com.losmessias.leherer.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "confirmation_token")
+@EntityListeners(AuditingEntityListener.class)
 public class ConfirmationToken {
 
-    @SequenceGenerator(
-            name = "confirmation_token_sequence",
-            sequenceName = "confirmation_token_sequence",
-            allocationSize = 1
-    )
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "confirmation_token_sequence"
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
+    @Column(nullable = false)
     private Long id;
 
     @Column(nullable = false)
+    @NotEmpty(message = "Token can not be an empty string")
     private String token;
 
-    @Column(nullable = false)
+  //  @CreatedDate
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private LocalDateTime expiresAt;
+//    @Column(nullable = false, updatable = false)
+//    private LocalDateTime expiresAt = {() -> if (createdAt != null) {return createdAt.plusMinutes(15)}};
 
+    @Column
     private LocalDateTime confirmedAt;
 
     @ManyToOne
-    @JoinColumn(
-            nullable = false,
-            name = "app_user_id"
-    )
+    @JoinColumn(nullable = false, name = "app_user_id")
+    @Valid
     private AppUser appUser;
 
-    public ConfirmationToken(String token,
-                             LocalDateTime createdAt,
-                             LocalDateTime expiresAt,
-                             AppUser user) {
+    public ConfirmationToken(String token, AppUser user) {
         this.token = token;
-        this.createdAt = createdAt;
-        this.expiresAt = expiresAt;
         this.appUser = user;
     }
 }

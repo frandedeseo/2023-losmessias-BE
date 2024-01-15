@@ -27,8 +27,6 @@ public class ConfirmationTokenService {
 
         ConfirmationToken confirmationToken = new ConfirmationToken(
                 token,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(15),
                 appUser
         );
 

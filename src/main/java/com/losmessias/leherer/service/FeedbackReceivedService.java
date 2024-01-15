@@ -16,7 +16,7 @@ public class FeedbackReceivedService {
     private final AppUserService appUserService;
     private final FeedbackReceivedRepository feedbackReceivedRepository;
 
-    public void updateFeedbackReceived( FeedbackDto feedbackDto, Double avg){
+    public void updateFeedbackReceived( FeedbackDto feedbackDto, Double avg) {
         AppUser appUser = appUserService.getAppUserById(feedbackDto.getReceiverId());
         FeedbackReceived feedbackReceived = appUser.getFeedbackReceived();
         feedbackReceived.update(feedbackDto, avg);

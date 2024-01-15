@@ -2,6 +2,7 @@ package com.losmessias.leherer.domain;
 
 import com.losmessias.leherer.domain.enumeration.ReservationStatus;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -26,16 +27,19 @@ public class ClassReservation {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "professor_id")
     @NotNull
+    @Valid
     private Professor professor;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "subject_id")
     @NotNull
+    @Valid
     private Subject subject;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "student_id")
     @NotNull
+    @Valid
     private Student student;
 
     @Column(nullable = false)
