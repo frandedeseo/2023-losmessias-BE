@@ -11,7 +11,7 @@ HELP.md
 
 ### IntelliJ IDEA ###
 .idea
-*.iws
+*.iwsd
 *.iml
 *.ipr
 
@@ -24,7 +24,7 @@ HELP.md
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
-
+/target/**
 ### VS Code ###
 .vscode/
 .DS_Store
