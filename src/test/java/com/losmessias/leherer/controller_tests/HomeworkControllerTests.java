@@ -15,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
@@ -40,7 +41,7 @@ public class HomeworkControllerTests {
     private Homework homeworkTest2;
 
     @Test
-    @WithMockUser(username="admin",roles={"ADMIN"})
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Get all homeworks")
     void testGetAllHomeworks() throws Exception {
         List<Homework> homeworkList = homeworkService.getAllHomeworks();
@@ -51,6 +52,45 @@ public class HomeworkControllerTests {
 
         mockMvc.perform(get("/api/homework/all"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Get all homeworks without authentication")
+    void testGetAllHomeworksWithoutAuthentication() throws Exception {
+        mockMvc.perform(get("/api/homework/all"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @DisplayName("Get all homeworks finds none")
+    void testGetAllHomeworksFindsNone() throws Exception {
+        when(homeworkService.getAllHomeworks()).thenReturn(new ArrayList<>());
+
+        mockMvc.perform(get("/api/homework/all"))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> result.getResponse().getContentAsString().equals("No homeworks found"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @DisplayName("Get homework by id")
+    void testGetHomeworkById() throws Exception {
+        when(homeworkService.getHomeworkById(1L)).thenReturn(homeworkTest1);
+
+        mockMvc.perform(get("/api/homework/1"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @DisplayName("Get homework by id finds none")
+    void testGetHomeworkByIdFindsNone() throws Exception {
+        when(homeworkService.getHomeworkById(1L)).thenReturn(null);
+
+        mockMvc.perform(get("/api/homework/1"))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> result.getResponse().getContentAsString().equals("No homework found with id 1"));
     }
 
 }
