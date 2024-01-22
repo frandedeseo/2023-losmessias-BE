@@ -5,14 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class HomeworkDto {
+public class HomeworkCreationDto {
     private String assignment;
+    private LocalDateTime deadline;
     private Long classReservationId;
-    private String deadline;
+    private Long professorId;
     private List<File> files;
 }

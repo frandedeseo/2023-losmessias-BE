@@ -48,21 +48,11 @@ public class Homework {
     @NotNull
     private LocalDateTime deadline;
 
-    public Homework(ClassReservation classReservation, Comment assignment, LocalDateTime deadline) {
+    public Homework(ClassReservation classReservation, Comment assignment, LocalDateTime deadline, List<File> files) {
         this.classReservation = classReservation;
         this.assignment = assignment;
-        this.files = new ArrayList<>();
-        this.status = HomeworkStatus.PENDING;
-        if (deadline.isBefore(LocalDateTime.now()))
-            throw new IllegalArgumentException("Deadline must be in the future");
-        else
-            this.deadline = deadline;
-    }
-
-    public Homework(ClassReservation classReservation, Comment assignment, LocalDateTime deadline, File file) {
-        this.classReservation = classReservation;
-        this.assignment = assignment;
-        this.files = List.of(file);
+        if (files == null) this.files = new ArrayList<>();
+        else this.files = files;
         this.status = HomeworkStatus.PENDING;
         if (deadline.isBefore(LocalDateTime.now()))
             throw new IllegalArgumentException("Deadline must be in the future");

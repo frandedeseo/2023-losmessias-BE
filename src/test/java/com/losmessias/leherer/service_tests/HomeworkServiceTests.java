@@ -4,6 +4,7 @@ import com.losmessias.leherer.domain.ClassReservation;
 import com.losmessias.leherer.domain.Comment;
 import com.losmessias.leherer.domain.Homework;
 import com.losmessias.leherer.repository.HomeworkRepository;
+import com.losmessias.leherer.service.ClassReservationService;
 import com.losmessias.leherer.service.HomeworkService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,12 +26,16 @@ public class HomeworkServiceTests {
 
     @Mock
     private HomeworkRepository homeworkRepository;
+    @Mock
+    private ClassReservationService classReservationService;
+    @Mock
+    private ClassReservation classReservation;
 
     @InjectMocks
     private HomeworkService homeworkService;
 
     @Test
-    @DisplayName("Get all homeworks")
+    @DisplayName("Succeeds to get all homeworks")
     void testGetAllHomeworks() {
         List<Homework> homeworks = homeworkService.getAllHomeworks();
         homeworks.add(new Homework());
@@ -40,7 +46,7 @@ public class HomeworkServiceTests {
     }
 
     @Test
-    @DisplayName("Get homeworkById")
+    @DisplayName("Suceeds to get homeworkById")
     void testGetHomeworkById() {
         Homework homework = new Homework();
 
@@ -49,7 +55,7 @@ public class HomeworkServiceTests {
     }
 
     @Test
-    @DisplayName("Create homework with valid date")
+    @DisplayName("Succeeds to create homework with valid date")
     void testCreateHomeworkWithValidDate() {
         Homework homework = new Homework();
         homework.setId(1L);
@@ -57,12 +63,19 @@ public class HomeworkServiceTests {
         homework.setAssignment(new Comment());
         homework.setDeadline(java.time.LocalDateTime.now().plusDays(1));
 
-        when(homeworkRepository.save(homework)).thenReturn(homework);
-        assertEquals(homeworkService.createHomework(homework), homework);
+        when(classReservationService.getReservationById(1L)).thenReturn(classReservation);
+        when(homeworkRepository.save(any())).thenReturn(homework);
+        assertEquals(homeworkService.createHomework(
+                LocalDateTime.now().plusDays(1),
+                "Assignment",
+                1L,
+                1L,
+                null
+        ), homework);
     }
 
     @Test
-    @DisplayName("Create homework with invalid date")
+    @DisplayName("Fails to create homework with invalid deadline (in the past)")
     void testCreateHomeworkWithInvalidDate() {
         Homework homework = new Homework();
         homework.setId(1L);
@@ -70,11 +83,21 @@ public class HomeworkServiceTests {
         homework.setAssignment(new Comment());
         homework.setDeadline(LocalDateTime.now().minusDays(1));
 
-        assertThrowsExactly(IllegalArgumentException.class, () -> homeworkService.createHomework(homework), "Deadline must be in the future");
+        assertThrowsExactly(
+                IllegalArgumentException.class,
+                () -> homeworkService.createHomework(
+                        LocalDateTime.now().minusDays(1),
+                        "Assignment",
+                        1L,
+                        1L,
+                        null
+                ),
+                "Deadline must be in the future"
+        );
     }
 
     @Test
-    @DisplayName("Create homework with null deadline")
+    @DisplayName("Fails to create homework with null deadline")
     void testCreateHomeworkWithNullDeadline() {
         Homework homework = new Homework();
         homework.setId(1L);
@@ -82,23 +105,40 @@ public class HomeworkServiceTests {
         homework.setAssignment(new Comment());
         homework.setDeadline(null);
 
-        assertThrowsExactly(IllegalArgumentException.class, () -> homeworkService.createHomework(homework), "Deadline must not be null");
+        assertThrowsExactly(NullPointerException.class,
+                () -> homeworkService.createHomework(
+                        null,
+                        "Assignment",
+                        1L,
+                        1L,
+                        null
+                ),
+                "Deadline must not be null"
+        );
     }
 
     @Test
-    @DisplayName("Create homework with null assignment")
+    @DisplayName("Fails to create homework with null assignment")
     void testCreateHomeworkWithNullAssignment() {
         Homework homework = new Homework();
         homework.setId(1L);
         homework.setClassReservation(new ClassReservation());
         homework.setAssignment(null);
         homework.setDeadline(LocalDateTime.now().plusDays(1));
-
-        assertThrowsExactly(IllegalArgumentException.class, () -> homeworkService.createHomework(homework), "Assignment must not be null");
+        assertThrowsExactly(IllegalArgumentException.class,
+                () -> homeworkService.createHomework(
+                        LocalDateTime.now().plusDays(1),
+                        null,
+                        1L,
+                        1L,
+                        null
+                ),
+                "Assignment must not be null"
+        );
     }
 
     @Test
-    @DisplayName("Create homework with null class reservation")
+    @DisplayName("Fails to create homework with null class reservation")
     void testCreateHomeworkWithNullClassReservation() {
         Homework homework = new Homework();
         homework.setId(1L);
@@ -106,12 +146,14 @@ public class HomeworkServiceTests {
         homework.setAssignment(new Comment());
         homework.setDeadline(LocalDateTime.now().plusDays(1));
 
-        assertThrowsExactly(IllegalArgumentException.class, () -> homeworkService.createHomework(homework), "Class reservation must not be null");
+        assertThrowsExactly(IllegalArgumentException.class, () -> homeworkService.createHomework(
+                        LocalDateTime.now().plusDays(1),
+                        "Assignment",
+                        null,
+                        1L,
+                        null
+                ), "Class reservation must not be null"
+        );
     }
 
-    @Test
-    @DisplayName("Create homework with null homework")
-    void testCreateHomeworkWithNullHomework() {
-        assertThrowsExactly(IllegalArgumentException.class, () -> homeworkService.createHomework(null), "Homework must not be null");
-    }
 }
