@@ -25,6 +25,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 /target/**
+/target
 ### VS Code ###
 .vscode/
 .DS_Store
