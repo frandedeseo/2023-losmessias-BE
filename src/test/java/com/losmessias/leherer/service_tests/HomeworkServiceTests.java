@@ -5,6 +5,7 @@ import com.losmessias.leherer.domain.Comment;
 import com.losmessias.leherer.domain.Homework;
 import com.losmessias.leherer.repository.HomeworkRepository;
 import com.losmessias.leherer.service.ClassReservationService;
+import com.losmessias.leherer.service.CommentService;
 import com.losmessias.leherer.service.HomeworkService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,8 @@ public class HomeworkServiceTests {
     private ClassReservationService classReservationService;
     @Mock
     private ClassReservation classReservation;
+    @Mock
+    private CommentService commentService;
 
     @InjectMocks
     private HomeworkService homeworkService;
@@ -65,6 +68,7 @@ public class HomeworkServiceTests {
 
         when(classReservationService.getReservationById(1L)).thenReturn(classReservation);
         when(homeworkRepository.save(any())).thenReturn(homework);
+//        when()
         assertEquals(homeworkService.createHomework(
                 LocalDateTime.now().plusDays(1),
                 "Assignment",

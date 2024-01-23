@@ -5,6 +5,7 @@ import com.losmessias.leherer.domain.Comment;
 import com.losmessias.leherer.domain.File;
 import com.losmessias.leherer.domain.Homework;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
+import com.losmessias.leherer.dto.CommentDto;
 import com.losmessias.leherer.repository.HomeworkRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ public class HomeworkService {
 
     private final HomeworkRepository homeworkRepository;
     private final ClassReservationService classReservationService;
+    private final CommentService commentService;
 
     public Homework createHomework(LocalDateTime deadline, String assignment, Long classReservationId, Long associatedId, List<File> files) {
         if (deadline.isBefore(java.time.LocalDateTime.now())) throw new IllegalArgumentException("Deadline must be in the future");
@@ -26,7 +28,8 @@ public class HomeworkService {
         if (associatedId == null) throw new IllegalArgumentException("Associated id must not be null");
 
         ClassReservation classReservation = classReservationService.getReservationById(classReservationId);
-        Comment comment = new Comment(assignment, classReservation, LocalDateTime.now(), AppUserRole.PROFESSOR, associatedId);
+        CommentDto commentDto = new CommentDto(assignment, classReservationId, LocalDateTime.now(), AppUserRole.PROFESSOR, associatedId);
+        Comment comment = commentService.upload(commentDto);
         Homework homework = new Homework(classReservation, comment, deadline, files);
         return homeworkRepository.save(homework);
     }

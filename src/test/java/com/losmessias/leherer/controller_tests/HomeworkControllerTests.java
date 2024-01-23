@@ -1,10 +1,12 @@
 package com.losmessias.leherer.controller_tests;
 
 import com.losmessias.leherer.controller.HomeworkController;
-import com.losmessias.leherer.domain.Homework;
+import com.losmessias.leherer.domain.*;
+import com.losmessias.leherer.domain.enumeration.HomeworkStatus;
 import com.losmessias.leherer.service.HomeworkService;
 import com.losmessias.leherer.service.JwtService;
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,11 +45,49 @@ public class HomeworkControllerTests {
     @Mock
     private Homework homeworkTest2;
 
+    @BeforeEach
+    void setUp() {
+        homeworkTest1 = Homework.builder()
+                .id(1L)
+                .assignment(new Comment())
+                .deadline(LocalDateTime.now().plusDays(1))
+                .classReservation(
+                        ClassReservation
+                                .builder()
+                                .id(1L)
+                                .professor(Professor
+                                        .builder()
+                                        .id(1L)
+                                        .build()
+                                )
+                                .student(Student.builder().id(1L).build())
+                                .build())
+                .status(HomeworkStatus.PENDING)
+                .build();
+        homeworkTest2 = Homework.builder()
+                .id(2L)
+                .assignment(new Comment())
+                .deadline(LocalDateTime.now().plusDays(1))
+                .classReservation(
+                        ClassReservation
+                                .builder()
+                                .id(2L)
+                                .professor(Professor
+                                        .builder()
+                                        .id(1L)
+                                        .build()
+                                )
+                                .student(Student.builder().id(1L).build())
+                                .build())
+                .status(HomeworkStatus.PENDING)
+                .build();
+    }
+
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Get all homeworks")
     void testGetAllHomeworks() throws Exception {
-        List<Homework> homeworkList = homeworkService.getAllHomeworks();
+        List<Homework> homeworkList = new ArrayList<>();
         homeworkList.add(homeworkTest1);
         homeworkList.add(homeworkTest2);
 
@@ -112,7 +152,10 @@ public class HomeworkControllerTests {
     @DisplayName("Get homework by id with invalid id")
     void testGetHomeworkByIdWithInvalidId() throws Exception {
         mockMvc.perform(get("/api/homework/-1"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> {
+                    assert (result.getResponse().getContentAsString().equals("Id must be positive"));
+                });
     }
 
     @Test
@@ -121,6 +164,7 @@ public class HomeworkControllerTests {
     void testCreateHomework() throws Exception {
         JSONObject jsonContent = new JSONObject();
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
+        System.out.println(deadline);
         jsonContent.put("assignment", "Assignment");
         jsonContent.put("deadline", deadline);
         jsonContent.put("classReservationId", 1L);
@@ -240,7 +284,6 @@ public class HomeworkControllerTests {
     @DisplayName("Create homework with null deadline")
     void testCreateHomeworkWithNullDeadline() throws Exception {
         JSONObject jsonContent = new JSONObject();
-        LocalDateTime deadline = LocalDateTime.now().plusDays(1);
         jsonContent.put("assignment", "Assignment");
         jsonContent.put("deadline", null);
         jsonContent.put("classReservationId", 1L);
