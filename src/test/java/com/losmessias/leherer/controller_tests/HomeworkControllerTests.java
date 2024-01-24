@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -304,6 +305,149 @@ public class HomeworkControllerTests {
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> {
                     assert (result.getResponse().getContentAsString().equals("Deadline must not be null"));
+                });
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @DisplayName("Give a response to homework with valid data")
+    void testRespondHomeworkWithValidData() throws Exception {
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("response", "Response");
+        jsonContent.put("associatedId", 5L);
+        jsonContent.put("files", null);
+
+        when(homeworkService.verifyIfResponded(any())).thenReturn(false);
+        when(homeworkService.getHomeworkById(any())).thenReturn(homeworkTest1);
+        when(homeworkRepository.save(any())).thenReturn(homeworkTest1);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("/api/homework/respond/1")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(result -> {
+                    assert (result.getResponse().getContentAsString().contains("\"status\":\"DONE\","));
+                    assert (result.getResponse().getContentAsString().contains("\"response\":\"Response\","));
+                });
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @DisplayName("Give a response to homework with invalid data")
+    void testRespondHomeworkWithInvalidData() throws Exception {
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("response", null);
+        jsonContent.put("associatedId", 5L);
+        jsonContent.put("files", null);
+
+        when(homeworkService.verifyIfResponded(any())).thenReturn(false);
+        when(homeworkService.getHomeworkById(any())).thenReturn(homeworkTest1);
+        when(homeworkRepository.save(any())).thenReturn(homeworkTest1);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("/api/homework/respond/1")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> {
+                    assert (result.getResponse().getContentAsString().contains("Response must not be null"));
+                });
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @DisplayName("Give a response to homework with invalid id")
+    void testRespondHomeworkWithInvalidId() throws Exception {
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("response", "Response");
+        jsonContent.put("associatedId", 5L);
+        jsonContent.put("files", null);
+
+        when(homeworkService.verifyIfResponded(any())).thenReturn(false);
+        when(homeworkService.getHomeworkById(any())).thenReturn(null);
+        when(homeworkRepository.save(any())).thenReturn(homeworkTest1);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("/api/homework/respond/1")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> {
+                    assert (result.getResponse().getContentAsString().contains("No homework found with id 1"));
+                });
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @DisplayName("Give a response to homework with invalid associated id")
+    void testRespondHomeworkWithInvalidAssociatedId() throws Exception {
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("response", "Response");
+        jsonContent.put("associatedId", 1L);
+        jsonContent.put("files", null);
+
+        when(homeworkService.verifyIfResponded(any())).thenReturn(false);
+        when(homeworkService.getHomeworkById(any())).thenReturn(homeworkTest1);
+        when(homeworkRepository.save(any())).thenReturn(homeworkTest1);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("/api/homework/respond/1")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> {
+                    assert (result.getResponse().getContentAsString().contains("Student id does not match"));
+                });
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @DisplayName("Give a response to homework already responded")
+    void testRespondHomeworkAlreadyResponded() throws Exception {
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("response", "Response");
+        jsonContent.put("associatedId", 5L);
+        jsonContent.put("files", null);
+
+        when(homeworkService.verifyIfResponded(any())).thenReturn(true);
+        when(homeworkService.getHomeworkById(any())).thenReturn(homeworkTest1);
+        when(homeworkRepository.save(any())).thenReturn(homeworkTest1);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("/api/homework/respond/1")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> {
+                    assert (result.getResponse().getContentAsString().contains("Homework already responded"));
+                });
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @DisplayName("Give a response to homework not found")
+    void testRespondHomeworkNotFound() throws Exception {
+        JSONObject jsonContent = new JSONObject();
+        jsonContent.put("response", "Response");
+        jsonContent.put("associatedId", 5L);
+        jsonContent.put("files", null);
+
+        when(homeworkService.getHomeworkById(any())).thenReturn(null);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("/api/homework/respond/1")
+                        .contentType("application/json")
+                        .content(jsonContent.toString())
+                        .with(csrf()))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> {
+                    assert (result.getResponse().getContentAsString().contains("No homework found with id 1"));
                 });
     }
 }

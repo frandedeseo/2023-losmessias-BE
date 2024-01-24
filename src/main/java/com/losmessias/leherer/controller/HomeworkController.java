@@ -66,8 +66,6 @@ public class HomeworkController {
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(createdHomework), HttpStatus.CREATED);
     }
 
-    // TODO: verify if responder (associatedID) is associated to homework class reservation
-    // TODO: TEST
     @PatchMapping("/respond/{id}")
     public ResponseEntity<String> respondHomework(@PathVariable("id") Long id, @RequestBody HomeworkResponseDto homeworkResponseDto) throws JsonProcessingException {
         if (id < 0) return new ResponseEntity<>("Id must be positive", HttpStatus.BAD_REQUEST);
@@ -82,6 +80,8 @@ public class HomeworkController {
         Homework homework = homeworkService.getHomeworkById(id);
         if (homework == null)
             return new ResponseEntity<>("No homework found with id " + id, HttpStatus.NOT_FOUND);
+        if (homework.getClassReservation().getStudent().getId().equals(homeworkResponseDto.getAssociatedId()))
+            return new ResponseEntity<>("Student id does not match", HttpStatus.BAD_REQUEST);
         // Homework has the responsibility and capability of handling the response by itself:
         homework.respondWith(homeworkResponseDto, commentRepository);
         Homework savedHomework = homeworkRepository.save(homework);
@@ -101,6 +101,7 @@ public class HomeworkController {
                 homework.getClassReservation().getStudent().getId(),
                 homework.getFiles() != null ? homework.getFiles() : null);
     }
+
 //    @DeleteMapping("/delete/{id}")
 //    public ResponseEntity<String> deleteHomework(@PathVariable("id") Long id) throws JsonProcessingException {
 //        if (id < 0) return new ResponseEntity<>("ID must be positive", HttpStatus.BAD_REQUEST);
