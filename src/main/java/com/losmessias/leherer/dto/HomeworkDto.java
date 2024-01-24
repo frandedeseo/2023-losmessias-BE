@@ -10,8 +10,14 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class HomeworkResponseDto {
+public class HomeworkDto {
+    private Long id;
+    private Long classReservationId;
+    private String assignment;
     private String response;
-    private Long associatedId;
+    private String status;
+    private String deadline;
+    private Long professorId;
+    private Long studentId;
     private List<File> files;
 }

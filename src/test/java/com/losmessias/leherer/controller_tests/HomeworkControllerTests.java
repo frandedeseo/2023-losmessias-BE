@@ -3,6 +3,8 @@ package com.losmessias.leherer.controller_tests;
 import com.losmessias.leherer.controller.HomeworkController;
 import com.losmessias.leherer.domain.*;
 import com.losmessias.leherer.domain.enumeration.HomeworkStatus;
+import com.losmessias.leherer.repository.CommentRepository;
+import com.losmessias.leherer.repository.HomeworkRepository;
 import com.losmessias.leherer.service.HomeworkService;
 import com.losmessias.leherer.service.JwtService;
 import org.json.JSONObject;
@@ -38,7 +40,11 @@ public class HomeworkControllerTests {
     @MockBean
     private HomeworkService homeworkService;
     @MockBean
+    private HomeworkRepository homeworkRepository;
+    @MockBean
     private JwtService jwtService;
+    @MockBean
+    private CommentRepository commentRepository;
 
     @Mock
     private Homework homeworkTest1;

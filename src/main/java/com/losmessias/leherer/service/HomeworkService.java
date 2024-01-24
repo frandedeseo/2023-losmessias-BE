@@ -5,6 +5,7 @@ import com.losmessias.leherer.domain.Comment;
 import com.losmessias.leherer.domain.File;
 import com.losmessias.leherer.domain.Homework;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
+import com.losmessias.leherer.domain.enumeration.HomeworkStatus;
 import com.losmessias.leherer.dto.CommentDto;
 import com.losmessias.leherer.repository.HomeworkRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,5 +41,13 @@ public class HomeworkService {
 
     public Homework getHomeworkById(Long id) {
         return homeworkRepository.findById(id).orElse(null);
+    }
+
+
+    // #TODO: TEST
+    public boolean verifyIfResponded(Long id) {
+        Homework homework = homeworkRepository.findById(id).orElse(null);
+        if (homework == null) throw new IllegalArgumentException("Homework not found");
+        return homework.getStatus() == HomeworkStatus.DONE;
     }
 }
