@@ -65,8 +65,7 @@ public class ClassReservationController {
 
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return ResponseEntity.ok(
-            converter.getObjectMapper().writeValueAsString(
-                new ClassReservation(
+            converter.getObjectMapper().writeValueAsString(classReservationService.createReservation(
                     professor,
                     subject,
                     student,

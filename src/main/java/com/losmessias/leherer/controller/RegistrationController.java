@@ -3,19 +3,25 @@ package com.losmessias.leherer.controller;
 import com.losmessias.leherer.dto.*;
 import com.losmessias.leherer.service.JwtService;
 import com.losmessias.leherer.service.RegistrationService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.token.TokenService;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 
 
-@CrossOrigin(origins = "*")
 @RequestMapping("/api")
 @RestController
 @AllArgsConstructor
+@CrossOrigin
 public class RegistrationController {
 
     private final RegistrationService registrationService;

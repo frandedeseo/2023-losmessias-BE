@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "confirmation_token")
-@EntityListeners(AuditingEntityListener.class)
 public class ConfirmationToken {
 
     @Id
@@ -26,12 +25,11 @@ public class ConfirmationToken {
     @NotEmpty(message = "Token can not be an empty string")
     private String token;
 
-  //  @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-//    @Column(nullable = false, updatable = false)
-//    private LocalDateTime expiresAt = {() -> if (createdAt != null) {return createdAt.plusMinutes(15)}};
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime expiresAt;
 
     @Column
     private LocalDateTime confirmedAt;
@@ -44,5 +42,7 @@ public class ConfirmationToken {
     public ConfirmationToken(String token, AppUser user) {
         this.token = token;
         this.appUser = user;
+        this.createdAt = LocalDateTime.now();
+        expiresAt = createdAt.plusMinutes(15);
     }
 }

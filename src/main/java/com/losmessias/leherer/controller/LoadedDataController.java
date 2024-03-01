@@ -5,14 +5,12 @@ import com.losmessias.leherer.service.LoadedDataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/loadedData")
 @RequiredArgsConstructor
+@CrossOrigin
 public class LoadedDataController {
 
     private final LoadedDataService loadedDataService;

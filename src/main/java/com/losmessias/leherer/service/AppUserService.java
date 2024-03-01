@@ -1,6 +1,7 @@
 package com.losmessias.leherer.service;
 
 import com.losmessias.leherer.domain.AppUser;
+import com.losmessias.leherer.dto.AppUserUpdateDto;
 import com.losmessias.leherer.repository.AppUserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -57,14 +58,11 @@ public class AppUserService implements UserDetailsService {
         return "Password changed successfully";
     }
 
-    public AppUser update(Long id, AppUser appUser) {
+    public AppUser update(Long id, AppUserUpdateDto appUserUpdateDto) {
         AppUser appUserToUpdate = getAppUserById(id);
-        appUserToUpdate.setFirstName(appUser.getFirstName() != null ? appUser.getFirstName() : appUserToUpdate.getFirstName());
-        appUserToUpdate.setLastName(appUser.getLastName() != null ? appUser.getLastName() : appUserToUpdate.getLastName());
-        appUserToUpdate.setEmail(appUser.getEmail() != null ? appUser.getEmail() : appUserToUpdate.getEmail());
-        appUserToUpdate.setLocation(appUser.getLocation() != null ? appUser.getLocation() : appUserToUpdate.getLocation());
-        appUserToUpdate.setPhone(appUser.getPhone() != null ? appUser.getPhone() : appUserToUpdate.getPhone());
-        appUserToUpdate.setClassReservations(appUser.getClassReservations() != null ? appUser.getClassReservations() : appUserToUpdate.getClassReservations());
+        appUserToUpdate.setEmail(appUserUpdateDto.getEmail() != null ? appUserUpdateDto.getEmail() : appUserToUpdate.getEmail());
+        appUserToUpdate.setLocation(appUserUpdateDto.getLocation() != null ? appUserUpdateDto.getLocation() : appUserToUpdate.getLocation());
+        appUserToUpdate.setPhone(appUserUpdateDto.getPhone() != null ? appUserUpdateDto.getPhone() : appUserToUpdate.getPhone());
         return appUserRepository.save(appUserToUpdate);
     }
 }

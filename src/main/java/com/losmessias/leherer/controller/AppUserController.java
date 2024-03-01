@@ -1,6 +1,7 @@
 package com.losmessias.leherer.controller;
 
 import com.losmessias.leherer.domain.AppUser;
+import com.losmessias.leherer.dto.AppUserUpdateDto;
 import com.losmessias.leherer.dto.ForgotPasswordDto;
 import com.losmessias.leherer.service.AppUserService;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +19,13 @@ public class AppUserController {
     private final AppUserService appUserService;
 
     @PatchMapping("/update/{id}")
-    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody AppUser appUser) {
+    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody AppUserUpdateDto appUserUpdateDto) {
         if (id == null) {
             return ResponseEntity.badRequest().body("App User ID not registered");
         } else if (appUserService.getAppUserById(id) == null) {
             return ResponseEntity.badRequest().body("AppUser not found");
         }
-        AppUser appUserSaved = appUserService.update(id, appUser);
+        AppUser appUserSaved = appUserService.update(id, appUserUpdateDto);
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return ResponseEntity.ok(converter.getObjectMapper().valueToTree(appUserSaved).toString());
     }

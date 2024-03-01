@@ -35,18 +35,17 @@ public class ClassReservationService {
     public ClassReservation cancelReservation(ClassReservationCancelDto classReservationCancelDto) {
         ClassReservation classReservation = getReservationById(classReservationCancelDto.getId());
         classReservation.setStatus(ReservationStatus.CANCELLED);
-        AppUser appUser;
         if (checkIfIsBetween48hsBefore(classReservation)) {
             classReservation.setPrice(classReservation.getPrice() / 2);
         } else {
             classReservation.setPrice(0);
         }
-        if (Objects.equals(classReservationCancelDto.getIdCancelsUser(), classReservation.getStudent().getId())){
-            appUser = classReservation.getStudent();
-            notificationService.cancelClassReservedNotification(classReservation, appUser);
-        }else if(Objects.equals(classReservationCancelDto.getIdCancelsUser(), classReservation.getProfessor().getId())){
-            appUser = classReservation.getProfessor();
-            notificationService.cancelClassReservedNotification(classReservation, appUser);
+        AppUser professor = classReservation.getProfessor();
+        AppUser student = classReservation.getStudent();
+        if (Objects.equals(classReservationCancelDto.getIdCancelsUser(), student.getId())){
+            notificationService.cancelClassReservedNotification(classReservation, professor);
+        }else if(Objects.equals(classReservationCancelDto.getIdCancelsUser(), professor.getId())){
+            notificationService.cancelClassReservedNotification(classReservation, student);
         }else{
             //TODO throw exception
         }

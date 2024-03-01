@@ -60,15 +60,16 @@ public abstract class AppUser implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @NotEmpty(message = "Role cannot be empty")
+    @NotNull(message = "Role cannot be empty")
     private AppUserRole role;
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(nullable = false)
-    @NotEmpty(message = "Sex cannot be empty")
+    @NotNull(message = "Sex cannot be empty")
     private AppUserSex sex;
 
-    @OneToOne (fetch = FetchType.EAGER)
     @JoinColumn(name = "feedback_received_id")
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private FeedbackReceived feedbackReceived;
 
     @ElementCollection(fetch = FetchType.EAGER)

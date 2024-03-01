@@ -24,13 +24,13 @@ public class FeedbackReceived {
         @Column
         private Long id;
         @Column
-        private Double avgRating;
+        private Double avgRating = 0.0;
         @Column
-        private Integer sumMaterial;
+        private Integer sumMaterial = 0;
         @Column
-        private Integer sumPunctuality;
+        private Integer sumPunctuality = 0;
         @Column
-        private Integer sumPolite;
+        private Integer sumPolite = 0;
 
         public void update(FeedbackDto feedbackDto, Double avg){
                 if (feedbackDto.getPunctuality()){setSumPunctuality(sumPunctuality+1);}

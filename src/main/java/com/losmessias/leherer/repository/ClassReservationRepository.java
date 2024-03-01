@@ -35,6 +35,7 @@ public interface ClassReservationRepository extends JpaRepository<ClassReservati
     @Query("SELECT COUNT(c) FROM ClassReservation c " +
             "WHERE c.professor.id = :professorId " +
             "AND c.date = :day " +
+            "AND c.status != 'CANCELLED' " +
             "AND ((c.startingHour >= :startingTime AND c.startingHour < :endingTime) " +
             "OR (c.endingHour > :startingTime AND c.endingHour <= :endingTime) " +
             "OR (c.startingHour <= :startingTime AND c.endingHour >= :endingTime))")

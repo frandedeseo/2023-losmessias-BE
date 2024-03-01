@@ -46,6 +46,8 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/loadEmailForPasswordChange").permitAll()
                                 .requestMatchers("/api/validate-email").permitAll()
                                 .requestMatchers("/api/subject/all").permitAll()
+                                .requestMatchers("/api/app-user/changePassword").permitAll()
+                                .requestMatchers("/api/forgot_password/**").permitAll()
                                 .requestMatchers("/api/is-token-expired").permitAll()
                                 .requestMatchers(WHITELIST).permitAll()
                                 .anyRequest().authenticated()

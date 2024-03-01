@@ -32,14 +32,10 @@ public class ClassReservation {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "subject_id")
-    @NotNull
-    @Valid
     private Subject subject;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "student_id")
-    @NotNull
-    @Valid
     private Student student;
 
     @Column(nullable = false)
@@ -59,7 +55,7 @@ public class ClassReservation {
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;
 
-    @Column(nullable = false)
+    @Column
     @Min(0)
     private Integer price;
 
