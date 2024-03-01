@@ -38,7 +38,7 @@ public class ClassReservationService {
         if (checkIfIsBetween48hsBefore(classReservation)) {
             classReservation.setPrice(classReservation.getPrice() / 2);
         } else {
-            classReservation.setPrice(0);
+            classReservation.setPrice(0.0);
         }
         AppUser professor = classReservation.getProfessor();
         AppUser student = classReservation.getStudent();
@@ -64,7 +64,7 @@ public class ClassReservationService {
                                               LocalDate day,
                                               LocalTime startingTime,
                                               LocalTime endingTime,
-                                              Integer price) {
+                                              Double price) {
         ClassReservation classReservation = new ClassReservation(
                 professor,
                 subject,

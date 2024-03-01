@@ -57,7 +57,7 @@ public class ClassReservation {
 
     @Column
     @Min(0)
-    private Integer price;
+    private Double price;
 
     public ClassReservation(Professor professor,
                             Subject subject,
@@ -65,7 +65,7 @@ public class ClassReservation {
                             LocalDate date,
                             LocalTime startingTime,
                             LocalTime endingTime,
-                            Integer price) {
+                            Double price) {
         if (startingTime.isAfter(endingTime))
             throw new IllegalArgumentException("Starting time must be before ending time");
         this.professor = professor;
