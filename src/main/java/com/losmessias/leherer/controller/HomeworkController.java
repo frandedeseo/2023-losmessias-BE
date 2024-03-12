@@ -90,11 +90,11 @@ public class HomeworkController {
     }
 
     @PatchMapping("/respond/{id}")
-    public ResponseEntity<String> respondHomework(@PathVariable("id") Long id, @RequestBody HomeworkResponseDto homeworkResponseDto) throws JsonProcessingException {
+    public ResponseEntity<String> respondHomework(@PathVariable("id") Long id, @RequestParam(required = false) String response, @RequestParam(required = false) Long associatedId, @RequestParam(required = false) MultipartFile file) throws JsonProcessingException {
         if (id < 0) return new ResponseEntity<>("Id must be positive", HttpStatus.BAD_REQUEST);
-        if (homeworkResponseDto.getResponse() == null)
+        if (response == null)
             return new ResponseEntity<>("Response must not be null", HttpStatus.BAD_REQUEST);
-        if (homeworkResponseDto.getAssociatedId() == null)
+        if (associatedId == null)
             return new ResponseEntity<>("Associated id must not be null", HttpStatus.BAD_REQUEST);
         if (homeworkService.verifyIfResponded(id))
             return new ResponseEntity<>("Homework already responded", HttpStatus.BAD_REQUEST);
@@ -102,8 +102,26 @@ public class HomeworkController {
         Homework homework = homeworkService.getHomeworkById(id);
         if (homework == null)
             return new ResponseEntity<>("No homework found with id " + id, HttpStatus.NOT_FOUND);
-        if (homework.getClassReservation().getStudent().getId().equals(homeworkResponseDto.getAssociatedId()))
+        if (homework.getClassReservation().getStudent().getId().equals(associatedId))
             return new ResponseEntity<>("Student id does not match", HttpStatus.BAD_REQUEST);
+
+        File fileReturned = null;
+        if (file != null) {
+            fileReturned = fileService.storeFile(file);
+            if (fileReturned == null) {
+                return new ResponseEntity<>("File could not be stored", HttpStatus.BAD_REQUEST);
+            }
+            UploadInformationDto info = new UploadInformationDto();
+            info.setIdFile(fileReturned.getId());
+            info.setClassReservation(homeworkService.getHomeworkById(id).getClassReservation().getId());
+            info.setAssociatedId(associatedId);
+            info.setRole(AppUserRole.STUDENT);
+            info.setHomeworkId(id);
+            info.setUploadedDateTime(LocalDateTime.now());
+            fileService.setUploadInformation(info);
+        }
+        HomeworkResponseDto homeworkResponseDto = new HomeworkResponseDto(response, associatedId, fileReturned);
+
         // Homework has the responsibility and capability of handling the response by itself:
         homework.respondWith(homeworkResponseDto, commentRepository);
         Homework savedHomework = homeworkRepository.save(homework);

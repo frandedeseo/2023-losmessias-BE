@@ -298,10 +298,6 @@ public class HomeworkControllerTests {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Give a response to homework with valid data")
     void testRespondHomeworkWithValidData() throws Exception {
-        JSONObject jsonContent = new JSONObject();
-        jsonContent.put("response", "Response");
-        jsonContent.put("associatedId", 5L);
-        jsonContent.put("files", null);
 
         when(homeworkService.verifyIfResponded(any())).thenReturn(false);
         when(homeworkService.getHomeworkById(any())).thenReturn(homeworkTest1);
@@ -309,8 +305,9 @@ public class HomeworkControllerTests {
 
         mockMvc.perform(MockMvcRequestBuilders
                         .patch("/api/homework/respond/1")
-                        .contentType("application/json")
-                        .content(jsonContent.toString())
+                        .param("response", "Response")
+                        .param("associatedId", "5")
+                        .param("file", "")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(result -> {
@@ -347,10 +344,6 @@ public class HomeworkControllerTests {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Give a response to homework with invalid id")
     void testRespondHomeworkWithInvalidId() throws Exception {
-        JSONObject jsonContent = new JSONObject();
-        jsonContent.put("response", "Response");
-        jsonContent.put("associatedId", 5L);
-        jsonContent.put("files", null);
 
         when(homeworkService.verifyIfResponded(any())).thenReturn(false);
         when(homeworkService.getHomeworkById(any())).thenReturn(null);
@@ -358,8 +351,9 @@ public class HomeworkControllerTests {
 
         mockMvc.perform(MockMvcRequestBuilders
                         .patch("/api/homework/respond/1")
-                        .contentType("application/json")
-                        .content(jsonContent.toString())
+                        .param("response", "Response")
+                        .param("associatedId", "5")
+                        .param("file", "")
                         .with(csrf()))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> {
@@ -382,8 +376,9 @@ public class HomeworkControllerTests {
 
         mockMvc.perform(MockMvcRequestBuilders
                         .patch("/api/homework/respond/1")
-                        .contentType("application/json")
-                        .content(jsonContent.toString())
+                        .param("response", "Response")
+                        .param("associatedId", "1")
+                        .param("file", "")
                         .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> {
@@ -395,10 +390,6 @@ public class HomeworkControllerTests {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Give a response to homework already responded")
     void testRespondHomeworkAlreadyResponded() throws Exception {
-        JSONObject jsonContent = new JSONObject();
-        jsonContent.put("response", "Response");
-        jsonContent.put("associatedId", 5L);
-        jsonContent.put("files", null);
 
         when(homeworkService.verifyIfResponded(any())).thenReturn(true);
         when(homeworkService.getHomeworkById(any())).thenReturn(homeworkTest1);
@@ -406,8 +397,9 @@ public class HomeworkControllerTests {
 
         mockMvc.perform(MockMvcRequestBuilders
                         .patch("/api/homework/respond/1")
-                        .contentType("application/json")
-                        .content(jsonContent.toString())
+                        .param("response", "Response")
+                        .param("associatedId", "5")
+                        .param("file", "")
                         .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> {
@@ -419,17 +411,14 @@ public class HomeworkControllerTests {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Give a response to homework not found")
     void testRespondHomeworkNotFound() throws Exception {
-        JSONObject jsonContent = new JSONObject();
-        jsonContent.put("response", "Response");
-        jsonContent.put("associatedId", 5L);
-        jsonContent.put("files", null);
 
         when(homeworkService.getHomeworkById(any())).thenReturn(null);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .patch("/api/homework/respond/1")
-                        .contentType("application/json")
-                        .content(jsonContent.toString())
+                        .param("response", "Response")
+                        .param("associatedId", "5")
+                        .param("file", "")
                         .with(csrf()))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> {

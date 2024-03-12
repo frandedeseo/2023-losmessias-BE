@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.losmessias.leherer.domain.File;
 import com.losmessias.leherer.domain.LoadedData;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
-import com.losmessias.leherer.dto.UploadFileResponseDto;
 import com.losmessias.leherer.dto.UploadInformationDto;
 import com.losmessias.leherer.service.FileService;
 import com.losmessias.leherer.service.LoadedDataService;
@@ -17,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
 @RestController
