@@ -13,5 +13,5 @@ import java.util.List;
 public class HomeworkResponseDto {
     private String response;
     private Long associatedId;
-    private List<File> files;
+    private File file;
 }

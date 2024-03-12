@@ -32,6 +32,9 @@ public abstract class LoadedData {
     private AppUserRole role;
     @Column
     private Long associatedId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "homework_id")
+    private Homework homework;
 
     public LoadedData(ClassReservation classReservation, LocalDateTime uploadedDateTime, AppUserRole role, Long associatedId) {
         super();

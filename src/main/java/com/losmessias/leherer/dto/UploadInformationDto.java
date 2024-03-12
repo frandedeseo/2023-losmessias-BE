@@ -19,4 +19,5 @@ public class UploadInformationDto {
     private LocalDateTime uploadedDateTime;
     private AppUserRole role;
     private Long associatedId;
+    private Long homeworkId;
 }

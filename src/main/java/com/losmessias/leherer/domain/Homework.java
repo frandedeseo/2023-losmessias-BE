@@ -33,7 +33,6 @@ public class Homework {
     private ClassReservation classReservation;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @NotNull
     private Comment assignment;
 
     // Response to the homework
@@ -41,7 +40,7 @@ public class Homework {
     private Comment response;
 
     // If in need of more than one file, or to upload both professor and student
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     private List<File> files;
 
     @Column
@@ -71,8 +70,8 @@ public class Homework {
         commentRepository.save(comment);
         this.setResponse(comment);
         this.setStatus(HomeworkStatus.DONE);
-        if (homeworkResponseDto.getFiles() != null)
-            this.files.addAll(homeworkResponseDto.getFiles());
+        if (homeworkResponseDto.getFile() != null)
+            this.files.add(homeworkResponseDto.getFile());
     }
 
     @Override

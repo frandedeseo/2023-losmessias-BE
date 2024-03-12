@@ -19,5 +19,5 @@ public class HomeworkDto {
     private String deadline;
     private Long professorId;
     private Long studentId;
-    private List<File> files;
+    private List<String> files;
 }
