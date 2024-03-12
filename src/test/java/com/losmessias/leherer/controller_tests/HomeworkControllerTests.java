@@ -5,6 +5,7 @@ import com.losmessias.leherer.domain.*;
 import com.losmessias.leherer.domain.enumeration.HomeworkStatus;
 import com.losmessias.leherer.repository.CommentRepository;
 import com.losmessias.leherer.repository.HomeworkRepository;
+import com.losmessias.leherer.service.FileService;
 import com.losmessias.leherer.service.HomeworkService;
 import com.losmessias.leherer.service.JwtService;
 import org.json.JSONObject;
@@ -46,6 +47,8 @@ public class HomeworkControllerTests {
     private JwtService jwtService;
     @MockBean
     private CommentRepository commentRepository;
+    @MockBean
+    private FileService fileService;
 
     @Mock
     private Homework homeworkTest1;
@@ -169,14 +172,7 @@ public class HomeworkControllerTests {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Create homework")
     void testCreateHomework() throws Exception {
-        JSONObject jsonContent = new JSONObject();
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
-        System.out.println(deadline);
-        jsonContent.put("assignment", "Assignment");
-        jsonContent.put("deadline", deadline);
-        jsonContent.put("classReservationId", 1L);
-        jsonContent.put("professorId", 1L);
-        jsonContent.put("files", null);
 
         when(homeworkService.createHomework(
                 deadline,
@@ -188,8 +184,11 @@ public class HomeworkControllerTests {
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/homework/create")
-                        .contentType("application/json")
-                        .content(jsonContent.toString())
+                        .param("assignment", "Assignment")
+                        .param("deadline", deadline.toString())
+                        .param("classReservationId", "1")
+                        .param("professorId", "1")
+                        .param("files", "")
                         .with(csrf()))
                 .andExpect(status().isCreated());
     }
@@ -198,22 +197,19 @@ public class HomeworkControllerTests {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Create homework with invalid deadline")
     void testCreateHomeworkWithInvalidDeadline() throws Exception {
-        JSONObject jsonContent = new JSONObject();
         LocalDateTime deadline = LocalDateTime.now().minusDays(1);
-        jsonContent.put("assignment", "Assignment");
-        jsonContent.put("deadline", deadline);
-        jsonContent.put("classReservationId", 1L);
-        jsonContent.put("professorId", 1L);
-        jsonContent.put("files", null);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/homework/create")
-                        .contentType("application/json")
-                        .content(jsonContent.toString())
+                        .param("assignment", "Assignment")
+                        .param("deadline", deadline.toString())
+                        .param("classReservationId", "1")
+                        .param("professorId", "1")
+                        .param("file", "")
                         .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> {
-                    assert (result.getResponse().getContentAsString().equals("Deadline must be in the future"));
+                    assert (result.getResponse().getContentAsString().equals("Deadline must be in the future."));
                 });
     }
 
@@ -236,7 +232,7 @@ public class HomeworkControllerTests {
                         .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> {
-                    assert (result.getResponse().getContentAsString().equals("Assignment must not be null"));
+                    assert (result.getResponse().getContentAsString().equals("Assignment and files can't be both null. Please upload either an assignment or a file."));
                 });
     }
 
@@ -244,18 +240,15 @@ public class HomeworkControllerTests {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Create homework with null class reservation")
     void testCreateHomeworkWithNullClassReservation() throws Exception {
-        JSONObject jsonContent = new JSONObject();
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
-        jsonContent.put("assignment", "Assignment");
-        jsonContent.put("deadline", deadline);
-        jsonContent.put("classReservationId", null);
-        jsonContent.put("professorId", 1L);
-        jsonContent.put("files", null);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/homework/create")
-                        .contentType("application/json")
-                        .content(jsonContent.toString())
+                        .param("assignment", "Assignment")
+                        .param("deadline", deadline.toString())
+                        .param("classReservationId", "")
+                        .param("professorId", "1")
+                        .param("file", "")
                         .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> {
@@ -267,22 +260,19 @@ public class HomeworkControllerTests {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Create homework with null professor id")
     void testCreateHomeworkWithNullProfessorId() throws Exception {
-        JSONObject jsonContent = new JSONObject();
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
-        jsonContent.put("assignment", "Assignment");
-        jsonContent.put("deadline", deadline);
-        jsonContent.put("classReservationId", 1L);
-        jsonContent.put("professorId", null);
-        jsonContent.put("files", null);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/homework/create")
-                        .contentType("application/json")
-                        .content(jsonContent.toString())
+                        .param("assignment", "Assignment")
+                        .param("deadline", deadline.toString())
+                        .param("classReservationId", "1")
+                        .param("professorId", "")
+                        .param("file", "")
                         .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> {
-                    assert (result.getResponse().getContentAsString().equals("Professor id must not be null"));
+                    assert (result.getResponse().getContentAsString().equals("Professor id must not be null."));
                 });
     }
 
@@ -290,21 +280,17 @@ public class HomeworkControllerTests {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Create homework with null deadline")
     void testCreateHomeworkWithNullDeadline() throws Exception {
-        JSONObject jsonContent = new JSONObject();
-        jsonContent.put("assignment", "Assignment");
-        jsonContent.put("deadline", null);
-        jsonContent.put("classReservationId", 1L);
-        jsonContent.put("professorId", 1L);
-        jsonContent.put("files", null);
-
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/homework/create")
-                        .contentType("application/json")
-                        .content(jsonContent.toString())
+                        .param("assignment", "Assignment")
+                        .param("deadline", "")
+                        .param("classReservationId", "1")
+                        .param("professorId", "1")
+                        .param("file", "")
                         .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> {
-                    assert (result.getResponse().getContentAsString().equals("Deadline must not be null"));
+                    assert (result.getResponse().getContentAsString().equals("Deadline must not be null."));
                 });
     }
 

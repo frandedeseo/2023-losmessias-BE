@@ -5,9 +5,11 @@ import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.dto.UploadInformationDto;
 import com.losmessias.leherer.exception.FileStorageException;
 import com.losmessias.leherer.repository.FileRepository;
+import com.losmessias.leherer.repository.HomeworkRepository;
 import com.losmessias.leherer.repository.LoadedDataRepository;
 import com.losmessias.leherer.service.ClassReservationService;
 import com.losmessias.leherer.service.FileService;
+import com.losmessias.leherer.service.HomeworkService;
 import com.losmessias.leherer.service.ProfessorService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -38,6 +40,10 @@ public class FileServiceTests {
     private LoadedDataRepository loadedDataRepository;
     @Mock
     private ClassReservationService classReservationService;
+    @Mock
+    private HomeworkService homeworkService;
+    @Mock
+    private HomeworkRepository homeworkRepository;
 
     @InjectMocks
     private FileService fileService;
@@ -64,6 +70,7 @@ public class FileServiceTests {
                 1L,
                 LocalDateTime.of(2023, 10, 1, 10, 10, 10),
                 AppUserRole.PROFESSOR,
+                1L,
                 1L
         );
         File file = new File("hola.pdf", "content/pdf", null);

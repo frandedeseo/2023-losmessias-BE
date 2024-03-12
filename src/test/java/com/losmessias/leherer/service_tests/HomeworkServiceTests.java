@@ -67,8 +67,9 @@ public class HomeworkServiceTests {
         homework.setDeadline(java.time.LocalDateTime.now().plusDays(1));
 
         when(classReservationService.getReservationById(1L)).thenReturn(classReservation);
+
         when(homeworkRepository.save(any())).thenReturn(homework);
-//        when()
+
         assertEquals(homeworkService.createHomework(
                 LocalDateTime.now().plusDays(1),
                 "Assignment",
