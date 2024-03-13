@@ -64,6 +64,7 @@ public class HomeworkController {
             return new ResponseEntity<>("Deadline must not be null.", HttpStatus.BAD_REQUEST);
         if (deadline.isBefore(LocalDateTime.now()))
             return new ResponseEntity<>("Deadline must be in the future.", HttpStatus.BAD_REQUEST);
+
         Homework createdHomework = homeworkService.createHomework(
                 deadline,
                 assignment,
@@ -73,7 +74,6 @@ public class HomeworkController {
         );
         if (createdHomework == null)
             return new ResponseEntity<>("Homework could not be created", HttpStatus.BAD_REQUEST);
-
         UploadInformationDto info = new UploadInformationDto();
         if (file != null) {
             info.setIdFile(createdHomework.getFiles().get(0).getId());
@@ -129,13 +129,20 @@ public class HomeworkController {
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(convertHomeworkToDto(savedHomework)), HttpStatus.OK);
     }
 
+    //#TODO: TEST METHOD
+    @GetMapping("/getByClassReservation/{id}")
+    public ResponseEntity<String> getHomeworkByClassReservation(@PathVariable("id") Long id) throws JsonProcessingException {
+        if (id < 0) return new ResponseEntity<>("Class reservation Id can't be negative", HttpStatus.BAD_REQUEST);
+
+        List<Homework> homeworks = homeworkService.getHomeworkByClassReservationId(id);
+        if (homeworks.isEmpty()) return new ResponseEntity<>("No homeworks found with class reservation id " + id, HttpStatus.NOT_FOUND);
+
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        List<HomeworkDto> homeworkDtoList = homeworks.stream().map(this::convertHomeworkToDto).toList();
+        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(homeworkDtoList));
+    }
+
     public HomeworkDto convertHomeworkToDto(Homework homework) {
-        List<String> fileNames = new ArrayList<>();
-        if (homework.getFiles() != null) {
-            for (File file : homework.getFiles()) {
-                fileNames.add(file.getFileName());
-            }
-        }
         return new HomeworkDto(
                 homework.getId(),
                 homework.getClassReservation().getId(),
@@ -145,7 +152,7 @@ public class HomeworkController {
                 homework.getDeadline().toString(),
                 homework.getClassReservation().getProfessor().getId(),
                 homework.getClassReservation().getStudent().getId(),
-                fileNames);
+                homework.getFiles());
     }
 
 //    @DeleteMapping("/delete/{id}")

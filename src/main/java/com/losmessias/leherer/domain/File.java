@@ -27,8 +27,8 @@ public class File extends LoadedData {
     @Column(length=1000000)
     private byte[] data;
 
-    public File(ClassReservation classReservation, LocalDateTime uploadedDateTime, AppUserRole role, Long associatedId, String fileName, String fileType, byte[] data) {
-        super(classReservation, uploadedDateTime, role, associatedId);
+    public File(ClassReservation classReservation, LocalDateTime uploadedDateTime, AppUserRole role, Long associatedId, String fileName, String fileType, byte[] data, Boolean belongsToHomework) {
+        super(classReservation, uploadedDateTime, role, associatedId, belongsToHomework);
         this.fileName = fileName;
         this.fileType = fileType;
         this.data = data;

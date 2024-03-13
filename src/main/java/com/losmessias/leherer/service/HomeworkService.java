@@ -33,11 +33,16 @@ public class HomeworkService {
         if (associatedId == null) throw new IllegalArgumentException("Associated id must not be null");
 
         ClassReservation classReservation = classReservationService.getReservationById(classReservationId);
-        CommentDto commentDto = new CommentDto(assignment, classReservationId, LocalDateTime.now(), AppUserRole.PROFESSOR, associatedId);
-        Comment comment = commentService.upload(commentDto);
+        Comment comment = null;
+        if (assignment != null) {
+            CommentDto commentDto = new CommentDto(assignment, classReservationId, LocalDateTime.now(), AppUserRole.PROFESSOR, associatedId, true);
+            comment = commentService.upload(commentDto);
+        }
         File fileReturned = null;
-        if (file != null)
+        if (file != null) {
             fileReturned = fileService.storeFile(file);
+            fileReturned = fileService.setFileToHomework(fileReturned.getId());
+        }
         Homework homework = new Homework(classReservation, comment, deadline, fileReturned == null ? null : List.of(fileReturned));
         return homeworkRepository.save(homework);
     }
@@ -48,6 +53,11 @@ public class HomeworkService {
 
     public Homework getHomeworkById(Long id) {
         return homeworkRepository.findById(id).orElse(null);
+    }
+
+    //#TODO: TEST METHOD
+    public List<Homework> getHomeworkByClassReservationId(Long id) {
+        return homeworkRepository.findByClassReservation_Id(id);
     }
 
 

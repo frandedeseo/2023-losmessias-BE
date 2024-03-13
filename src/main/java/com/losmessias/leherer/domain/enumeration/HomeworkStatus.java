@@ -5,5 +5,4 @@ public enum HomeworkStatus {
         PENDING,
         DONE,
         LATE,
-        CANCELLED
 }

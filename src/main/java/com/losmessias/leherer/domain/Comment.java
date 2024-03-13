@@ -22,8 +22,8 @@ public class Comment extends LoadedData {
     @Column
     private String comment;
 
-    public Comment(String comment, ClassReservation classReservation, LocalDateTime uploadedDateTime, AppUserRole role, Long associatedId) {
-        super(classReservation, uploadedDateTime, role, associatedId);
+    public Comment(String comment, ClassReservation classReservation, LocalDateTime uploadedDateTime, AppUserRole role, Long associatedId, Boolean belongsToHomework) {
+        super(classReservation, uploadedDateTime, role, associatedId, belongsToHomework);
         this.comment = comment;
     }
 }

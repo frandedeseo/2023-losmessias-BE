@@ -1,5 +1,6 @@
 package com.losmessias.leherer.dto;
 
+import com.losmessias.leherer.domain.File;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,5 +19,5 @@ public class HomeworkDto {
     private String deadline;
     private Long professorId;
     private Long studentId;
-    private List<String> files;
+    private List<File> files;
 }

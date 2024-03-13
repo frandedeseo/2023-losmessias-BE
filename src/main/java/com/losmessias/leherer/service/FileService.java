@@ -56,8 +56,7 @@ public class FileService {
         file.setRole(info.getRole());
         file.setClassReservation(classReservationService.getReservationById(info.getClassReservation()));
         file.setUploadedDateTime(info.getUploadedDateTime());
-        if (info.getHomeworkId() != null) // if the file corresponds to a homework entity, set the homework
-            file.setHomework(homeworkRepository.findById(info.getHomeworkId()).orElse(null));
+        file.setBelongsToHomework(info.getHomeworkId() != null);
 
         loadedDataRepository.save(file);
         return file;
@@ -66,5 +65,11 @@ public class FileService {
     public File getFile(Long fileId) {
         return fileRepository.findById(fileId)
                 .orElseThrow(() -> new FileNotFoundException("File not found with id " + fileId));
+    }
+
+    public File setFileToHomework(Long fileId) {
+        File file = getFile(fileId);
+        file.setBelongsToHomework(true);
+        return fileRepository.save(file);
     }
 }

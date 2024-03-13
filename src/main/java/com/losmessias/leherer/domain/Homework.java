@@ -66,7 +66,7 @@ public class Homework {
         if (homeworkResponseDto.getResponse() == null) throw new IllegalArgumentException("Response must not be null");
         if (homeworkResponseDto.getAssociatedId() == null)
             throw new IllegalArgumentException("Associated id must not be null");
-        Comment comment = new Comment(homeworkResponseDto.getResponse(), this.classReservation, LocalDateTime.now(), AppUserRole.STUDENT, homeworkResponseDto.getAssociatedId());
+        Comment comment = new Comment(homeworkResponseDto.getResponse(), this.classReservation, LocalDateTime.now(), AppUserRole.STUDENT, homeworkResponseDto.getAssociatedId(), true);
         commentRepository.save(comment);
         this.setResponse(comment);
         this.setStatus(HomeworkStatus.DONE);
