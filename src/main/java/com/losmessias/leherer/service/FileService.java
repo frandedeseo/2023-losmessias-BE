@@ -6,7 +6,6 @@ import com.losmessias.leherer.dto.UploadInformationDto;
 import com.losmessias.leherer.exception.FileNotFoundException;
 import com.losmessias.leherer.exception.FileStorageException;
 import com.losmessias.leherer.repository.FileRepository;
-import com.losmessias.leherer.repository.HomeworkRepository;
 import com.losmessias.leherer.repository.LoadedDataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,6 @@ public class FileService {
     private final FileRepository fileRepository;
     private final ClassReservationService classReservationService;
     private final LoadedDataRepository loadedDataRepository;
-    private final HomeworkRepository homeworkRepository;
 
     public File storeFile(MultipartFile file) {
         // Normalize file name
@@ -67,7 +65,7 @@ public class FileService {
                 .orElseThrow(() -> new FileNotFoundException("File not found with id " + fileId));
     }
 
-    public File setFileToHomework(Long fileId) {
+    public File setBelongingToHomework(Long fileId) {
         File file = getFile(fileId);
         file.setBelongsToHomework(true);
         return fileRepository.save(file);

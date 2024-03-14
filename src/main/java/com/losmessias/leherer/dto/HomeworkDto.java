@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,5 +17,6 @@ public class HomeworkDto {
     private String deadline;
     private Long professorId;
     private Long studentId;
-    private List<File> files;
+    private File assignmentFile;
+    private File responseFile;
 }

@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -76,7 +75,7 @@ public class HomeworkController {
             return new ResponseEntity<>("Homework could not be created", HttpStatus.BAD_REQUEST);
         UploadInformationDto info = new UploadInformationDto();
         if (file != null) {
-            info.setIdFile(createdHomework.getFiles().get(0).getId());
+            info.setIdFile(createdHomework.getAssignmentFile().getId());
             info.setClassReservation(classReservationId);
             info.setAssociatedId(professorId);
             info.setRole(AppUserRole.PROFESSOR);
@@ -92,8 +91,8 @@ public class HomeworkController {
     @PatchMapping("/respond/{id}")
     public ResponseEntity<String> respondHomework(@PathVariable("id") Long id, @RequestParam(required = false) String response, @RequestParam(required = false) Long associatedId, @RequestParam(required = false) MultipartFile file) throws JsonProcessingException {
         if (id < 0) return new ResponseEntity<>("Id must be positive", HttpStatus.BAD_REQUEST);
-        if (response == null)
-            return new ResponseEntity<>("Response must not be null", HttpStatus.BAD_REQUEST);
+        if (response == null && file == null)
+            return new ResponseEntity<>("Response must have either answer or a file", HttpStatus.BAD_REQUEST);
         if (associatedId == null)
             return new ResponseEntity<>("Associated id must not be null", HttpStatus.BAD_REQUEST);
         if (homeworkService.verifyIfResponded(id))
@@ -121,15 +120,14 @@ public class HomeworkController {
             fileService.setUploadInformation(info);
         }
         HomeworkResponseDto homeworkResponseDto = new HomeworkResponseDto(response, associatedId, fileReturned);
-
         // Homework has the responsibility and capability of handling the response by itself:
         homework.respondWith(homeworkResponseDto, commentRepository);
         Homework savedHomework = homeworkRepository.save(homework);
+        System.out.println(savedHomework);
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(convertHomeworkToDto(savedHomework)), HttpStatus.OK);
     }
 
-    //#TODO: TEST METHOD
     @GetMapping("/getByClassReservation/{id}")
     public ResponseEntity<String> getHomeworkByClassReservation(@PathVariable("id") Long id) throws JsonProcessingException {
         if (id < 0) return new ResponseEntity<>("Class reservation Id can't be negative", HttpStatus.BAD_REQUEST);
@@ -152,7 +150,8 @@ public class HomeworkController {
                 homework.getDeadline().toString(),
                 homework.getClassReservation().getProfessor().getId(),
                 homework.getClassReservation().getStudent().getId(),
-                homework.getFiles());
+                homework.getAssignmentFile(),
+                homework.getResponseFile());
     }
 
 //    @DeleteMapping("/delete/{id}")

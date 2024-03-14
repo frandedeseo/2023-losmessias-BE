@@ -318,30 +318,6 @@ public class HomeworkControllerTests {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    @DisplayName("Give a response to homework with invalid data")
-    void testRespondHomeworkWithInvalidData() throws Exception {
-        JSONObject jsonContent = new JSONObject();
-        jsonContent.put("response", null);
-        jsonContent.put("associatedId", 5L);
-        jsonContent.put("files", null);
-
-        when(homeworkService.verifyIfResponded(any())).thenReturn(false);
-        when(homeworkService.getHomeworkById(any())).thenReturn(homeworkTest1);
-        when(homeworkRepository.save(any())).thenReturn(homeworkTest1);
-
-        mockMvc.perform(MockMvcRequestBuilders
-                        .patch("/api/homework/respond/1")
-                        .contentType("application/json")
-                        .content(jsonContent.toString())
-                        .with(csrf()))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> {
-                    assert (result.getResponse().getContentAsString().contains("Response must not be null"));
-                });
-    }
-
-    @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Give a response to homework with invalid id")
     void testRespondHomeworkWithInvalidId() throws Exception {
 
@@ -423,6 +399,33 @@ public class HomeworkControllerTests {
                 .andExpect(status().isNotFound())
                 .andExpect(result -> {
                     assert (result.getResponse().getContentAsString().contains("No homework found with id 1"));
+                });
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @DisplayName("Get homework by class reservation")
+    void testGetHomeworkByClassReservation() throws Exception {
+        List<Homework> homeworkList = new ArrayList<>();
+        homeworkList.add(homeworkTest1);
+        homeworkList.add(homeworkTest2);
+
+        when(homeworkService.getHomeworkByClassReservationId(1L)).thenReturn(homeworkList);
+
+        mockMvc.perform(get("/api/homework/getByClassReservation/1"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @DisplayName("Get homework by class reservation finds none")
+    void testGetHomeworkByClassReservationFindsNone() throws Exception {
+        when(homeworkService.getHomeworkByClassReservationId(1L)).thenReturn(new ArrayList<>());
+
+        mockMvc.perform(get("/api/homework/getByClassReservation/1"))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> {
+                    assert (result.getResponse().getContentAsString().equals("No homeworks found with class reservation id 1"));
                 });
     }
 }

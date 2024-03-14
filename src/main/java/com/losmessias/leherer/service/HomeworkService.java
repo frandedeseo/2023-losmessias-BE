@@ -41,9 +41,9 @@ public class HomeworkService {
         File fileReturned = null;
         if (file != null) {
             fileReturned = fileService.storeFile(file);
-            fileReturned = fileService.setFileToHomework(fileReturned.getId());
+            fileReturned = fileService.setBelongingToHomework(fileReturned.getId());
         }
-        Homework homework = new Homework(classReservation, comment, deadline, fileReturned == null ? null : List.of(fileReturned));
+        Homework homework = new Homework(classReservation, comment, deadline, fileReturned);
         return homeworkRepository.save(homework);
     }
 
@@ -55,13 +55,10 @@ public class HomeworkService {
         return homeworkRepository.findById(id).orElse(null);
     }
 
-    //#TODO: TEST METHOD
     public List<Homework> getHomeworkByClassReservationId(Long id) {
         return homeworkRepository.findByClassReservation_Id(id);
     }
 
-
-    // #TODO: TEST
     public boolean verifyIfResponded(Long id) {
         Homework homework = homeworkRepository.findById(id).orElse(null);
         if (homework == null) throw new IllegalArgumentException("Homework not found");

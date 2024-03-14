@@ -9,8 +9,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -35,13 +33,16 @@ public class Homework {
     @OneToOne(fetch = FetchType.EAGER)
     private Comment assignment;
 
+    // If in need of more than one file, or to upload both professor and student
+    @OneToOne(fetch = FetchType.EAGER)
+    private File assignmentFile;
+
     // Response to the homework
     @OneToOne(fetch = FetchType.EAGER)
     private Comment response;
 
-    // If in need of more than one file, or to upload both professor and student
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<File> files;
+    @OneToOne(fetch = FetchType.EAGER)
+    private File responseFile;
 
     @Column
     private HomeworkStatus status;
@@ -50,11 +51,11 @@ public class Homework {
     @NotNull
     private LocalDateTime deadline;
 
-    public Homework(ClassReservation classReservation, Comment assignment, LocalDateTime deadline, List<File> files) {
+    public Homework(ClassReservation classReservation, Comment assignment, LocalDateTime deadline, File file) {
         this.classReservation = classReservation;
         this.assignment = assignment;
-        if (files == null) this.files = new ArrayList<>();
-        else this.files = files;
+        this.assignmentFile = file;
+        this.responseFile = null;
         this.status = HomeworkStatus.PENDING;
         if (deadline.isBefore(LocalDateTime.now()))
             throw new IllegalArgumentException("Deadline must be in the future");
@@ -63,15 +64,17 @@ public class Homework {
     }
 
     public void respondWith(HomeworkResponseDto homeworkResponseDto, CommentRepository commentRepository) {
-        if (homeworkResponseDto.getResponse() == null) throw new IllegalArgumentException("Response must not be null");
         if (homeworkResponseDto.getAssociatedId() == null)
             throw new IllegalArgumentException("Associated id must not be null");
-        Comment comment = new Comment(homeworkResponseDto.getResponse(), this.classReservation, LocalDateTime.now(), AppUserRole.STUDENT, homeworkResponseDto.getAssociatedId(), true);
-        commentRepository.save(comment);
-        this.setResponse(comment);
+        if (homeworkResponseDto.getResponse() != null){
+            Comment comment = new Comment(homeworkResponseDto.getResponse(), this.classReservation, LocalDateTime.now(), AppUserRole.STUDENT, homeworkResponseDto.getAssociatedId(), true);
+            commentRepository.save(comment);
+            this.setResponse(comment);
+        }
         this.setStatus(HomeworkStatus.DONE);
-        if (homeworkResponseDto.getFile() != null)
-            this.files.add(homeworkResponseDto.getFile());
+        if (homeworkResponseDto.getFile() != null){
+            this.setResponseFile(homeworkResponseDto.getFile());
+        }
     }
 
     @Override

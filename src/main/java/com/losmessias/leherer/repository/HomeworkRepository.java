@@ -9,6 +9,5 @@ import java.util.List;
 @Repository
 public interface HomeworkRepository extends JpaRepository<Homework, Long> {
 
-    //#TODO: TEST METHOD
     List<Homework> findByClassReservation_Id(Long id);
 }
