@@ -101,7 +101,7 @@ public class HomeworkController {
         Homework homework = homeworkService.getHomeworkById(id);
         if (homework == null)
             return new ResponseEntity<>("No homework found with id " + id, HttpStatus.NOT_FOUND);
-        if (homework.getClassReservation().getStudent().getId().equals(associatedId))
+        if (!homework.getClassReservation().getStudent().getId().equals(associatedId))
             return new ResponseEntity<>("Student id does not match", HttpStatus.BAD_REQUEST);
 
         File fileReturned = null;
