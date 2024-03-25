@@ -140,6 +140,18 @@ public class HomeworkController {
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(homeworkDtoList));
     }
 
+    @GetMapping("/getByStudent/{id}")
+    public ResponseEntity<String> getHomeworkByStudent(@PathVariable("id") Long id) throws JsonProcessingException {
+        if (id < 0) return new ResponseEntity<>("Student Id can't be negative", HttpStatus.BAD_REQUEST);
+
+        List<Homework> homeworks = homeworkRepository.findByStudentId(id);
+        if (homeworks.isEmpty()) return new ResponseEntity<>("No homeworks found with student id " + id, HttpStatus.NOT_FOUND);
+
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        List<HomeworkDto> homeworkDtoList = homeworks.stream().map(this::convertHomeworkToDto).toList();
+        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(homeworkDtoList));
+    }
+
     public HomeworkDto convertHomeworkToDto(Homework homework) {
         return new HomeworkDto(
                 homework.getId(),

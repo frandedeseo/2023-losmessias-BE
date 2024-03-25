@@ -306,7 +306,7 @@ public class HomeworkControllerTests {
         mockMvc.perform(MockMvcRequestBuilders
                         .patch("/api/homework/respond/1")
                         .param("response", "Response")
-                        .param("associatedId", "5")
+                        .param("associatedId", "1")
                         .param("file", "")
                         .with(csrf()))
                 .andExpect(status().isOk())
@@ -353,7 +353,7 @@ public class HomeworkControllerTests {
         mockMvc.perform(MockMvcRequestBuilders
                         .patch("/api/homework/respond/1")
                         .param("response", "Response")
-                        .param("associatedId", "1")
+                        .param("associatedId", "5")
                         .param("file", "")
                         .with(csrf()))
                 .andExpect(status().isBadRequest())
