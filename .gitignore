@@ -6,6 +6,7 @@ HELP.md
 .factorypath
 .project
 .settings
+.settings/
 .springBeans
 .sts4-cache
 
@@ -29,8 +30,10 @@ build/
 /target/**
 target/**
 target/*
+target/
 target\**
 target\*
+target\
 ### VS Code ###
 .vscode/
 .DS_Store
