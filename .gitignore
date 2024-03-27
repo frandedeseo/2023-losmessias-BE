@@ -28,7 +28,9 @@ build/
 !**/src/test/**/target/
 /target/**
 target/**
+target/*
 target\**
+target\*
 ### VS Code ###
 .vscode/
 .DS_Store
