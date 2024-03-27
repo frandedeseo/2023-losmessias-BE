@@ -3,6 +3,8 @@ HELP.md
 ### STS ###
 .apt_generated
 .classpath
+*.classpath
+*.class
 .factorypath
 .project
 .settings
