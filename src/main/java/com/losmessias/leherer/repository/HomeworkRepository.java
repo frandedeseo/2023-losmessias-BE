@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -14,4 +15,6 @@ public interface HomeworkRepository extends JpaRepository<Homework, Long> {
 
     @Query("SELECT h FROM Homework h WHERE h.classReservation.student.id = ?1")
     List<Homework> findByStudentId(Long id);
+
+    List<Homework> findByDeadline(LocalDateTime deadline);
 }
