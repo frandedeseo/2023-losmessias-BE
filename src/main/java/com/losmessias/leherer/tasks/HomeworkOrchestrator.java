@@ -37,6 +37,7 @@ public class HomeworkOrchestrator {
         // LocalDate -3 due to de Render Hosting time zone
         LocalDateTime endingTimeInGMT = LocalDateTime.now();
         LocalDateTime endingTimeInGMTMinus3 = convertToGMTMinus3(endingTimeInGMT);
+        endingTimeInGMTMinus3 = endingTimeInGMTMinus3.withSecond(0).withNano(0);
         log.info("Executing on: " + endingTimeInGMTMinus3);
         List<Homework> homeworks = homeworkRepository.findByDeadline(endingTimeInGMTMinus3);
         if (homeworks.isEmpty()) {
