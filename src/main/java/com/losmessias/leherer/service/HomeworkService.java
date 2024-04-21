@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -25,7 +26,7 @@ public class HomeworkService {
     private final FileService fileService;
 
     public Homework createHomework(LocalDateTime deadline, String assignment, Long classReservationId, Long associatedId, MultipartFile file) {
-        if (deadline.isBefore(java.time.LocalDateTime.now()))
+        if (deadline.isBefore(convertToGMTMinus3(LocalDateTime.now())))
             throw new IllegalArgumentException("Deadline must be in the future");
         if (assignment == null && file == null)
             throw new IllegalArgumentException("Assignment and files can't be both null");
@@ -63,5 +64,12 @@ public class HomeworkService {
         Homework homework = homeworkRepository.findById(id).orElse(null);
         if (homework == null) throw new IllegalArgumentException("Homework not found");
         return homework.getStatus() == HomeworkStatus.DONE;
+    }
+
+    private static LocalDateTime convertToGMTMinus3(LocalDateTime gmtDateTime) {
+        ZoneId gmtZone = ZoneId.of("GMT");
+        return gmtDateTime.atZone(gmtZone)
+                .withZoneSameInstant(ZoneId.of("GMT-3"))
+                .toLocalDateTime();
     }
 }
