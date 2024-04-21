@@ -29,7 +29,7 @@ public class HomeworkService {
         System.out.println("HomeworkService - deadline: " + deadline);
         System.out.println("HomeworkService - LocalDateTime.now(): " + LocalDateTime.now());
         System.out.println("HomeworkService - deadline.isBefore(LocalDateTime.now()): " + deadline.isBefore(LocalDateTime.now()));
-        System.out.println("HomeworkService - convertToGMTMinus3(LocalDateTime.now()): " + convertToGMTMinus3(LocalDateTime.now());
+        System.out.println("HomeworkService - convertToGMTMinus3(LocalDateTime.now()): " + convertToGMTMinus3(LocalDateTime.now()));
         if (deadline.isBefore(convertToGMTMinus3(LocalDateTime.now())))
             throw new IllegalArgumentException("Deadline must be in the future");
         if (assignment == null && file == null)
