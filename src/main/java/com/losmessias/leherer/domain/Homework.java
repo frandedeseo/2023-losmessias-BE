@@ -59,6 +59,9 @@ public class Homework {
         this.responseFile = null;
         this.status = HomeworkStatus.PENDING;
 //        if (deadline.isBefore(LocalDateTime.now()))
+        System.out.println("Homework - deadline: " + deadline);
+        System.out.println("Homework - Current time: " + LocalDateTime.now());
+        System.out.println("Homework - Current time GMT-3: " + convertToGMTMinus3(LocalDateTime.now()));
         if (deadline.isBefore(convertToGMTMinus3(LocalDateTime.now())))
             throw new IllegalArgumentException("Deadline must be in the future");
         else
