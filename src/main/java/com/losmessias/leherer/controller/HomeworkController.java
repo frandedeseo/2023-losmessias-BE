@@ -74,6 +74,7 @@ public class HomeworkController {
             return new ResponseEntity<>("Deadline must not be null.", HttpStatus.BAD_REQUEST);
         if (deadline.isBefore(convertToGMTMinus3(LocalDateTime.now())))
             return new ResponseEntity<>("Deadline must be in the future.", HttpStatus.BAD_REQUEST);
+        System.out.println("Creating homework with deadline: " + deadline);
         Homework createdHomework = homeworkService.createHomework(
                 deadline,
                 assignment,
@@ -81,9 +82,11 @@ public class HomeworkController {
                 professorId,
                 file
         );
+        System.out.println("Created homework: " + createdHomework);
         if (createdHomework == null)
             return new ResponseEntity<>("Homework could not be created", HttpStatus.BAD_REQUEST);
         UploadInformationDto info = new UploadInformationDto();
+        System.out.println("Created info");
         if (file != null) {
             info.setIdFile(createdHomework.getAssignmentFile().getId());
             info.setClassReservation(classReservationId);
@@ -91,10 +94,15 @@ public class HomeworkController {
             info.setRole(AppUserRole.PROFESSOR);
             info.setHomeworkId(createdHomework.getId());
             info.setUploadedDateTime(LocalDateTime.now());
+            System.out.println("Filled info");
             fileService.setUploadInformation(info);
+            System.out.println("saved information");
         }
+
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        System.out.println("Creating DTO");
         HomeworkDto homeworkDto = convertHomeworkToDto(createdHomework);
+        System.out.println("Created DTO");
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(homeworkDto), HttpStatus.CREATED);
     }
 
