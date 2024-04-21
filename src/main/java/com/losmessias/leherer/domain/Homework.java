@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Entity
 @Getter
@@ -57,7 +58,8 @@ public class Homework {
         this.assignmentFile = file;
         this.responseFile = null;
         this.status = HomeworkStatus.PENDING;
-        if (deadline.isBefore(LocalDateTime.now()))
+//        if (deadline.isBefore(LocalDateTime.now()))
+        if (deadline.isBefore(convertToGMTMinus3(LocalDateTime.now())))
             throw new IllegalArgumentException("Deadline must be in the future");
         else
             this.deadline = deadline;
@@ -66,13 +68,13 @@ public class Homework {
     public void respondWith(HomeworkResponseDto homeworkResponseDto, CommentRepository commentRepository) {
         if (homeworkResponseDto.getAssociatedId() == null)
             throw new IllegalArgumentException("Associated id must not be null");
-        if (homeworkResponseDto.getResponse() != null){
+        if (homeworkResponseDto.getResponse() != null) {
             Comment comment = new Comment(homeworkResponseDto.getResponse(), this.classReservation, LocalDateTime.now(), AppUserRole.STUDENT, homeworkResponseDto.getAssociatedId(), true);
             commentRepository.save(comment);
             this.setResponse(comment);
         }
         this.setStatus(HomeworkStatus.DONE);
-        if (homeworkResponseDto.getFile() != null){
+        if (homeworkResponseDto.getFile() != null) {
             this.setResponseFile(homeworkResponseDto.getFile());
         }
     }
@@ -87,5 +89,12 @@ public class Homework {
                 ", status=" + status +
                 ", deadline=" + deadline +
                 '}';
+    }
+
+    private static LocalDateTime convertToGMTMinus3(LocalDateTime gmtDateTime) {
+        ZoneId gmtZone = ZoneId.of("GMT");
+        return gmtDateTime.atZone(gmtZone)
+                .withZoneSameInstant(ZoneId.of("GMT-3"))
+                .toLocalDateTime();
     }
 }
