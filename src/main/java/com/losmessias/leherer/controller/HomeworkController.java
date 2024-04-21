@@ -72,6 +72,9 @@ public class HomeworkController {
             return new ResponseEntity<>("Professor id must not be null.", HttpStatus.BAD_REQUEST);
         if (deadline == null)
             return new ResponseEntity<>("Deadline must not be null.", HttpStatus.BAD_REQUEST);
+        System.out.println("Deadline: " + deadline);
+        System.out.println(LocalDateTime.now());
+        System.out.println("Local time GMT-3:"+convertToGMTMinus3(LocalDateTime.now()));
         if (deadline.isBefore(convertToGMTMinus3(LocalDateTime.now())))
             return new ResponseEntity<>("Deadline must be in the future.", HttpStatus.BAD_REQUEST);
         System.out.println("Creating homework with deadline: " + deadline);
