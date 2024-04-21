@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @RestController
@@ -31,6 +32,16 @@ public class HomeworkController {
     private final HomeworkRepository homeworkRepository;
     private final CommentRepository commentRepository;
     private final FileService fileService;
+
+    // get GMT-3 time
+    private static LocalDateTime convertToGMTMinus3(LocalDateTime gmtDateTime) {
+        // Set the time zone to GMT
+        ZoneId gmtZone = ZoneId.of("GMT");
+        // Convert the GMT time to GMT-3
+        return gmtDateTime.atZone(gmtZone)
+                .withZoneSameInstant(ZoneId.of("GMT-3"))
+                .toLocalDateTime();
+    }
 
     @GetMapping("/all")
     public ResponseEntity<String> getAllHomeworks() throws JsonProcessingException {
@@ -61,9 +72,8 @@ public class HomeworkController {
             return new ResponseEntity<>("Professor id must not be null.", HttpStatus.BAD_REQUEST);
         if (deadline == null)
             return new ResponseEntity<>("Deadline must not be null.", HttpStatus.BAD_REQUEST);
-        if (deadline.isBefore(LocalDateTime.now()))
+        if (deadline.isBefore(convertToGMTMinus3(LocalDateTime.now())))
             return new ResponseEntity<>("Deadline must be in the future.", HttpStatus.BAD_REQUEST);
-
         Homework createdHomework = homeworkService.createHomework(
                 deadline,
                 assignment,
@@ -133,7 +143,8 @@ public class HomeworkController {
         if (id < 0) return new ResponseEntity<>("Class reservation Id can't be negative", HttpStatus.BAD_REQUEST);
 
         List<Homework> homeworks = homeworkService.getHomeworkByClassReservationId(id);
-        if (homeworks.isEmpty()) return new ResponseEntity<>("No homeworks found with class reservation id " + id, HttpStatus.NOT_FOUND);
+        if (homeworks.isEmpty())
+            return new ResponseEntity<>("No homeworks found with class reservation id " + id, HttpStatus.NOT_FOUND);
 
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         List<HomeworkDto> homeworkDtoList = homeworks.stream().map(this::convertHomeworkToDto).toList();
@@ -145,7 +156,8 @@ public class HomeworkController {
         if (id < 0) return new ResponseEntity<>("Student Id can't be negative", HttpStatus.BAD_REQUEST);
 
         List<Homework> homeworks = homeworkRepository.findByStudentId(id);
-        if (homeworks.isEmpty()) return new ResponseEntity<>("No homeworks found with student id " + id, HttpStatus.NOT_FOUND);
+        if (homeworks.isEmpty())
+            return new ResponseEntity<>("No homeworks found with student id " + id, HttpStatus.NOT_FOUND);
 
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         List<HomeworkDto> homeworkDtoList = homeworks.stream().map(this::convertHomeworkToDto).toList();
@@ -165,7 +177,6 @@ public class HomeworkController {
                 homework.getAssignmentFile(),
                 homework.getResponseFile());
     }
-
 //    @DeleteMapping("/delete/{id}")
 //    public ResponseEntity<String> deleteHomework(@PathVariable("id") Long id) throws JsonProcessingException {
 //        if (id < 0) return new ResponseEntity<>("ID must be positive", HttpStatus.BAD_REQUEST);
