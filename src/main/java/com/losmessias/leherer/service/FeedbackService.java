@@ -63,5 +63,4 @@ public class FeedbackService {
     public List<Feedback> getAllFeedbacks() {
         return feedbackRepository.findAll();
     }
-    //TODO: get feedback by role
 }

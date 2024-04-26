@@ -16,4 +16,5 @@ public class CommentDto {
     private LocalDateTime uploadedDateTime;
     private AppUserRole role;
     private Long associatedId;
+    private boolean belongsToHomework;
 }

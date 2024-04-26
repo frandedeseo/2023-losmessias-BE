@@ -3,10 +3,9 @@ package com.losmessias.leherer.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.losmessias.leherer.domain.File;
 import com.losmessias.leherer.domain.LoadedData;
-import com.losmessias.leherer.dto.UploadFileResponseDto;
+import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.dto.UploadInformationDto;
 import com.losmessias.leherer.service.FileService;
-
 import com.losmessias.leherer.service.LoadedDataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
@@ -17,9 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.util.List;
 
 
 @RestController
@@ -31,31 +27,23 @@ public class FileController {
     private final FileService fileService;
     private final LoadedDataService loadedDataService;
 
-    @PostMapping("/uploadFile")
-    public UploadFileResponseDto uploadFile(@RequestParam MultipartFile file) {
+    @PostMapping("/upload")
+    public ResponseEntity<String> upload(@RequestParam MultipartFile file, @RequestParam Long classReservation, @RequestParam Long associatedId, @RequestParam String role, @RequestParam Long homeworkId) throws JsonProcessingException {
         File fileReturned = fileService.storeFile(file);
 
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/downloadFile/")
-                .path(fileReturned.getFileName())
-                .toUriString();
+        UploadInformationDto info = new UploadInformationDto();
+        info.setIdFile(fileReturned.getId());
+        info.setClassReservation(classReservation);
+        info.setAssociatedId(associatedId);
+        info.setRole(AppUserRole.valueOf(role.toUpperCase()));
+        info.setHomeworkId(homeworkId > 0 ? homeworkId : null);
+        info.setUploadedDateTime(java.time.LocalDateTime.now());
 
-        return new UploadFileResponseDto(fileReturned.getId(), fileReturned.getFileName(), fileDownloadUri,
-                file.getContentType(), file.getSize());
-    }
-    @PostMapping("/setUploadInformation")
-    public ResponseEntity<String> setUploadInformation(@RequestBody UploadInformationDto info) throws JsonProcessingException {
+        LoadedData loadedData = fileService.setUploadInformation(info);
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(fileService.setUploadInformation(info)));
+        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(loadedData));
     }
 
-//    @PostMapping("/uploadMultipleFiles")
-//    public List< UploadFileResponseDto > uploadMultipleFiles(@RequestBody() MultipartFile[] files) {
-//
-//        return Arrays.stream(files)
-//                .map(this::uploadFile)
-//                .collect(Collectors.toList());
-//    }
 
     @GetMapping("/get-uploaded-data")
     public ResponseEntity<String> getUploadedData(@RequestParam("id") Long Id) throws JsonProcessingException {
@@ -73,4 +61,13 @@ public class FileController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFileName() + "\"")
                 .body(new ByteArrayResource(file.getData()));
     }
+
+//    public List<LoadedData> convertUploadedDataToDto(List<LoadedData> loadedDataList) {
+//        List<UploadFileResponseDto> loadedDataDtoList = new ArrayList<>();
+//        for (LoadedData loadedData : loadedDataList) {
+//            loadedDataDtoList.add(new UploadFileResponseDto(
+//            ));
+//        }
+//        return loadedDataList;
+//    }
 }

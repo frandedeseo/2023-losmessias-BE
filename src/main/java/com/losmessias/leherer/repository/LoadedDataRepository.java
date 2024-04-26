@@ -12,6 +12,6 @@ import java.util.List;
 @Repository
 public interface LoadedDataRepository extends JpaRepository<LoadedData, Long> {
 
-    @Query("SELECT data FROM LoadedData data WHERE  data.classReservation.id = ?1 ORDER BY data.uploadedDateTime ASC")
+    @Query("SELECT data FROM LoadedData data WHERE data.classReservation.id = ?1 AND data.belongsToHomework=false ORDER BY data.uploadedDateTime ASC")
     List<LoadedData> getUploadedData(Long id);
 }

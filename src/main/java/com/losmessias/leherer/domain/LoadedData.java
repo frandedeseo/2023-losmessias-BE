@@ -32,12 +32,15 @@ public abstract class LoadedData {
     private AppUserRole role;
     @Column
     private Long associatedId;
+    @Column
+    private Boolean belongsToHomework;
 
-    public LoadedData(ClassReservation classReservation, LocalDateTime uploadedDateTime, AppUserRole role, Long associatedId) {
+    public LoadedData(ClassReservation classReservation, LocalDateTime uploadedDateTime, AppUserRole role, Long associatedId, Boolean belongsToHomework) {
         super();
         this.classReservation = classReservation;
         this.uploadedDateTime = uploadedDateTime;
         this.role = role;
         this.associatedId = associatedId;
+        this.belongsToHomework = belongsToHomework;
     }
 }
