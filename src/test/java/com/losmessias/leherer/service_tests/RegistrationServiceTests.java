@@ -72,8 +72,8 @@ public class RegistrationServiceTests {
                 AppUserSex.MALE
         );
 
-        professor1 = new Professor();
-        student1 = new Student();
+        professor1 = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
+        student1 = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         Student student = new Student(
                 "fran@gmail.com",
                 "fran123",

@@ -12,6 +12,7 @@ import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.repository.ClassReservationRepository;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
 import com.losmessias.leherer.service.ClassReservationService;
+import com.losmessias.leherer.role.AppUserSex;
 import com.losmessias.leherer.service.NotificationService;
 import org.junit.Before;
 import org.junit.jupiter.api.DisplayName;
@@ -50,9 +51,9 @@ public class ClassReservationServiceTests {
     @Test
     @DisplayName("Create reservation from student, professor and subject")
     void testCreateReservationFromStudentAndProfessorSubjectWithDefaultStatus() {
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject();
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         ClassReservation classReservation = new ClassReservation(
                 professor,
                 subject,
@@ -76,9 +77,9 @@ public class ClassReservationServiceTests {
     @Test
     @DisplayName("Create reservation from student, professor and subject")
     void testCancelReservationFromStudentAndProfessorSubjectWithDefaultStatus() {
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject();
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         ClassReservation classReservation = new ClassReservation(
                 professor,
                 subject,
@@ -122,7 +123,7 @@ public class ClassReservationServiceTests {
     @Test
     @DisplayName("Create unavailable reservation for professor")
     void testCreateUnavailableReservation() {
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         ClassReservation classReservation = new ClassReservation(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0));
         when(classReservationRepository.save(any())).thenReturn(classReservation);
         assertEquals(classReservation, classReservationService.createUnavailableReservation(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0)));
@@ -132,9 +133,9 @@ public class ClassReservationServiceTests {
     @DisplayName("Creating reservation for professor with invalid time interval")
     void testCreateReservationForProfessorWithInvalidTimeInterval() {
         assertThrowsExactly(IllegalArgumentException.class, () -> {
-            Professor professor = new Professor();
+            Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
             Subject subject = new Subject();
-            Student student = new Student();
+            Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
             classReservationService.createReservation(professor,
                     subject,
                     student,
@@ -149,7 +150,7 @@ public class ClassReservationServiceTests {
     @DisplayName("Creating unavailable reservation for professor with invalid time interval")
     void testCreateUnavailableReservationForProfessorWithInvalidTimeInterval() {
         assertThrowsExactly(IllegalArgumentException.class, () -> {
-            Professor professor = new Professor();
+            Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
             classReservationService.createUnavailableReservation(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(11, 0));
         });
     }
@@ -179,9 +180,9 @@ public class ClassReservationServiceTests {
     @Test
     @DisplayName("Cancel class after 48hs before")
     void cancelClassAfter(){
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject("Biology");
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
 
         ClassReservation class1 = new ClassReservation(
                 professor,
@@ -204,9 +205,9 @@ public class ClassReservationServiceTests {
     @DisplayName("get professor stadistics with three classes in this month")
     void testGetStatics() {
         List<ClassReservation> classes = new ArrayList<>();
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject("Biology");
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         classes.add(
                 new ClassReservation(
                         professor,
@@ -277,9 +278,9 @@ public class ClassReservationServiceTests {
     @DisplayName("get professor stadistics with one class in previous month and two in this month")
     void testGetStaticsOneClassPreviousMonthTwoThisMonth() {
         List<ClassReservation> classes = new ArrayList<>();
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject("Biology");
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         classes.add(
                 new ClassReservation(
                         professor,
@@ -356,9 +357,9 @@ public class ClassReservationServiceTests {
     @DisplayName("get professor stadistics with one class two month ago and one the previous month and where cancelled")
     void testGetStaticsOneClassTwoMonthAgoTwoPreviousMonthAndWhereCancelled() {
         List<ClassReservation> classes = new ArrayList<>();
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject("Biology");
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         ClassReservation class1 = new ClassReservation(
                         professor,
                         subject,

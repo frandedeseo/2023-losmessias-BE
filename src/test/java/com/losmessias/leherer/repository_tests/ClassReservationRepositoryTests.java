@@ -42,11 +42,11 @@ public class ClassReservationRepositoryTests {
 
     @BeforeEach
     public void setupData() {
-        professor = new Professor();
+        professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", com.losmessias.leherer.role.AppUserSex.MALE);
         subject = Subject.builder()
                 .name("Math")
                 .build();
-        student = new Student();
+        student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", com.losmessias.leherer.role.AppUserSex.MALE);
         professorRepository.save(professor);
         subjectRepository.save(subject);
         studentRepository.save(student);

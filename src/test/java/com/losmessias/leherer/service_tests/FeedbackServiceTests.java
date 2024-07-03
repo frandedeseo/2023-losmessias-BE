@@ -3,6 +3,7 @@ package com.losmessias.leherer.service_tests;
 import com.losmessias.leherer.domain.Feedback;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.domain.Student;
+import com.losmessias.leherer.role.AppUserSex;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.dto.FeedbackDto;
 import com.losmessias.leherer.repository.FeedbackRepository;
@@ -48,10 +49,10 @@ public class FeedbackServiceTests {
 
     @BeforeEach
     void setUp() {
-        studentTest = new Student();
+        studentTest = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         studentTest.setId(1L);
         studentTest.setPendingClassesFeedbacks(new ArrayList<>());
-        professorTest = new Professor();
+        professorTest = new Professor("frandedeseo@gmail.com", "pass123", "Francisco", "de Deseo", "Recoleta", "3462663707", com.losmessias.leherer.role.AppUserSex.MALE);
         professorTest.setId(2L);
         professorTest.setPendingClassesFeedbacks(new ArrayList<>());
     }

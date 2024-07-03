@@ -91,7 +91,7 @@
 //        professor1 = new Professor("Francisco",
 //                "de Deseö",
 //                "fran@gmail.com",);
-//        student1 = new Student();
+//        student1 = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
 //
 //
 //

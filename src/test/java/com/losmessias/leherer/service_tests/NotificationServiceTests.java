@@ -2,6 +2,7 @@ package com.losmessias.leherer.service_tests;
 
 import com.losmessias.leherer.domain.*;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
+import com.losmessias.leherer.role.AppUserSex;
 import com.losmessias.leherer.repository.NotificationRepository;
 import com.losmessias.leherer.service.EmailService;
 import com.losmessias.leherer.service.NotificationService;
@@ -54,9 +55,9 @@ public class NotificationServiceTests {
     @Test
     @DisplayName("Test the generation of notifications when a class is reserved")
     void testGenerateClassReservedNotification() {
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject();
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         ClassReservation classReservation = new ClassReservation(
                 professor,
                 subject,
@@ -70,9 +71,9 @@ public class NotificationServiceTests {
     @Test
     @DisplayName("Test the notification was sent to the professor when the student cancels the class")
     void testCancelClassReservedNotificationByStudent() {
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject();
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         ClassReservation classReservation = new ClassReservation(
                 professor,
                 subject,
@@ -87,9 +88,9 @@ public class NotificationServiceTests {
     @Test
     @DisplayName("Test the notification was sent to the student when the professor cancels the class")
     void testCancelClassReservedNotificationByProfessor() {
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject();
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         ClassReservation classReservation = new ClassReservation(
                 professor,
                 subject,

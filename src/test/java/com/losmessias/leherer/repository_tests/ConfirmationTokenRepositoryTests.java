@@ -31,7 +31,7 @@ public class ConfirmationTokenRepositoryTests {
     public void setupData() {
         student = new Student(
                 "fran@gmail.com",
-                "fran123",
+                "fran1234",
                 "Francisco",
                 "de Deseo",
                 "Ayacucho 1822",

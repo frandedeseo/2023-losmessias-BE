@@ -7,6 +7,7 @@ import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.domain.enumeration.SubjectStatus;
 import com.losmessias.leherer.dto.SubjectRequestDto;
 import com.losmessias.leherer.service.*;
+import com.losmessias.leherer.role.AppUserSex;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
@@ -122,7 +123,7 @@ public class ProfessorSubjectControllerTests {
     @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Approve professor-subjects returns ok")
     void testApproveProfessorSubjectsReturnsOk() throws Exception {
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("professorId", 1L);
         jsonObject.put("subjectIds", new JSONArray(List.of(1L)));
@@ -198,7 +199,7 @@ public class ProfessorSubjectControllerTests {
     @WithMockUser(username="admin",roles={"ADMIN"})
     @DisplayName("Reject professor-subjects returns ok")
     void testRejectProfessorSubjectsReturnsOk() throws Exception {
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("professorId", 1L);
         jsonObject.put("subjectIds", new JSONArray(List.of(1L)));

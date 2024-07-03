@@ -7,6 +7,7 @@ import com.losmessias.leherer.domain.enumeration.SubjectStatus;
 import com.losmessias.leherer.repository.ProfessorRepository;
 import com.losmessias.leherer.repository.ProfessorSubjectRepository;
 import com.losmessias.leherer.repository.SubjectRepository;
+import com.losmessias.leherer.role.AppUserSex;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +43,7 @@ public class ProfessorSubjectRepositoryTests {
 
     @BeforeEach
     public void setupData() {
-        professor = new Professor();
+        professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         subject = Subject.builder()
                 .name("Math")
                 .build();

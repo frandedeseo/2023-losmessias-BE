@@ -3,6 +3,7 @@ package com.losmessias.leherer.service_tests;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.dto.AppUserUpdateDto;
+import com.losmessias.leherer.repository.AppUserRepository;
 import com.losmessias.leherer.repository.ProfessorRepository;
 import com.losmessias.leherer.role.AppUserSex;
 import com.losmessias.leherer.service.AppUserService;
@@ -27,6 +28,8 @@ public class ProfessorServiceTests {
 
     @Mock
     private ProfessorRepository professorRepository;
+    @Mock
+    private AppUserRepository appUserRepository;
 
     @InjectMocks
     private ProfessorService professorService;
@@ -37,8 +40,8 @@ public class ProfessorServiceTests {
     @DisplayName("Get all professors")
     void testGetAllProfessors() {
         List<Professor> professors = new ArrayList<Professor>();
-        professors.add(new Professor());
-        professors.add(new Professor());
+        professors.add(new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE));
+        professors.add(new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE));
         when(professorRepository.findAll()).thenReturn(professors);
 
         assertEquals(professors, professorService.getAllProfessors());
@@ -55,7 +58,7 @@ public class ProfessorServiceTests {
     @Test
     @DisplayName("Find professor by id")
     void testFindProfessorById() {
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         when(professorRepository.findById(1L)).thenReturn(java.util.Optional.of(professor));
         assertEquals(professorService.getProfessorById(1L), professor);
     }
@@ -63,11 +66,11 @@ public class ProfessorServiceTests {
     @Test
     @DisplayName("Update a professor")
     void testUpdateProfessor() {
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         AppUserUpdateDto professorToUpdate = new AppUserUpdateDto();
         professorToUpdate.setEmail("jane@gmail.com");
-        when(professorRepository.findById(1L)).thenReturn(Optional.of(professor));
-        when(professorRepository.save(any())).thenReturn(professorToUpdate);
+        when(appUserRepository.findById(1L)).thenReturn(Optional.of(professor));
+        when(appUserRepository.save(any())).thenReturn(professorToUpdate);
         assertEquals(appUserService.update(1L, professorToUpdate), professorToUpdate);
     }
 }

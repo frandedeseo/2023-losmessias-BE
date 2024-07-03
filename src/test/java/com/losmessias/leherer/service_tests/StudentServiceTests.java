@@ -4,6 +4,8 @@ import com.losmessias.leherer.domain.ClassReservation;
 import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.dto.AppUserUpdateDto;
+import com.losmessias.leherer.repository.AppUserRepository;
+import com.losmessias.leherer.repository.FeedbackReceivedRepository;
 import com.losmessias.leherer.repository.StudentRepository;
 import com.losmessias.leherer.role.AppUserSex;
 import com.losmessias.leherer.service.AppUserService;
@@ -27,6 +29,10 @@ import static org.mockito.Mockito.when;
 public class StudentServiceTests {
     @Mock
     private StudentRepository studentRepository;
+    @Mock
+    private FeedbackReceivedRepository feedbackReceivedRepository;
+    @Mock
+    private AppUserRepository appUserRepository;
     @InjectMocks
     private StudentService studentService;
     @InjectMocks
@@ -45,7 +51,7 @@ public class StudentServiceTests {
     @Test
     @DisplayName("Get student by id")
     void testGetStudentById() {
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         when(studentRepository.findById(1L)).thenReturn(java.util.Optional.of(student));
         assertEquals(student, studentService.getStudentById(1L));
     }
@@ -55,7 +61,7 @@ public class StudentServiceTests {
     void testCreateStudent() {
         Student student = new Student(
                 "fran@gmail.com",
-                "fran123",
+                "fran1234",
                 "Francisco",
                 "de Deseo",
                 "Ayacucho 1822",
@@ -71,7 +77,7 @@ public class StudentServiceTests {
     void testUpdateStudent() {
         Student student = new Student(
                 "fran@gmail.com",
-                "fran123",
+                "fran1234",
                 "Francisco",
                 "de Deseo",
                 "Ayacucho 1822",
@@ -80,8 +86,8 @@ public class StudentServiceTests {
         );
         AppUserUpdateDto appUserUpdateDto = new AppUserUpdateDto("john@mail.com", "Recoleta", "123456");
 
-        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
-        when(studentRepository.save(any())).thenReturn(appUserUpdateDto);
+        when(appUserRepository.findById(1L)).thenReturn(Optional.of(student));
+        when(appUserRepository.save(any())).thenReturn(appUserUpdateDto);
         assertEquals(appUserService.update(1L, appUserUpdateDto), appUserUpdateDto);
     }
 

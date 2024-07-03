@@ -36,7 +36,7 @@ public class ProfessorSubjectServiceTests {
     @Test
     @DisplayName("Create association between professor and subject")
     void testCreatingAnAssociationBetweenProfessorAndSubject() {
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject("Math");
         ProfessorSubject professorSubject = new ProfessorSubject(professor, subject);
 
@@ -47,7 +47,7 @@ public class ProfessorSubjectServiceTests {
     @Test
     @DisplayName("Change status of professor subject from pending to approved")
     void testChangingStatusOfProfessorSubjectFromPendingToApproved() {
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject("Math");
         ProfessorSubject professorSubject = new ProfessorSubject(professor, subject);
 
@@ -63,7 +63,7 @@ public class ProfessorSubjectServiceTests {
     @Test
     @DisplayName("Change status of professor subject from pending to rejected")
     void testChangingStatusOfProfessorSubjectFromPendingToRejected() {
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject("Math");
         ProfessorSubject professorSubject = new ProfessorSubject(professor, subject);
 
@@ -79,7 +79,7 @@ public class ProfessorSubjectServiceTests {
     @Test
     @DisplayName("Find by professor and subject")
     void testFindByProfessorAndSubject(){
-        Professor professor1 = new Professor();
+        Professor professor1 = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject1 = new Subject("Math");
         ProfessorSubject professorSubject = new ProfessorSubject(professor1, subject1);
 
@@ -90,7 +90,7 @@ public class ProfessorSubjectServiceTests {
     @Test
     @DisplayName("Find by pending status")
     void testFindByPendingStatus(){
-        Professor professor1 = new Professor();
+        Professor professor1 = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject1 = new Subject("Math");
         ProfessorSubject professorSubject1 = new ProfessorSubject(professor1, subject1);
 
