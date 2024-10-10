@@ -4,6 +4,7 @@ import com.losmessias.leherer.domain.ClassReservation;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.domain.Subject;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import com.losmessias.leherer.domain.enumeration.ReservationStatus;
 import com.losmessias.leherer.repository.ClassReservationRepository;
 import com.losmessias.leherer.repository.ProfessorRepository;
@@ -42,11 +43,11 @@ public class ClassReservationRepositoryTests {
 
     @BeforeEach
     public void setupData() {
-        professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", com.losmessias.leherer.role.AppUserSex.MALE);
+        professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);
         subject = Subject.builder()
                 .name("Math")
                 .build();
-        student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", com.losmessias.leherer.role.AppUserSex.MALE);
+        student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         professorRepository.save(professor);
         subjectRepository.save(subject);
         studentRepository.save(student);

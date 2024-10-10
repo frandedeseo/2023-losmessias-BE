@@ -1,11 +1,12 @@
 package com.losmessias.leherer.service_tests;
 
+import com.losmessias.leherer.domain.AppUser;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.dto.AppUserUpdateDto;
 import com.losmessias.leherer.repository.AppUserRepository;
 import com.losmessias.leherer.repository.ProfessorRepository;
-import com.losmessias.leherer.role.AppUserSex;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import com.losmessias.leherer.service.AppUserService;
 import com.losmessias.leherer.service.ProfessorService;
 import org.junit.jupiter.api.DisplayName;
@@ -66,11 +67,19 @@ public class ProfessorServiceTests {
     @Test
     @DisplayName("Update a professor")
     void testUpdateProfessor() {
-        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);
         AppUserUpdateDto professorToUpdate = new AppUserUpdateDto();
         professorToUpdate.setEmail("jane@gmail.com");
+
+        // Mock the repository methods
         when(appUserRepository.findById(1L)).thenReturn(Optional.of(professor));
-        when(appUserRepository.save(any())).thenReturn(professorToUpdate);
-        assertEquals(appUserService.update(1L, professorToUpdate), professorToUpdate);
+        when(appUserRepository.save(any(Professor.class))).thenReturn(professor);
+
+        // Perform the update operation
+        AppUser result = appUserService.update(1L, professorToUpdate);
+
+        // Assert that the returned object matches the expected result
+        assertEquals(professor.getEmail(), professorToUpdate.getEmail());
+        assertEquals(professor.getEmail(), result.getEmail());
     }
 }

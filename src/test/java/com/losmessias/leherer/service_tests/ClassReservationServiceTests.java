@@ -12,7 +12,7 @@ import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.repository.ClassReservationRepository;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
 import com.losmessias.leherer.service.ClassReservationService;
-import com.losmessias.leherer.role.AppUserSex;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import com.losmessias.leherer.service.NotificationService;
 import org.junit.Before;
 import org.junit.jupiter.api.DisplayName;
@@ -36,6 +36,8 @@ import static org.mockito.Mockito.when;
 public class ClassReservationServiceTests {
     @Mock
     private ClassReservationRepository classReservationRepository;
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private ClassReservationService classReservationService;
@@ -58,7 +60,7 @@ public class ClassReservationServiceTests {
                 professor,
                 subject,
                 student,
-                LocalDate.of(2023, 1, 1),
+                LocalDate.of(2024, 7, 1),
                 LocalTime.of(12, 0),
                 LocalTime.of(13, 0),
                 100.0);
@@ -68,7 +70,7 @@ public class ClassReservationServiceTests {
                 professor,
                 subject,
                 student,
-                LocalDate.of(2023, 1, 1),
+                LocalDate.of(2024, 7, 1),
                 LocalTime.of(12, 0),
                 LocalTime.of(13, 0),
                 100.0));
@@ -84,7 +86,7 @@ public class ClassReservationServiceTests {
                 professor,
                 subject,
                 student,
-                LocalDate.of(2023, 1, 1),
+                LocalDate.of(2024, 7, 1),
                 LocalTime.of(12, 0),
                 LocalTime.of(13, 0),
                 100.0);
@@ -94,7 +96,7 @@ public class ClassReservationServiceTests {
                 professor,
                 subject,
                 student,
-                LocalDate.of(2023, 1, 1),
+                LocalDate.of(2024, 7, 1),
                 LocalTime.of(12, 0),
                 LocalTime.of(13, 0),
                 100.0));
@@ -188,7 +190,7 @@ public class ClassReservationServiceTests {
                 professor,
                 subject,
                 student,
-                LocalDate.of(2023, 11, 13),
+                LocalDate.of(2024, 7, 13),
                 LocalTime.of(12, 0),
                 LocalTime.of(13, 0),
                 100.0
@@ -213,7 +215,7 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2023, 11, 1),
+                        LocalDate.of(2024, 7, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
                         100.0
@@ -224,7 +226,7 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2023, 11, 1),
+                        LocalDate.of(2024, 7, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
                         100.0
@@ -235,7 +237,7 @@ public class ClassReservationServiceTests {
                     professor,
                     subject,
                     student,
-                    LocalDate.of(2023, 11, 1),
+                    LocalDate.of(2024, 7, 1),
                     LocalTime.of(12, 0),
                     LocalTime.of(13, 0),
                     100.0
@@ -286,7 +288,7 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2023, 10, 1),
+                        LocalDate.of(2024, 6, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
                         100.0
@@ -297,7 +299,7 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2023, 11, 1),
+                        LocalDate.of(2024, 7, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
                         100.0
@@ -308,7 +310,7 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2023, 11, 1),
+                        LocalDate.of(2024, 7, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
                         100.0
@@ -364,7 +366,7 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2023, 9, 1),
+                        LocalDate.of(2024, 5, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
                         100.0
@@ -375,7 +377,7 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2023, 10, 1),
+                        LocalDate.of(2024, 6, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
                         100.0
@@ -386,7 +388,7 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2023, 10, 29),
+                        LocalDate.of(2024, 6, 29),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
                         100.0

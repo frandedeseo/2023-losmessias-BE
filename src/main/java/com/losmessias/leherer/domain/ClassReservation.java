@@ -10,6 +10,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import jakarta.persistence.Column;
 
 @Entity
 @Data
@@ -58,6 +59,12 @@ public class ClassReservation {
     @Column
     @Min(0)
     private Double price;
+
+    @Column(name = "google_calendar_event_id")
+    private String googleCalendarEventId;
+
+    @Column(name = "google_meet_link")
+    private String googleMeetLink;
 
     public ClassReservation(Professor professor,
                             Subject subject,

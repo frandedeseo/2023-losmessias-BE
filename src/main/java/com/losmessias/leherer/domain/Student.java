@@ -2,7 +2,7 @@ package com.losmessias.leherer.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
-import com.losmessias.leherer.role.AppUserSex;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.WhereJoinTable;

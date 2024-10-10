@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import com.losmessias.leherer.role.AppUserSex;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 
 @Getter
 @AllArgsConstructor

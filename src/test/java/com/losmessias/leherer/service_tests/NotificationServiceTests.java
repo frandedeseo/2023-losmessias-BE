@@ -2,7 +2,7 @@ package com.losmessias.leherer.service_tests;
 
 import com.losmessias.leherer.domain.*;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
-import com.losmessias.leherer.role.AppUserSex;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import com.losmessias.leherer.repository.NotificationRepository;
 import com.losmessias.leherer.service.EmailService;
 import com.losmessias.leherer.service.NotificationService;

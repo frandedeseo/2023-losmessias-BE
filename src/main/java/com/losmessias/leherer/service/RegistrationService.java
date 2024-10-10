@@ -3,7 +3,7 @@ package com.losmessias.leherer.service;
 import com.losmessias.leherer.domain.*;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.dto.*;
-import com.losmessias.leherer.role.AppUserSex;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;

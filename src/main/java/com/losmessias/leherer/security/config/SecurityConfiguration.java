@@ -45,6 +45,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/authentication").permitAll()
                                 .requestMatchers("/api/loadEmailForPasswordChange").permitAll()
                                 .requestMatchers("/api/validate-email").permitAll()
+                                .requestMatchers("/api/calendar/**").permitAll()
                                 .requestMatchers("/api/subject/all").permitAll()
                                 .requestMatchers("/api/app-user/changePassword").permitAll()
                                 .requestMatchers("/api/forgot_password/**").permitAll()

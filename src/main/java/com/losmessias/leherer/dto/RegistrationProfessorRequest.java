@@ -1,7 +1,7 @@
 package com.losmessias.leherer.dto;
 
 import com.losmessias.leherer.domain.Subject;
-import com.losmessias.leherer.role.AppUserSex;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

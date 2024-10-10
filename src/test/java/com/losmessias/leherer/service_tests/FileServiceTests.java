@@ -1,7 +1,7 @@
 package com.losmessias.leherer.service_tests;
 
 import com.losmessias.leherer.domain.*;
-import com.losmessias.leherer.role.AppUserSex;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.dto.UploadInformationDto;
 import com.losmessias.leherer.exception.FileStorageException;
@@ -46,7 +46,7 @@ public class FileServiceTests {
     @Test
     @DisplayName("Files stores successfully")
     void setUploadInformation() {
-        Professor professor = new Professor("frandedeseo@gmail.com", "pass123", "Francisco", "de Deseo", "Recoleta", "3462663707", com.losmessias.leherer.role.AppUserSex.MALE);
+        Professor professor = new Professor("frandedeseo@gmail.com", "pass123", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);
         Subject subject = new Subject("Biology");
         Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         ClassReservation class1 = new ClassReservation(

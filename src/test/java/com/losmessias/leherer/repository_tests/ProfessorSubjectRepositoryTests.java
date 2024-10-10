@@ -7,7 +7,7 @@ import com.losmessias.leherer.domain.enumeration.SubjectStatus;
 import com.losmessias.leherer.repository.ProfessorRepository;
 import com.losmessias.leherer.repository.ProfessorSubjectRepository;
 import com.losmessias.leherer.repository.SubjectRepository;
-import com.losmessias.leherer.role.AppUserSex;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;

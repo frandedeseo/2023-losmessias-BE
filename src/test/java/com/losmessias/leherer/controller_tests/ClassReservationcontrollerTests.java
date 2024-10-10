@@ -10,7 +10,7 @@ import com.losmessias.leherer.dto.ClassReservationDto;
 import com.losmessias.leherer.repository.ProfessorSubjectRepository;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
 import com.losmessias.leherer.service.*;
-import com.losmessias.leherer.role.AppUserSex;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

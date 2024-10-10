@@ -1,5 +1,11 @@
 package com.losmessias.leherer.service;
 
+import com.google.api.client.util.DateTime;
+import com.google.api.services.calendar.Calendar;
+import com.google.api.services.calendar.model.ConferenceData;
+import com.google.api.services.calendar.model.CreateConferenceRequest;
+import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventDateTime;
 import com.losmessias.leherer.domain.*;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.domain.enumeration.ReservationStatus;
@@ -11,13 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.Period;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.time.*;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +28,9 @@ public class ClassReservationService {
     private final ProfessorService professorService;
     private final SubjectService subjectService;
     private final NotificationService notificationService;
+
+    @Autowired
+    private CalendarService calendarService;
 
     public ClassReservation getReservationById(Long id) {
         return classReservationRepository.findById(id).orElse(null);
@@ -76,8 +80,53 @@ public class ClassReservationService {
         );
 
         notificationService.generateClassReservedNotification(classReservation);
+        try {
+            Event event = createGoogleCalendarEvent(classReservation);
+            // Puedes guardar el ID del evento si lo necesitas
+            classReservation.setGoogleCalendarEventId(event.getId());
+            classReservation.setGoogleMeetLink(event.getHangoutLink());
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Manejar el error según sea necesario
+        }
 
         return classReservationRepository.save(classReservation);
+    }
+
+    // Método para crear el evento en Google Calendar
+    private Event createGoogleCalendarEvent(ClassReservation reservation) throws Exception {
+        Calendar service = calendarService.getCalendarService();
+
+        // Configurar el evento
+        Event event = new Event()
+                .setSummary("Clase con " + reservation.getProfessor().getFirstName() + " " + reservation.getProfessor().getLastName())
+                .setDescription("Clase de " + reservation.getSubject().getName())
+                .setStart(new EventDateTime()
+                        .setDateTime(getDateTime(reservation.getDate(), reservation.getStartingHour()))
+                        .setTimeZone("America/Los_Angeles"))
+                .setEnd(new EventDateTime()
+                        .setDateTime(getDateTime(reservation.getDate(), reservation.getEndingHour()))
+                        .setTimeZone("America/Los_Angeles"));
+
+        // Añadir conferencias (Google Meet)
+        ConferenceData conferenceData = new ConferenceData();
+        CreateConferenceRequest createConferenceRequest = new CreateConferenceRequest();
+        createConferenceRequest.setRequestId("some-random-string-" + System.currentTimeMillis());
+        conferenceData.setCreateRequest(createConferenceRequest);
+        event.setConferenceData(conferenceData);
+
+        // Insertar el evento en el calendario
+        Calendar.Events.Insert request = service.events().insert("primary", event);
+        request.setConferenceDataVersion(1); // Necesario para incluir datos de conferencia
+        Event createdEvent = request.execute();
+
+        return createdEvent;
+    }
+
+    private DateTime getDateTime(LocalDate date, LocalTime time) {
+        LocalDateTime localDateTime = LocalDateTime.of(date, time);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("America/Los_Angeles"));
+        return new DateTime(Date.from(zonedDateTime.toInstant()));
     }
 
     public boolean existsReservationForProfessorOnDayAndTime(Long professor,

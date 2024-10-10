@@ -5,6 +5,7 @@ import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.repository.AppUserRepository;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.service.AppUserService;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +43,7 @@ class AppUserServiceTest {
                 "de Deseo",
                 "Ayacucho 1822",
                 "+54 3462 663707",
-                com.losmessias.leherer.role.AppUserSex.MALE
+                AppUserSex.MALE
         );
     }
     @Test

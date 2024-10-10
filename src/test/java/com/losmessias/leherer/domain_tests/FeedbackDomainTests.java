@@ -16,77 +16,61 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 public class FeedbackDomainTests {
     private AppUser sender;
-    private AppUser reciever;
+    private AppUser receiver;
     private Set<FeedbackOptions> feedbackOptions;
 
     @BeforeEach
     void setUp() {
         sender = Student.builder().build();
-        reciever = Professor.builder().build();
+        receiver = Professor.builder().build();
         feedbackOptions = new HashSet<>();
     }
 
     @Test
     @DisplayName("Creating feedback with valid parameters")
     void creatingFeedbackWithValidParameters() throws InstantiationException {
-        Feedback feedback = new Feedback(sender, reciever,  feedbackOptions, 3.0);
+        Feedback feedback = new Feedback(sender, receiver, feedbackOptions, 3.0);
         assertThat(feedback).isNotNull();
-        assert (feedback.getReceiver().equals(reciever));
-        assert (feedback.getSender().equals(sender));
-        assert (feedback.getReceptorRole().equals(AppUserRole.STUDENT));
-        assert (feedback.getFeedbackOptions().equals(feedbackOptions));
-        assert (feedback.getRating().equals(3.0));
+        assertThat(feedback.getSender()).isEqualTo(sender);
+        assertThat(feedback.getReceiver()).isEqualTo(receiver);
+        assertThat(feedback.getFeedbackOptions()).isEqualTo(feedbackOptions);
+        assertThat(feedback.getRating()).isEqualTo(3.0);
     }
 
     @Test
-    @DisplayName("Creating feedback with than 3.0 rating rounds to 3.0")
-    void creatingFeedbackWithInvalidParameters() throws InstantiationException {
-        Feedback feedback = new Feedback(sender, reciever, feedbackOptions, 3.5);
-        assertThat(feedback).isNotNull();
-        assert (feedback.getSender().equals(sender));
-        assert (feedback.getReceiver().equals(reciever));
-        assert (feedback.getReceptorRole().equals(AppUserRole.STUDENT));
-        assert (feedback.getFeedbackOptions().equals(feedbackOptions));
-        assert (feedback.getRating().equals(3.0));
-    }
-//TODO Tendría que ser que tire excepción
-    @Test
-    @DisplayName("Creating feedback with less than 0.0 rating rounds to 0.0")
-    void creatingFeedbackWithInvalidParameters2() throws InstantiationException {
-        Feedback feedback = new Feedback(sender, reciever, feedbackOptions, -1.0);
-        assertThat(feedback).isNotNull();
-        assert (feedback.getSender().equals(sender));
-        assert (feedback.getReceiver().equals(reciever));
-        assert (feedback.getReceptorRole().equals(AppUserRole.STUDENT));
-        assert (feedback.getFeedbackOptions().equals(feedbackOptions));
-        assert (feedback.getRating().equals(0.0));
+    @DisplayName("Creating feedback with invalid rating (more than 3.0) throws exception")
+    void creatingFeedbackWithInvalidHighRating() {
+        assertThrows(InstantiationException.class, () -> {
+            new Feedback(sender, receiver, feedbackOptions, 3.5);
+        });
     }
 
     @Test
-    @DisplayName("Creating feedback with invalid rating rounds down to nearest 0.5")
-    void creatingFeedbackWithInvalidParameters3() throws InstantiationException {
-        Feedback feedback = new Feedback(sender, reciever, feedbackOptions, 2.3);
-        assertThat(feedback).isNotNull();
-        assert (feedback.getSender().equals(sender));
-        assert (feedback.getReceiver().equals(reciever));
-        assert (feedback.getReceptorRole().equals(AppUserRole.STUDENT));
-        assert (feedback.getFeedbackOptions().equals(feedbackOptions));
-        assert (feedback.getRating().equals(2.5));
+    @DisplayName("Creating feedback with invalid rating (less than 0.0) throws exception")
+    void creatingFeedbackWithInvalidLowRating() {
+        assertThrows(InstantiationException.class, () -> {
+            new Feedback(sender, receiver, feedbackOptions, -1.0);
+        });
     }
 
     @Test
-    @DisplayName("Creating feedback with invalid rating rounds up to nearest 0.5")
-    void creatingFeedbackWithInvalidParameters4() throws InstantiationException {
-        Feedback feedback = new Feedback(sender, reciever, feedbackOptions, 2.7);
-        assertThat(feedback).isNotNull();
-        assert (feedback.getSender().equals(sender));
-        assert (feedback.getReceiver().equals(reciever));
-        assert (feedback.getReceptorRole().equals(AppUserRole.STUDENT));
-        assert (feedback.getFeedbackOptions().equals(feedbackOptions));
-        assert (feedback.getRating().equals(2.5));
+    @DisplayName("Creating feedback with invalid rating (not a multiple of 0.5) throws exception")
+    void creatingFeedbackWithNonMultipleRating() {
+        assertThrows(InstantiationException.class, () -> {
+            new Feedback(sender, receiver, feedbackOptions, 2.3);
+        });
+    }
+
+    @Test
+    @DisplayName("Creating feedback with invalid rating (round up to nearest 0.5) throws exception")
+    void creatingFeedbackWithInvalidRoundUpRating() {
+        assertThrows(InstantiationException.class, () -> {
+            new Feedback(sender, receiver, feedbackOptions, 2.7);
+        });
     }
 }

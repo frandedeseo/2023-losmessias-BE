@@ -7,7 +7,7 @@ import com.losmessias.leherer.dto.AppUserUpdateDto;
 import com.losmessias.leherer.repository.AppUserRepository;
 import com.losmessias.leherer.repository.FeedbackReceivedRepository;
 import com.losmessias.leherer.repository.StudentRepository;
-import com.losmessias.leherer.role.AppUserSex;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import com.losmessias.leherer.service.AppUserService;
 import com.losmessias.leherer.service.StudentService;
 import org.junit.jupiter.api.DisplayName;
@@ -66,7 +66,7 @@ public class StudentServiceTests {
                 "de Deseo",
                 "Ayacucho 1822",
                 "+54 3462 663707",
-                com.losmessias.leherer.role.AppUserSex.MALE
+                AppUserSex.MALE
         );
         when(studentRepository.save(student)).thenReturn(student);
         assertEquals(student, studentService.create(student));
@@ -82,7 +82,7 @@ public class StudentServiceTests {
                 "de Deseo",
                 "Ayacucho 1822",
                 "+54 3462 663707",
-                com.losmessias.leherer.role.AppUserSex.MALE
+                AppUserSex.MALE
         );
         AppUserUpdateDto appUserUpdateDto = new AppUserUpdateDto("john@mail.com", "Recoleta", "123456");
 

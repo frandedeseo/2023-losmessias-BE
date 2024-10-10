@@ -5,6 +5,7 @@ import com.losmessias.leherer.domain.ConfirmationToken;
 import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.repository.ConfirmationTokenRepository;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import com.losmessias.leherer.service.ConfirmationTokenService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,14 +27,14 @@ class ConfirmationTokenServiceTest {
     @BeforeEach
     void setUp(){
 
-        Student student = new Student(
+        AppUser student = new Student(
                 "fran@gmail.com",
                 "fran123",
                 "Francisco",
                 "de Deseo",
                 "Ayacucho 1822",
                 "+54 3462 663707",
-                com.losmessias.leherer.role.AppUserSex.MALE
+                AppUserSex.MALE
         );
 
         token = "token";
@@ -45,6 +46,7 @@ class ConfirmationTokenServiceTest {
                 token,
                 student
         );
+        confirmationToken2.setConfirmedAt(LocalDateTime.now());
     }
     @Test
     @DisplayName("Confirmation of Token was successful")

@@ -4,7 +4,7 @@ import com.losmessias.leherer.domain.AppUser;
 import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.repository.AppUserRepository;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
-import com.losmessias.leherer.role.AppUserSex;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +26,7 @@ public class AppUserRepositoryTest {
     public void setupData() {
         student = new Student(
                 "fran@gmail.com",
-                "fran123",
+                "fran12345",
                 "Francisco",
                 "de Deseo",
                 "Ayacucho 1822",

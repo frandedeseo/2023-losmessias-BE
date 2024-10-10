@@ -43,18 +43,15 @@ public class ProfessorSubjectController {
     //TODO Hacer bienn las validaciones
     @PostMapping("/approve")
     public ResponseEntity<String> approve(@RequestBody SubjectRequestDto subjectRequestDto) throws JsonProcessingException {
-/*        Professor professor = professorService.getProfessorById(subjectRequestDto.getProfessorId());
-        if (professor == null) return new ResponseEntity<>("No professor found", HttpStatus.NOT_FOUND);*/
+        Professor professor = professorService.getProfessorById(subjectRequestDto.getProfessorId());
+        if (professor == null) return new ResponseEntity<>("No professor found", HttpStatus.NOT_FOUND);
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(professorSubjectService.changeStatus(subjectRequestDto, SubjectStatus.APPROVED)), HttpStatus.OK);
     }
 
     @PostMapping("/reject")
     public ResponseEntity<String> reject(@RequestBody SubjectRequestDto subjectRequestDto) throws JsonProcessingException {
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(professorSubjectService.changeStatus(subjectRequestDto, SubjectStatus.REJECTED)), HttpStatus.OK);
 
-        /*
         Professor professor = professorService.getProfessorById(subjectRequestDto.getProfessorId());
         if (professor == null) return new ResponseEntity<>("No professor found", HttpStatus.NOT_FOUND);
 
@@ -78,7 +75,7 @@ public class ProfessorSubjectController {
 
         notificationService.lecturedRejectedByAdminNotification(rejectedSubjects);
 
-        return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(rejectedSubjects), HttpStatus.OK);*/
+        return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(rejectedSubjects), HttpStatus.OK);
     }
 
     @GetMapping("/findByStatus")
