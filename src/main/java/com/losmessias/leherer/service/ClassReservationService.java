@@ -1,5 +1,9 @@
 package com.losmessias.leherer.service;
 
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.ConferenceData;
@@ -7,7 +11,6 @@ import com.google.api.services.calendar.model.CreateConferenceRequest;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.losmessias.leherer.domain.*;
-import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.domain.enumeration.ReservationStatus;
 import com.losmessias.leherer.dto.ClassReservationCancelDto;
 import com.losmessias.leherer.dto.ProfessorStaticsDto;
@@ -68,7 +71,8 @@ public class ClassReservationService {
                                               LocalDate day,
                                               LocalTime startingTime,
                                               LocalTime endingTime,
-                                              Double price) {
+                                              Double price,
+                                              String accessToken) { // Pass OAuth Credential here
         ClassReservation classReservation = new ClassReservation(
                 professor,
                 subject,
@@ -81,23 +85,30 @@ public class ClassReservationService {
 
         notificationService.generateClassReservedNotification(classReservation);
         try {
-            Event event = createGoogleCalendarEvent(classReservation);
-            // Puedes guardar el ID del evento si lo necesitas
+            // Pass the credential to create a Google Calendar event
+            Event event = createGoogleCalendarEvent(classReservation, accessToken);
+            // Store the Google Calendar event ID and Google Meet link
             classReservation.setGoogleCalendarEventId(event.getId());
             classReservation.setGoogleMeetLink(event.getHangoutLink());
         } catch (Exception e) {
             e.printStackTrace();
-            // Manejar el error según sea necesario
+            // Handle error as necessary
         }
 
         return classReservationRepository.save(classReservation);
     }
 
     // Método para crear el evento en Google Calendar
-    private Event createGoogleCalendarEvent(ClassReservation reservation) throws Exception {
-        Calendar service = calendarService.getCalendarService();
+    private Event createGoogleCalendarEvent(ClassReservation reservation, String accessToken) throws Exception {
+        // Use the access token to authenticate the Calendar service
+        Calendar service = new Calendar.Builder(
+                GoogleNetHttpTransport.newTrustedTransport(),
+                GsonFactory.getDefaultInstance(), null)
+                .setApplicationName("Lehrer")
+                .setHttpRequestInitializer(request -> request.getHeaders().setAuthorization("Bearer " + accessToken))
+                .build();
 
-        // Configurar el evento
+        // Configure the event
         Event event = new Event()
                 .setSummary("Clase con " + reservation.getProfessor().getFirstName() + " " + reservation.getProfessor().getLastName())
                 .setDescription("Clase de " + reservation.getSubject().getName())
@@ -108,16 +119,16 @@ public class ClassReservationService {
                         .setDateTime(getDateTime(reservation.getDate(), reservation.getEndingHour()))
                         .setTimeZone("America/Los_Angeles"));
 
-        // Añadir conferencias (Google Meet)
+        // Add Google Meet conference link
         ConferenceData conferenceData = new ConferenceData();
         CreateConferenceRequest createConferenceRequest = new CreateConferenceRequest();
         createConferenceRequest.setRequestId("some-random-string-" + System.currentTimeMillis());
         conferenceData.setCreateRequest(createConferenceRequest);
         event.setConferenceData(conferenceData);
 
-        // Insertar el evento en el calendario
+        // Insert the event into the user's calendar
         Calendar.Events.Insert request = service.events().insert("primary", event);
-        request.setConferenceDataVersion(1); // Necesario para incluir datos de conferencia
+        request.setConferenceDataVersion(1); // Required to include conference data
         Event createdEvent = request.execute();
 
         return createdEvent;

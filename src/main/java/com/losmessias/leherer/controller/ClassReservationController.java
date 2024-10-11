@@ -1,6 +1,8 @@
 package com.losmessias.leherer.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.losmessias.leherer.domain.ClassReservation;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.domain.Student;
@@ -9,10 +11,7 @@ import com.losmessias.leherer.dto.ClassReservationCancelDto;
 import com.losmessias.leherer.dto.ClassReservationDto;
 import com.losmessias.leherer.dto.UnavailableClassReservationDto;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
-import com.losmessias.leherer.service.ClassReservationService;
-import com.losmessias.leherer.service.ProfessorService;
-import com.losmessias.leherer.service.StudentService;
-import com.losmessias.leherer.service.SubjectService;
+import com.losmessias.leherer.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +31,7 @@ public class ClassReservationController {
     private final StudentService studentService;
     private final SubjectService subjectService;
     private final ProfessorService professorService;
+    private final CalendarService calendarService;
 
     @GetMapping("/{id}")
     public ResponseEntity<String> getReservationById(@PathVariable Long id) throws JsonProcessingException {
@@ -43,39 +43,52 @@ public class ClassReservationController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createReservation(@RequestBody ClassReservationDto classReservationDto) throws JsonProcessingException {
-        if (classReservationDto.getProfessorId() == null)
-            return ResponseEntity.badRequest().body("Professor id must be provided");
-        if (classReservationDto.getSubjectId() == null)
-            return ResponseEntity.badRequest().body("Subject id must be provided");
-        if (classReservationDto.getStudentId() == null)
-            return ResponseEntity.badRequest().body("Student id must be provided");
-        Professor professor = professorService.getProfessorById(classReservationDto.getProfessorId());
-        Subject subject = subjectService.getSubjectById(classReservationDto.getSubjectId());
-        Student student = studentService.getStudentById(classReservationDto.getStudentId());
-        if (!student.canMakeAReservation())
-            return new ResponseEntity<>("Student must give feedback before making a reservation", HttpStatus.BAD_REQUEST);
-        //TODO Esto podría ir en la Class Reservation Entity?
-        if (classReservationService.existsReservationForProfessorOnDayAndTime(
-                classReservationDto.getProfessorId(),
-                classReservationDto.getDay(),
-                classReservationDto.getStartingHour(),
-                classReservationDto.getEndingHour()))
-            return ResponseEntity.badRequest().body("There is already a class reserved for this professor at this time");
+    public ResponseEntity<String> createReservation(@RequestBody ClassReservationDto classReservationDto,
+                                                    @RequestParam("accessToken") String accessToken) { // Get the access toke
+        try {
+            // Ensure required IDs are provided
+            if (classReservationDto.getProfessorId() == null)
+                return ResponseEntity.badRequest().body("Professor id must be provided");
+            if (classReservationDto.getSubjectId() == null)
+                return ResponseEntity.badRequest().body("Subject id must be provided");
+            if (classReservationDto.getStudentId() == null)
+                return ResponseEntity.badRequest().body("Student id must be provided");
 
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        return ResponseEntity.ok(
-            converter.getObjectMapper().writeValueAsString(classReservationService.createReservation(
+            // Fetch necessary entities
+            Professor professor = professorService.getProfessorById(classReservationDto.getProfessorId());
+            Subject subject = subjectService.getSubjectById(classReservationDto.getSubjectId());
+            Student student = studentService.getStudentById(classReservationDto.getStudentId());
+
+            // Check if the student can make a reservation
+            if (!student.canMakeAReservation())
+                return new ResponseEntity<>("Student must give feedback before making a reservation", HttpStatus.BAD_REQUEST);
+
+            // Check for conflicting reservations
+            if (classReservationService.existsReservationForProfessorOnDayAndTime(
+                    classReservationDto.getProfessorId(),
+                    classReservationDto.getDay(),
+                    classReservationDto.getStartingHour(),
+                    classReservationDto.getEndingHour()))
+                return ResponseEntity.badRequest().body("There is already a class reserved for this professor at this time");
+
+            // Create the reservation and pass the credential for Google Calendar access
+            ClassReservation reservation = classReservationService.createReservation(
                     professor,
                     subject,
                     student,
                     classReservationDto.getDay(),
                     classReservationDto.getStartingHour(),
                     classReservationDto.getEndingHour(),
-                    classReservationDto.getPrice()
-                )
-            )
-        );
+                    classReservationDto.getPrice(),
+                    accessToken // Pass the access token
+            );
+
+            return ResponseEntity.ok("Reservation and Google Calendar event created successfully!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating reservation");
+        }
     }
 
     @PostMapping("/cancel")

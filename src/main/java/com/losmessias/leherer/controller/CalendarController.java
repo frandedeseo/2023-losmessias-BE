@@ -1,54 +1,50 @@
 package com.losmessias.leherer.controller;
 
-import com.google.api.client.util.DateTime;
-import com.google.api.services.calendar.Calendar;
-import com.google.api.services.calendar.model.*;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.losmessias.leherer.service.CalendarService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class CalendarController {
 
     @Autowired
     private CalendarService calendarService;
 
-
-
-    @GetMapping("/api/calendar/eventLink")
-    public String createEvent() {
+    @GetMapping("/authorize")
+    public ResponseEntity<String> authorize() {
         try {
-            // Get the Calendar service
-            Calendar service = calendarService.getCalendarService();
-
-            // Create a new event (same as before)
-            Event event = new Event()
-                    .setSummary("Sample Event")
-                    .setLocation("Online")
-                    .setDescription("This is a sample event.");
-
-            // Set the start and end times
-            DateTime startDateTime = new DateTime("2024-10-10T10:00:00-07:00");
-            EventDateTime start = new EventDateTime()
-                    .setDateTime(startDateTime)
-                    .setTimeZone("America/Los_Angeles");
-            event.setStart(start);
-
-            DateTime endDateTime = new DateTime("2024-10-10T11:00:00-07:00");
-            EventDateTime end = new EventDateTime()
-                    .setDateTime(endDateTime)
-                    .setTimeZone("America/Los_Angeles");
-            event.setEnd(end);
-
-            // Insert the event into the user's calendar
-            Event createdEvent = service.events().insert("primary", event).execute();
-
-            // Return the event link
-            return "Event created: <a href=\"" + createdEvent.getHtmlLink() + "\">View Event</a>";
+            // Generate the authorization URL and send it to the frontend
+            String authorizationUrl = calendarService.getAuthorizationUrl();
+            return ResponseEntity.ok(authorizationUrl);
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error creating event.";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating authorization URL");
+        }
+    }
+
+    @GetMapping("/oauth2callback")
+    public ResponseEntity<String> handleOAuthCallback(@RequestParam("code") String code) {
+        try {
+            // Exchange the authorization code for OAuth credentials
+            Credential credential = calendarService.getCredentials(code);
+
+            // Redirect the user to the frontend after successful authorization with the token in the URL
+            String accessToken = credential.getAccessToken();  // Or use refresh token if needed
+            String redirectUrl = "http://localhost:3000/student-landing?token=" + accessToken;
+
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header("Location", redirectUrl)
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Error exchanging authorization code.");
         }
     }
 }

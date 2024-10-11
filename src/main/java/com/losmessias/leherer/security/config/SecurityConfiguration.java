@@ -47,6 +47,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/validate-email").permitAll()
                                 .requestMatchers("/api/calendar/**").permitAll()
                                 .requestMatchers("/api/subject/all").permitAll()
+                                .requestMatchers("/oauth2callback").permitAll()
                                 .requestMatchers("/api/app-user/changePassword").permitAll()
                                 .requestMatchers("/api/forgot_password/**").permitAll()
                                 .requestMatchers("/api/is-token-expired").permitAll()

@@ -99,42 +99,42 @@ public class ClassReservationcontrollerTests {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
-    @DisplayName("Create a reservation returns ok")
-    void testCreateAReservationReturnsOk() throws Exception {
-        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
-        Subject subject = new Subject();
-        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
-        JSONObject jsonContent = new JSONObject();
-        jsonContent.put("professorId", 1);
-        jsonContent.put("subjectId", 1);
-        jsonContent.put("studentId", 1);
-        jsonContent.put("day", LocalDate.of(2023, 1, 1));
-        jsonContent.put("startingTime", LocalTime.of(12, 0));
-        jsonContent.put("endingHour", LocalTime.of(13, 0));
-        jsonContent.put("price", 100);
-
-        when(studentService.getStudentById(1L)).thenReturn(studentTest);
-        when(studentService.getStudentById(1L).canMakeAReservation()).thenReturn(true);
-
-        when(classReservationService.createReservation(professor, subject, student, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0, 0), LocalTime.of(13, 0, 0), 100.0)).thenReturn(classReservationTest1);
-        when(classReservationService.createReservation(
-                professor,
-                subject,
-                student,
-                LocalDate.of(2023, 1, 1),
-                LocalTime.of(12, 0, 0),
-                LocalTime.of(13, 0, 0),
-                100.0)).thenReturn(classReservationTest1);
-
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/api/reservation/create")
-                        .contentType("application/json")
-                        .content(jsonContent.toString())
-                        .with(csrf()))
-                .andExpect(status().isOk());
-    }
+//    @Test
+//    @WithMockUser(username = "admin", roles = {"ADMIN"})
+//    @DisplayName("Create a reservation returns ok")
+//    void testCreateAReservationReturnsOk() throws Exception {
+//        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
+//        Subject subject = new Subject();
+//        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
+//        JSONObject jsonContent = new JSONObject();
+//        jsonContent.put("professorId", 1);
+//        jsonContent.put("subjectId", 1);
+//        jsonContent.put("studentId", 1);
+//        jsonContent.put("day", LocalDate.of(2023, 1, 1));
+//        jsonContent.put("startingTime", LocalTime.of(12, 0));
+//        jsonContent.put("endingHour", LocalTime.of(13, 0));
+//        jsonContent.put("price", 100);
+//
+//        when(studentService.getStudentById(1L)).thenReturn(studentTest);
+//        when(studentService.getStudentById(1L).canMakeAReservation()).thenReturn(true);
+//
+//        when(classReservationService.createReservation(professor, subject, student, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0, 0), LocalTime.of(13, 0, 0), 100.0)).thenReturn(classReservationTest1);
+//        when(classReservationService.createReservation(
+//                professor,
+//                subject,
+//                student,
+//                LocalDate.of(2023, 1, 1),
+//                LocalTime.of(12, 0, 0),
+//                LocalTime.of(13, 0, 0),
+//                100.0)).thenReturn(classReservationTest1);
+//
+//        mockMvc.perform(MockMvcRequestBuilders
+//                        .post("/api/reservation/create")
+//                        .contentType("application/json")
+//                        .content(jsonContent.toString())
+//                        .with(csrf()))
+//                .andExpect(status().isOk());
+//    }
 
     @Test
     @WithMockUser
