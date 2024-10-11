@@ -113,11 +113,9 @@ public class ClassReservationService {
                 .setSummary("Clase con " + reservation.getProfessor().getFirstName() + " " + reservation.getProfessor().getLastName())
                 .setDescription("Clase de " + reservation.getSubject().getName())
                 .setStart(new EventDateTime()
-                        .setDateTime(getDateTime(reservation.getDate(), reservation.getStartingHour()))
-                        .setTimeZone("America/Los_Angeles"))
+                        .setDateTime(getDateTime(reservation.getDate(), reservation.getStartingHour())))  // No time zone set
                 .setEnd(new EventDateTime()
-                        .setDateTime(getDateTime(reservation.getDate(), reservation.getEndingHour()))
-                        .setTimeZone("America/Los_Angeles"));
+                        .setDateTime(getDateTime(reservation.getDate(), reservation.getEndingHour())));   // No time zone set
 
         // Add Google Meet conference link
         ConferenceData conferenceData = new ConferenceData();
@@ -135,9 +133,14 @@ public class ClassReservationService {
     }
 
     private DateTime getDateTime(LocalDate date, LocalTime time) {
+        // Combine the date and time into a LocalDateTime
         LocalDateTime localDateTime = LocalDateTime.of(date, time);
-        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("America/Los_Angeles"));
-        return new DateTime(Date.from(zonedDateTime.toInstant()));
+
+        // Convert to ZonedDateTime with system default time zone or UTC if preferred
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());  // You can change to ZoneOffset.UTC if needed
+
+        // Return the DateTime in the proper ISO 8601 format
+        return new DateTime(zonedDateTime.toInstant().toString());
     }
 
     public boolean existsReservationForProfessorOnDayAndTime(Long professor,
