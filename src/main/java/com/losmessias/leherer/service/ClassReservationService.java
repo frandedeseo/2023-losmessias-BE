@@ -83,7 +83,7 @@ public class ClassReservationService {
                 price
         );
 
-        notificationService.generateClassReservedNotification(classReservation);
+
         try {
             // Pass the credential to create a Google Calendar event
             Event event = createGoogleCalendarEvent(classReservation, accessToken);
@@ -94,6 +94,7 @@ public class ClassReservationService {
             e.printStackTrace();
             // Handle error as necessary
         }
+        notificationService.generateClassReservedNotification(classReservation);
 
         return classReservationRepository.save(classReservation);
     }

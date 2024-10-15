@@ -23,8 +23,10 @@ public class ProfessorSubjectService {
     private final ProfessorService professorService;
     private final NotificationService notificationService;
 
-    public ProfessorSubject createAssociation(Professor professor, Subject subject) {
-        ProfessorSubject professorSubject = new ProfessorSubject(professor, subject);
+    public ProfessorSubject createAssociation(Professor professor, Subject subject, Double price) {
+        // Fetch the full subject from the database
+
+        ProfessorSubject professorSubject = new ProfessorSubject(professor, subject, price);
         return professorSubjectRepository.save(professorSubject);
     }
 
@@ -37,12 +39,26 @@ public class ProfessorSubjectService {
         return professorSubjectRepository.save(professorSubject);
     }
 
+    public ProfessorSubject editPrice(Long id, Double price) {
+        ProfessorSubject professorSubject = professorSubjectRepository.findById(id).orElse(null);
+        if (professorSubject == null) {
+            throw new RuntimeException("ProfessorSubject with id " + id + " not found");
+        }
+        professorSubject.editPrice(price);
+        return professorSubjectRepository.save(professorSubject);
+    }
+
+
     public ProfessorSubject findByProfessorAndSubject(Professor professor, Subject subject) {
         return professorSubjectRepository.findByProfessorIdAndSubject_Id(professor.getId(), subject.getId());
     }
 
     public List<ProfessorSubject> findByStatus(SubjectStatus status) {
         return professorSubjectRepository.findByStatus(status);
+    }
+
+    public List<ProfessorSubject> findByProfessor(Professor professor) {
+        return professorSubjectRepository.findByProfessorIdAndStatus(professor.getId(), SubjectStatus.APPROVED);
     }
 
     public List<ProfessorSubject> changeStatus(SubjectRequestDto subjectRequestDto, SubjectStatus status) {

@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
 
-    @Query("SELECT  AVG(f.rating) FROM Feedback f WHERE  f.receiver = ?1")
-    Double getAvgRating(Long id);
+    @Query("SELECT COALESCE(AVG(f.rating), 0) FROM Feedback f WHERE f.receiver.id = ?1")
+    Double getAvgRating(Long receiverId);
 }

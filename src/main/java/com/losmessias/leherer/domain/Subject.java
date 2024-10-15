@@ -19,9 +19,17 @@ public class Subject {
 
     @Column
     private String name;
+    @Column
+    private Double price;
 
     public Subject(String name) {
         this.name = name;
+        this.price = null;
+    }
+
+    public Subject(String name, Double price) {
+        this.name = name;
+        this.price = price;
     }
 
     @Override

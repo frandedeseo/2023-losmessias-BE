@@ -39,7 +39,11 @@ public class RegistrationController {
 
     @PostMapping(path = "/registration-professor")
     public ResponseEntity<String> registerProfessor(@RequestBody RegistrationProfessorRequest request) {
-        return ResponseEntity.ok(registrationService.registerProfessor(request));
+        try {
+            return ResponseEntity.ok(registrationService.registerProfessor(request));
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping(path = "/registration/confirm")

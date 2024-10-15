@@ -106,7 +106,7 @@ public class NotificationServiceTests {
     @DisplayName("test the notification was sent when admin approves a lecture")
     void testLecturedApprovedByAdminNotification(){
         List<ProfessorSubject> approvedSubjects = new ArrayList<>();
-        approvedSubjects.add(new ProfessorSubject(new Professor(), new Subject()));
+        approvedSubjects.add(new ProfessorSubject(new Professor(), new Subject(), 23.00));
         assertEquals( "Notification sent successfully", notificationService.lecturedApprovedByAdminNotification(approvedSubjects));
     }
 
@@ -114,7 +114,7 @@ public class NotificationServiceTests {
     @DisplayName("test the notification was sent when admin rejects a lecture")
     void testLecturedRejectedByAdminNotification(){
         List<ProfessorSubject> approvedSubjects = new ArrayList<>();
-        approvedSubjects.add(new ProfessorSubject(new Professor(), new Subject()));
+        approvedSubjects.add(new ProfessorSubject(new Professor(), new Subject(), 23.00));
         assertEquals( "Notification sent successfully", notificationService.lecturedApprovedByAdminNotification(approvedSubjects));
     }
 

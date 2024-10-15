@@ -1,10 +1,8 @@
 package com.losmessias.leherer.dto;
 
-import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 @Data
@@ -18,5 +16,5 @@ public class RegistrationProfessorRequest {
     private final String location;
     private final String phone;
     private final AppUserSex sex;
-    private final List<Subject> subjects;
+    private final List<SubjectPriceDto> subjectPrices;
 }

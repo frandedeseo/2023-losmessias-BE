@@ -33,9 +33,9 @@ public class NotificationService {
         Professor professor = classReservation.getProfessor();
 
         String textStudent = "You have reserved a class of "+ classReservation.getSubject().getName() +" with " + professor.getFirstName() + " " + professor.getLastName()
-                + ".\n From: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour() + ".\n The date: " + classReservation.getDate() + ".  Enlace de Google Meet: " + classReservation.getGoogleMeetLink();
+                + ".\n From: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour() + ".\n The date: " + classReservation.getDate() + ".\n  Enlace de Google Meet: " + classReservation.getGoogleMeetLink();
         String textProfessor = "You have been reserved a class of "+ classReservation.getSubject().getName() +" with " + student.getFirstName() + " " + student.getLastName()
-                + ".\n From: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour() + ".\n The date: " + classReservation.getDate() + ".  Enlace de Google Meet: " + classReservation.getGoogleMeetLink();
+                + ".\n From: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour() + ".\n The date: " + classReservation.getDate() + ".\n  Enlace de Google Meet: " + classReservation.getGoogleMeetLink();
 
         Notification notificationStudent = new Notification(student, textStudent);
         Notification notificationProfessor = new Notification(professor, textProfessor);

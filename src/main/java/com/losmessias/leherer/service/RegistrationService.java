@@ -1,12 +1,7 @@
 package com.losmessias.leherer.service;
 
 import com.losmessias.leherer.domain.*;
-import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.dto.*;
-import com.losmessias.leherer.domain.enumeration.AppUserSex;
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,8 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.*;
 
 @Service
@@ -99,9 +92,9 @@ public class RegistrationService {
                 )
         );
 
-        List<Subject> subjectList = request.getSubjects();
-        for (Subject subject : subjectList) {
-            professorSubjectService.createAssociation(professor, subject);
+        List<SubjectPriceDto> subjectPriceList = request.getSubjectPrices();
+        for (SubjectPriceDto subjectPrice : subjectPriceList) {
+            professorSubjectService.createAssociation(professor, subjectPrice.getSubject(), subjectPrice.getPrice());
         }
         AppUser appUser = appUserService.getAppUser( request.getEmail());
 

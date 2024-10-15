@@ -38,10 +38,10 @@ public class ProfessorSubjectServiceTests {
     void testCreatingAnAssociationBetweenProfessorAndSubject() {
         Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject("Math");
-        ProfessorSubject professorSubject = new ProfessorSubject(professor, subject);
+        ProfessorSubject professorSubject = new ProfessorSubject(professor, subject, 23.00);
 
         when(professorSubjectRepository.save(any())).thenReturn(professorSubject);
-        assertEquals(professorSubject, professorSubjectService.createAssociation(professor,subject));
+        assertEquals(professorSubject, professorSubjectService.createAssociation(professor,subject, 23.00));
     }
 
     @Test
@@ -49,10 +49,10 @@ public class ProfessorSubjectServiceTests {
     void testChangingStatusOfProfessorSubjectFromPendingToApproved() {
         Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject("Math");
-        ProfessorSubject professorSubject = new ProfessorSubject(professor, subject);
+        ProfessorSubject professorSubject = new ProfessorSubject(professor, subject, 23.00);
 
         when(professorSubjectRepository.save(any())).thenReturn(professorSubject);
-        ProfessorSubject subjectCreated = professorSubjectService.createAssociation(professor,subject);
+        ProfessorSubject subjectCreated = professorSubjectService.createAssociation(professor,subject, 23.00);
         assertEquals(professorSubject, subjectCreated);
 
         when(professorSubjectRepository.findById(any())).thenReturn(Optional.ofNullable(subjectCreated));
@@ -65,10 +65,10 @@ public class ProfessorSubjectServiceTests {
     void testChangingStatusOfProfessorSubjectFromPendingToRejected() {
         Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject("Math");
-        ProfessorSubject professorSubject = new ProfessorSubject(professor, subject);
+        ProfessorSubject professorSubject = new ProfessorSubject(professor, subject, 23.00);
 
         when(professorSubjectRepository.save(any())).thenReturn(professorSubject);
-        ProfessorSubject subjectCreated = professorSubjectService.createAssociation(professor,subject);
+        ProfessorSubject subjectCreated = professorSubjectService.createAssociation(professor,subject, 23.00);
         assertEquals(professorSubject, subjectCreated);
 
         when(professorSubjectRepository.findById(any())).thenReturn(Optional.ofNullable(subjectCreated));
@@ -81,7 +81,7 @@ public class ProfessorSubjectServiceTests {
     void testFindByProfessorAndSubject(){
         Professor professor1 = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject1 = new Subject("Math");
-        ProfessorSubject professorSubject = new ProfessorSubject(professor1, subject1);
+        ProfessorSubject professorSubject = new ProfessorSubject(professor1, subject1, 23.00);
 
         when(professorSubjectRepository.findByProfessorIdAndSubject_Id(any(), any())).thenReturn(professorSubject);
         assertEquals(professorSubject, professorSubjectService.findByProfessorAndSubject(professor1, subject1));
@@ -92,10 +92,10 @@ public class ProfessorSubjectServiceTests {
     void testFindByPendingStatus(){
         Professor professor1 = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject1 = new Subject("Math");
-        ProfessorSubject professorSubject1 = new ProfessorSubject(professor1, subject1);
+        ProfessorSubject professorSubject1 = new ProfessorSubject(professor1, subject1, 23.00);
 
         Subject subject2 = new Subject("Math");
-        ProfessorSubject professorSubject2 = new ProfessorSubject(professor1, subject2);
+        ProfessorSubject professorSubject2 = new ProfessorSubject(professor1, subject2, 23.00);
         List<ProfessorSubject> professorSubjects = new ArrayList<>();
         professorSubjects.add(professorSubject1);
         professorSubjects.add(professorSubject2);

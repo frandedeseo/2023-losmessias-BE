@@ -33,7 +33,7 @@ public class Feedback {
     @JoinColumn(nullable = false, name = "receiver_id")
     private AppUser receiver;
 
-    @Column(nullable = false)
+    @Column
     private AppUserRole receptorRole;
 
     @ElementCollection
@@ -52,6 +52,7 @@ public class Feedback {
         this.sender = sender;
         this.receiver = receiver;
         this.feedbackOptions = feedbackOptions;
+        this.dateTimeOfFeedback = LocalDateTime.now();
         this.rating = verifyRating(rating);
     }
 

@@ -31,13 +31,27 @@ public class ProfessorSubjectController {
     private final NotificationService notificationService;
 
     @PostMapping("/createAssociation")
-    public ResponseEntity<String> createProfessorSubject(Long professorId, Long subjectId) {
+    public ResponseEntity<String> createProfessorSubject(Long professorId, Long subjectId, Double price) {
         Professor professor = professorService.getProfessorById(professorId);
         if (professor == null) return new ResponseEntity<>("No professor found", HttpStatus.NOT_FOUND);
         Subject subject = subjectService.getSubjectById(subjectId);
         if (subject == null) return new ResponseEntity<>("No subject found", HttpStatus.NOT_FOUND);
-        professorSubjectService.createAssociation(professor, subject);
-        return new ResponseEntity<>("Professor-subject created", HttpStatus.CREATED);
+        try {
+            professorSubjectService.createAssociation(professor, subject, price);
+            return new ResponseEntity<>("Professor-subject created", HttpStatus.CREATED);
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/edit-price")
+    public ResponseEntity<String> editPrice(@RequestParam("id") Long id, @RequestParam("price") Double price) throws JsonProcessingException {
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        try {
+            return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(professorSubjectService.editPrice(id, price)), HttpStatus.OK);
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     //TODO Hacer bienn las validaciones
@@ -76,6 +90,17 @@ public class ProfessorSubjectController {
         notificationService.lecturedRejectedByAdminNotification(rejectedSubjects);
 
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(rejectedSubjects), HttpStatus.OK);
+    }
+
+    @GetMapping("/findByProfessor/{id}")
+    public ResponseEntity<String> findByProfessor(@PathVariable Long id) throws JsonProcessingException {
+        Professor professor = professorService.getProfessorById(id);
+        if (professor == null) return new ResponseEntity<>("No professor found", HttpStatus.NOT_FOUND);
+        List<ProfessorSubject> professorSubjects = professorSubjectService.findByProfessor(professor);
+        if (professorSubjects.isEmpty())
+            return new ResponseEntity<>("No professor-subjects found", HttpStatus.NOT_FOUND);
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(professorSubjects), HttpStatus.OK);
     }
 
     @GetMapping("/findByStatus")
