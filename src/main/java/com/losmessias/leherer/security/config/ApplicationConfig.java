@@ -20,7 +20,6 @@ import java.time.Clock;
 public class ApplicationConfig {
 
     private final AppUserRepository repository;
-    //jfvj
     @Bean
     public UserDetailsService userDetailsService(){
         return username -> {

@@ -22,7 +22,7 @@ public class SecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
-    private static final String[] WHITELIST = {
+    private static final String[] PUBLIC = {
             "/v2/api-docs",
             "/v3/api-docs/**",
             "/swagger-resources",
@@ -31,7 +31,45 @@ public class SecurityConfiguration {
             "/configuration/security",
             "/doc/swagger-ui.html",
             "/doc/swagger-ui/**",
-            "/webjars/**"
+            "/webjars/**",
+            "/api/registration/**",
+            "/api/registration-professor/**",
+            "/api/authentication",
+            "/api/loadEmailForPasswordChange",
+            "/api/validate-email",
+            "/api/subject/all",
+            "/api/app-user/changePassword",
+            "/api/forgot_password/**",
+            "/api/is-token-expired"
+    };
+    private static final String[] PROFESSOR_AUTHORITIES = {
+            "/api/reservation/createUnavailable",
+            "/api/professor/removeFeedback/**",
+            "/api/professor-subject/edit-price"
+    };
+    private static final String[] STUDENT_AUTHORITIES = {
+            "/api/reservation/create"
+    };
+    private static final String[] ADMIN_AUTHORITIES = {
+            "/api/subject/edit-price",
+            "/api/subject/create",
+            "/api/reservation/todaySummary",
+            "/api/professor-subject/reject",
+            "/api/professor-subject/approve",
+            "/api/professor-subject/findByStatus",
+            "/api/feedback/getAllFeedbacks",
+    };
+    private static final String[] PROFESSOR_AND_STUDENT_AUTHORITIES = {
+            "/api/reservation/cancel",
+            "/api/notification/**",
+            "/api/file/**",
+            "/api/feedback/giveFeedback",
+            "/api/comment/upload",
+            "/api/app-user/update/**",
+            "/api/loadedData/get-uploaded-data",
+    };
+    private static final String[] PROFESSOR_AND_ADMIN_AUTHORITIES = {
+            "/api/reservation/getStatistics"
     };
 
     @Bean
@@ -39,25 +77,23 @@ public class SecurityConfiguration {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(req ->
-                        req.requestMatchers("/api/registration/**").permitAll()
-                                .requestMatchers("/api/registration-professor/**").permitAll()
-                                .requestMatchers("/api/authentication").permitAll()
-                                .requestMatchers("/api/loadEmailForPasswordChange").permitAll()
-                                .requestMatchers("/api/validate-email").permitAll()
-                                .requestMatchers("/api/calendar/**").permitAll()
-                                .requestMatchers("/api/subject/all").permitAll()
-                                .requestMatchers("/oauth2callback").permitAll()
-                                .requestMatchers("/api/app-user/changePassword").permitAll()
-                                .requestMatchers("/api/forgot_password/**").permitAll()
-                                .requestMatchers("/api/is-token-expired").permitAll()
-                                .requestMatchers(WHITELIST).permitAll()
-                                .anyRequest().authenticated()
+                .authorizeHttpRequests(req -> req
+                        // Public access
+                        .requestMatchers(PUBLIC).permitAll()
+                        // Role-based access control
+                        .requestMatchers(PROFESSOR_AUTHORITIES).hasAuthority("PROFESSOR")
+                        .requestMatchers(ADMIN_AUTHORITIES).hasAuthority("ADMIN")
+                        .requestMatchers(STUDENT_AUTHORITIES).hasAuthority("STUDENT")
+                        .requestMatchers(PROFESSOR_AND_ADMIN_AUTHORITIES).hasAnyAuthority("PROFESSOR", "ADMIN")
+                        .requestMatchers(PROFESSOR_AND_STUDENT_AUTHORITIES).hasAnyAuthority("PROFESSOR", "STUDENT")
+                        // Any other request needs authentication
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .cors();
+
         return http.build();
     }
 }
