@@ -208,14 +208,14 @@ public class ClassReservationServiceTests {
     void testGetStatics() {
         List<ClassReservation> classes = new ArrayList<>();
         Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
-        Subject subject = new Subject("Biology");
+        Subject subject = new Subject("Biology", 100.0);
         Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         classes.add(
                 new ClassReservation(
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2024, 7, 1),
+                        LocalDate.of(2024, 10, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
                         100.0
@@ -226,7 +226,7 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2024, 7, 1),
+                        LocalDate.of(2024, 10, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
                         100.0
@@ -237,7 +237,7 @@ public class ClassReservationServiceTests {
                     professor,
                     subject,
                     student,
-                    LocalDate.of(2024, 7, 1),
+                    LocalDate.of(2024, 10, 1),
                     LocalTime.of(12, 0),
                     LocalTime.of(13, 0),
                     100.0
@@ -288,7 +288,7 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2024, 6, 1),
+                        LocalDate.of(2024, 9, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
                         100.0
@@ -299,7 +299,7 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2024, 7, 1),
+                        LocalDate.of(2024, 10, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
                         100.0
@@ -310,7 +310,7 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2024, 7, 1),
+                        LocalDate.of(2024, 10, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
                         100.0
@@ -366,7 +366,7 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2024, 5, 1),
+                        LocalDate.of(2024, 8, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
                         100.0
@@ -377,7 +377,7 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2024, 6, 1),
+                        LocalDate.of(2024, 9, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
                         100.0
@@ -388,7 +388,7 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2024, 6, 29),
+                        LocalDate.of(2024, 9, 29),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
                         100.0
