@@ -1,5 +1,6 @@
 package com.losmessias.leherer.service;
 
+import com.losmessias.leherer.domain.ProfessorSubject;
 import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,15 @@ public class SubjectService {
     }
 
     public Subject create(Subject subject) {
+        return subjectRepository.save(subject);
+    }
+
+    public Subject editPrice(Long id, Double price) {
+        Subject subject = subjectRepository.findById(id).orElse(null);
+        if (subject == null) {
+            throw new RuntimeException("subject with id " + id + " not found");
+        }
+        subject.setPrice(price);
         return subjectRepository.save(subject);
     }
 

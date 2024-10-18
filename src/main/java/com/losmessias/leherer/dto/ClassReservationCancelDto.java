@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ClassReservationCancelDto {
     private Long id;
-    private AppUserRole role;
+    private Long idCancelsUser;
 }

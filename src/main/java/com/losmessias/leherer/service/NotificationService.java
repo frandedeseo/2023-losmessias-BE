@@ -2,9 +2,7 @@ package com.losmessias.leherer.service;
 
 
 import com.losmessias.leherer.domain.*;
-import com.losmessias.leherer.domain.enumeration.AppUserRole;
-import com.losmessias.leherer.repository.NotificationProfessorRepository;
-import com.losmessias.leherer.repository.NotificationStudentRepository;
+import com.losmessias.leherer.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,47 +13,35 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class NotificationService {
 
-    private final NotificationProfessorRepository notificationProfessorRepository;
-    private final NotificationStudentRepository notificationStudentRepository;
+    private final NotificationRepository notificationRepository;
     private final EmailService emailService;
 
-    public List<NotificationStudent> getStudentNotifications(Long id) {
-        return notificationStudentRepository.findByStudentId(id);
-    }
-    public List<NotificationProfessor> getProfessorNotifications(Long id) {
-        return notificationProfessorRepository.findByProfessorId(id);
-    }
-    public NotificationProfessor setProfessorNotificationToOpened(Long id){
-        Optional<NotificationProfessor> notificationProfessorOptional = Optional.ofNullable(notificationProfessorRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new));
-        NotificationProfessor notificationProfessor = notificationProfessorOptional.get();
-        notificationProfessor.setOpened(true);
-        notificationProfessorRepository.save(notificationProfessor);
-        return notificationProfessor;
+    public List<Notification> getNotifications(Long id) {
+        return notificationRepository.findByAppUserId(id);
     }
 
-    public NotificationStudent setStudentNotificationToOpened(Long id) {
-        Optional<NotificationStudent> notificationStudentOptional = Optional.ofNullable(notificationStudentRepository.findById(id)
+    public Notification setNotificationToOpened(Long id) {
+        Optional<Notification> notificationOptional = Optional.ofNullable(notificationRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new));
-        NotificationStudent notificationStudent = notificationStudentOptional.get();
-        notificationStudent.setOpened(true);
-        notificationStudentRepository.save(notificationStudent);
-        return notificationStudent;
+        Notification notification = notificationOptional.get();
+        notification.setOpened(true);
+        notificationRepository.save(notification);
+        return notification;
     }
     public String generateClassReservedNotification(ClassReservation classReservation){
         Student student = classReservation.getStudent();
         Professor professor = classReservation.getProfessor();
 
         String textStudent = "You have reserved a class of "+ classReservation.getSubject().getName() +" with " + professor.getFirstName() + " " + professor.getLastName()
-                + ".\n From: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour() + ".\n The date: " + classReservation.getDate() + ". ";
+                + ".\n From: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour() + ".\n The date: " + classReservation.getDate() + ".\n  Enlace de Google Meet: " + classReservation.getGoogleMeetLink();
         String textProfessor = "You have been reserved a class of "+ classReservation.getSubject().getName() +" with " + student.getFirstName() + " " + student.getLastName()
-                + ".\n From: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour() + ".\n The date: " + classReservation.getDate() + ". ";
+                + ".\n From: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour() + ".\n The date: " + classReservation.getDate() + ".\n  Enlace de Google Meet: " + classReservation.getGoogleMeetLink();
 
-        NotificationStudent notificationStudent = new NotificationStudent(student, textStudent);
-        NotificationProfessor notificationProfessor = new NotificationProfessor(professor, textProfessor);
+        Notification notificationStudent = new Notification(student, textStudent);
+        Notification notificationProfessor = new Notification(professor, textProfessor);
 
-        notificationStudentRepository.save(notificationStudent);
-        notificationProfessorRepository.save(notificationProfessor);
+        notificationRepository.save(notificationStudent);
+        notificationRepository.save(notificationProfessor);
 
         String studentBody = buildEmail(student.getFirstName(), "Class Reservation confirmed", textStudent);
         emailService.sendWithHTML(student.getEmail(), "Class Reservation confirmed", studentBody);
@@ -64,35 +50,25 @@ public class NotificationService {
         return "Notifications sent successfully";
     }
 
-    public String cancelClassReservedNotification(ClassReservation classReservation, AppUserRole role){
+    public String cancelClassReservedNotification(ClassReservation classReservation, AppUser appUser){
 
-        Student student = classReservation.getStudent();
-        Professor professor = classReservation.getProfessor();
+        String text = appUser.getFirstName() + " " + appUser.getLastName() + " has cancelled the class of " +  classReservation.getSubject().getName() +
+                 " from: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour() + ".\n The date: " + classReservation.getDate() + ". ";
+        Notification notification= new Notification(appUser, text);
+        notificationRepository.save(notification);
+        String body = buildEmail(appUser.getFirstName(), "Class Reservation cancelled", text);
+        emailService.sendWithHTML(appUser.getEmail(), "Class Reservation cancelled", body);
 
-        if (role == AppUserRole.PROFESSOR){
-            String textStudent = professor.getFirstName() + " " + professor.getLastName() + " has cancelled the class of " +  classReservation.getSubject().getName() +
-                     " from: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour() + ".\n The date: " + classReservation.getDate() + ". ";
-            NotificationStudent notificationStudent = new NotificationStudent(student, textStudent);
-            notificationStudentRepository.save(notificationStudent);
-            String studentBody = buildEmail(student.getFirstName(), "Class Reservation cancelled", textStudent);
-            emailService.sendWithHTML(student.getEmail(), "Class Reservation cancelled", studentBody);
-        }else{
-            String textProfessor = student.getFirstName() + " " + student.getLastName() + " has cancelled the class of " +  classReservation.getSubject().getName() +
-                     " from: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour() + ".\n The date: " + classReservation.getDate() + ". ";
-            NotificationProfessor notificationProfessor = new NotificationProfessor(professor, textProfessor);
-            notificationProfessorRepository.save(notificationProfessor);
-            String professorBody = buildEmail(professor.getFirstName(), "Class Reservation confirmed", textProfessor);
-            emailService.sendWithHTML(professor.getEmail(), "Class Reservation confirmed", professorBody);
-        }
         return "Notification sent successfully";
     }
 
     public String lecturedApprovedByAdminNotification(List<ProfessorSubject> approvedSubjects ){
+        //TODO no trabajar con listas si siempre se aprueba y se rechaza solo una subject
         ProfessorSubject approvedSubject = approvedSubjects.get(0);
         Professor professor = approvedSubject.getProfessor();
         String textProfessor = professor.getFirstName() + ", " + approvedSubject.getSubject().getName() + " has has been approved!";
-        NotificationProfessor notificationProfessor = new NotificationProfessor(professor, textProfessor);
-        notificationProfessorRepository.save(notificationProfessor);
+        Notification notificationProfessor = new Notification(professor, textProfessor);
+        notificationRepository.save(notificationProfessor);
         String professorBody = buildEmail(professor.getFirstName(), "Approval of Subject", textProfessor);
         emailService.sendWithHTML(professor.getEmail(), "Approval of Subject", professorBody);
         return "Notification sent successfully";
@@ -102,8 +78,8 @@ public class NotificationService {
         ProfessorSubject rejectedSubject = rejectedSubjects.get(0);
         Professor professor = rejectedSubject.getProfessor();
         String textProfessor = professor.getFirstName() + ", " + rejectedSubject.getSubject().getName() + " has has been rejected!";
-        NotificationProfessor notificationProfessor = new NotificationProfessor(professor, textProfessor);
-        notificationProfessorRepository.save(notificationProfessor);
+        Notification notificationProfessor = new Notification(professor, textProfessor);
+        notificationRepository.save(notificationProfessor);
         String professorBody = buildEmail(professor.getFirstName(), "Disapproval of Subject", textProfessor);
         emailService.sendWithHTML(professor.getEmail(), "Disapproval of Subject", professorBody);
         return "Notification sent successfully";

@@ -130,8 +130,8 @@ public class FeedbackControllerTests {
     @DisplayName("Give feedback to a class not given by the professor returns bad request")
     void giveFeedbackToAClassNotGivenByTheProfessorReturnsBadRequest() throws Exception {
         JSONObject feedback = new JSONObject();
-        feedback.put("studentId", 1);
-        feedback.put("professorId", 1);
+        feedback.put("senderId", 1);
+        feedback.put("recieverId", 1);
         feedback.put("roleReceptor", "STUDENT");
         feedback.put("classId", 1L);
         feedback.put("rating", 3);
@@ -154,8 +154,8 @@ public class FeedbackControllerTests {
     @DisplayName("Give feedback to a class returns ok")
     void giveFeedbackToAClassReturnsOk() throws Exception {
         JSONObject feedback = new JSONObject();
-        feedback.put("studentId", 1);
-        feedback.put("professorId", 1);
+        feedback.put("senderId", 1);
+        feedback.put("receiverId", 1);
         feedback.put("roleReceptor", "STUDENT");
         feedback.put("classId", 1L);
         feedback.put("rating", 3);

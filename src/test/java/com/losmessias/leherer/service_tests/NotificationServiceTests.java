@@ -2,8 +2,8 @@ package com.losmessias.leherer.service_tests;
 
 import com.losmessias.leherer.domain.*;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
-import com.losmessias.leherer.repository.NotificationProfessorRepository;
-import com.losmessias.leherer.repository.NotificationStudentRepository;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
+import com.losmessias.leherer.repository.NotificationRepository;
 import com.losmessias.leherer.service.EmailService;
 import com.losmessias.leherer.service.NotificationService;
 import org.junit.jupiter.api.DisplayName;
@@ -27,9 +27,8 @@ import static org.mockito.Mockito.when;
 public class NotificationServiceTests {
 
     @Mock
-    private NotificationProfessorRepository notificationProfessorRepository;
-    @Mock
-    private NotificationStudentRepository notificationStudentRepository;
+    private NotificationRepository notificationRepository;
+
     @Mock
     private EmailService emailService;
     @InjectMocks
@@ -38,27 +37,27 @@ public class NotificationServiceTests {
     @Test
     @DisplayName("Test set notification of professor to opened")
     void testSetProfessorNotificationToOpened() {
-        NotificationProfessor notificationProfessors = new NotificationProfessor(new Professor(), "Te han cancelado la clase");
-        when(notificationProfessorRepository.findById(any())).thenReturn(Optional.of(notificationProfessors));
-        notificationProfessors.setOpened(true);
-        assertEquals(notificationProfessors, notificationService.setProfessorNotificationToOpened(1L));
+        Notification notifications = new Notification(new Professor(), "Te han cancelado la clase");
+        when(notificationRepository.findById(any())).thenReturn(Optional.of(notifications));
+        notifications.setOpened(true);
+        assertEquals(notifications, notificationService.setNotificationToOpened(1L));
 
     }
     @Test
     @DisplayName("Test set notification of student to opened")
     void testSetStudentNotificationToOpened() {
-        NotificationStudent notificationStudent = new NotificationStudent(new Student(), "Te han cancelado la clase");
-        when(notificationStudentRepository.findById(any())).thenReturn(Optional.of(notificationStudent));
+        Notification notificationStudent = new Notification(new Student(), "Te han cancelado la clase");
+        when(notificationRepository.findById(any())).thenReturn(Optional.of(notificationStudent));
         notificationStudent.setOpened(true);
-        assertEquals(notificationStudent, notificationService.setStudentNotificationToOpened(1L));
+        assertEquals(notificationStudent, notificationService.setNotificationToOpened(1L));
     }
 
     @Test
     @DisplayName("Test the generation of notifications when a class is reserved")
     void testGenerateClassReservedNotification() {
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject();
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         ClassReservation classReservation = new ClassReservation(
                 professor,
                 subject,
@@ -66,16 +65,15 @@ public class NotificationServiceTests {
                 LocalDate.of(2023, 1, 1),
                 LocalTime.of(12, 0),
                 LocalTime.of(13, 0),
-                0.0,
-                100);
+                100.0);
         assertEquals("Notifications sent successfully", notificationService.generateClassReservedNotification(classReservation));
     }
     @Test
     @DisplayName("Test the notification was sent to the professor when the student cancels the class")
     void testCancelClassReservedNotificationByStudent() {
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject();
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         ClassReservation classReservation = new ClassReservation(
                 professor,
                 subject,
@@ -83,17 +81,16 @@ public class NotificationServiceTests {
                 LocalDate.of(2023, 1, 1),
                 LocalTime.of(12, 0),
                 LocalTime.of(13, 0),
-                0.0,
-                100);
-        assertEquals("Notification sent successfully", notificationService.cancelClassReservedNotification(classReservation, AppUserRole.STUDENT));
+                100.0);
+        assertEquals("Notification sent successfully", notificationService.cancelClassReservedNotification(classReservation, student));
     }
 
     @Test
     @DisplayName("Test the notification was sent to the student when the professor cancels the class")
     void testCancelClassReservedNotificationByProfessor() {
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject();
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         ClassReservation classReservation = new ClassReservation(
                 professor,
                 subject,
@@ -101,16 +98,15 @@ public class NotificationServiceTests {
                 LocalDate.of(2023, 1, 1),
                 LocalTime.of(12, 0),
                 LocalTime.of(13, 0),
-                0.0,
-                100);
-        assertEquals("Notification sent successfully", notificationService.cancelClassReservedNotification(classReservation, AppUserRole.PROFESSOR));
+                100.0);
+        assertEquals("Notification sent successfully", notificationService.cancelClassReservedNotification(classReservation, professor));
     }
 
     @Test
     @DisplayName("test the notification was sent when admin approves a lecture")
     void testLecturedApprovedByAdminNotification(){
         List<ProfessorSubject> approvedSubjects = new ArrayList<>();
-        approvedSubjects.add(new ProfessorSubject(new Professor(), new Subject()));
+        approvedSubjects.add(new ProfessorSubject(new Professor(), new Subject(), 23.00));
         assertEquals( "Notification sent successfully", notificationService.lecturedApprovedByAdminNotification(approvedSubjects));
     }
 
@@ -118,7 +114,7 @@ public class NotificationServiceTests {
     @DisplayName("test the notification was sent when admin rejects a lecture")
     void testLecturedRejectedByAdminNotification(){
         List<ProfessorSubject> approvedSubjects = new ArrayList<>();
-        approvedSubjects.add(new ProfessorSubject(new Professor(), new Subject()));
+        approvedSubjects.add(new ProfessorSubject(new Professor(), new Subject(), 23.00));
         assertEquals( "Notification sent successfully", notificationService.lecturedApprovedByAdminNotification(approvedSubjects));
     }
 

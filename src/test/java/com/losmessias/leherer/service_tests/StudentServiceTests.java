@@ -3,8 +3,12 @@ package com.losmessias.leherer.service_tests;
 import com.losmessias.leherer.domain.ClassReservation;
 import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.domain.Subject;
+import com.losmessias.leherer.dto.AppUserUpdateDto;
+import com.losmessias.leherer.repository.AppUserRepository;
+import com.losmessias.leherer.repository.FeedbackReceivedRepository;
 import com.losmessias.leherer.repository.StudentRepository;
-import com.losmessias.leherer.role.AppUserSex;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
+import com.losmessias.leherer.service.AppUserService;
 import com.losmessias.leherer.service.StudentService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,8 +29,14 @@ import static org.mockito.Mockito.when;
 public class StudentServiceTests {
     @Mock
     private StudentRepository studentRepository;
+    @Mock
+    private FeedbackReceivedRepository feedbackReceivedRepository;
+    @Mock
+    private AppUserRepository appUserRepository;
     @InjectMocks
     private StudentService studentService;
+    @InjectMocks
+    private AppUserService appUserService;
 
     @Test
     @DisplayName("Get all students")
@@ -41,7 +51,7 @@ public class StudentServiceTests {
     @Test
     @DisplayName("Get student by id")
     void testGetStudentById() {
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         when(studentRepository.findById(1L)).thenReturn(java.util.Optional.of(student));
         assertEquals(student, studentService.getStudentById(1L));
     }
@@ -49,33 +59,36 @@ public class StudentServiceTests {
     @Test
     @DisplayName("Create student")
     void testCreateStudent() {
-        Student student = new Student("John", "Doe", "mail", "ubication", "123", AppUserSex.MALE);
+        Student student = new Student(
+                "fran@gmail.com",
+                "fran1234",
+                "Francisco",
+                "de Deseo",
+                "Ayacucho 1822",
+                "+54 3462 663707",
+                AppUserSex.MALE
+        );
         when(studentRepository.save(student)).thenReturn(student);
         assertEquals(student, studentService.create(student));
     }
 
     @Test
-    @DisplayName("Add reservation to student")
-    void testGetStudentSubjects() {
-        Student student = new Student("John", "Doe", "mail", "ubication", "123", AppUserSex.MALE);
-        ClassReservation reservation = new ClassReservation();
-
-        when(studentRepository.save(student)).thenReturn(student);
-        assertEquals(studentService.addReservationTo(student, reservation), student);
-    }
-
-    @Test
     @DisplayName("Update student")
     void testUpdateStudent() {
-        Student student = new Student("John", "Doe", "mail", "ubication", "123", AppUserSex.MALE);
-        Student studentToUpdate = new Student("John", "Doe", "mail", "ubication", "123", AppUserSex.MALE);
-        studentToUpdate.setFirstName("Jane");
-        studentToUpdate.setLastName("Doe");
-        studentToUpdate.setEmail("mail");
-        studentToUpdate.setLocation("ubication");
-        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
-        when(studentRepository.save(any())).thenReturn(studentToUpdate);
-        assertEquals(studentService.updateStudent(1L, studentToUpdate), studentToUpdate);
+        Student student = new Student(
+                "fran@gmail.com",
+                "fran1234",
+                "Francisco",
+                "de Deseo",
+                "Ayacucho 1822",
+                "+54 3462 663707",
+                AppUserSex.MALE
+        );
+        AppUserUpdateDto appUserUpdateDto = new AppUserUpdateDto("john@mail.com", "Recoleta", "123456");
+
+        when(appUserRepository.findById(1L)).thenReturn(Optional.of(student));
+        when(appUserRepository.save(any())).thenReturn(appUserUpdateDto);
+        assertEquals(appUserService.update(1L, appUserUpdateDto), appUserUpdateDto);
     }
 
 }

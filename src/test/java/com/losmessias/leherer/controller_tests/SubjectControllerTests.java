@@ -71,35 +71,6 @@ public class SubjectControllerTests {
 
     @Test
     @WithMockUser
-    @DisplayName("Get subject by id")
-    void testGetSubjectByIdReturnsOk() throws Exception {
-        when(subjectService.getSubjectById(1L)).thenReturn(new Subject());
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/subject/1"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("Get subject by id without authentication")
-    void testGetSubjectByIdReturnsUnauthorized() throws Exception {
-        when(subjectService.getSubjectById(1L)).thenReturn(null);
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/subject/1"))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @WithMockUser
-    @DisplayName("Get subject by id returns subject not found")
-    void testGetSubjectByIdReturnsNotFound() throws Exception {
-        when(subjectService.getSubjectById(1L)).thenReturn(null);
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/subject/1"))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @WithMockUser
     @DisplayName("Create subject")
     void testCreateSubjectReturnsOk() throws Exception {
         JSONObject jsonContent = new JSONObject();

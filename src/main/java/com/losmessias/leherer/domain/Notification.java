@@ -10,8 +10,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "notification_student")
-public class NotificationStudent {
+@Table(name = "notification")
+public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +21,7 @@ public class NotificationStudent {
 
     @ManyToOne
     @JoinColumn(name = "student_id")
-    private Student student;
+    private AppUser appUser;
 
     @Column(name = "message")
     private String message;
@@ -29,8 +29,8 @@ public class NotificationStudent {
     @Column(name = "opened")
     private boolean opened;
 
-    public NotificationStudent(Student student, String message) {
-        this.student = student;
+    public Notification(AppUser appUser, String message) {
+        this.appUser = appUser;
         this.message = message;
         this.opened = false;
     }

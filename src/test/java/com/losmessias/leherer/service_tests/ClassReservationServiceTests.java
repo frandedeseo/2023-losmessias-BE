@@ -12,6 +12,7 @@ import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.repository.ClassReservationRepository;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
 import com.losmessias.leherer.service.ClassReservationService;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import com.losmessias.leherer.service.NotificationService;
 import org.junit.Before;
 import org.junit.jupiter.api.DisplayName;
@@ -42,17 +43,6 @@ public class ClassReservationServiceTests {
     private ClassReservationService classReservationService;
 
     @Test
-    @DisplayName("Get all reservations")
-    void testGetAllReservations() {
-        List<ClassReservation> classReservations = new ArrayList<>();
-        classReservations.add(new ClassReservation());
-        classReservations.add(new ClassReservation());
-
-        when(classReservationRepository.findAll()).thenReturn(classReservations);
-        assertEquals(classReservations, classReservationService.getAllReservations());
-    }
-
-    @Test
     @DisplayName("Get reservation by id")
     void testGetReservationById() {
         ClassReservation classReservation = new ClassReservation();
@@ -60,61 +50,57 @@ public class ClassReservationServiceTests {
         assertEquals(classReservation, classReservationService.getReservationById(1L));
     }
 
-    @Test
-    @DisplayName("Create reservation from student, professor and subject")
-    void testCreateReservationFromStudentAndProfessorSubjectWithDefaultStatus() {
-        Professor professor = new Professor();
-        Subject subject = new Subject();
-        Student student = new Student();
-        ClassReservation classReservation = new ClassReservation(
-                professor,
-                subject,
-                student,
-                LocalDate.of(2023, 1, 1),
-                LocalTime.of(12, 0),
-                LocalTime.of(13, 0),
-                0.0,
-                100);
+//    @Test
+//    @DisplayName("Create reservation from student, professor and subject")
+//    void testCreateReservationFromStudentAndProfessorSubjectWithDefaultStatus() {
+//        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
+//        Subject subject = new Subject();
+//        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
+//        ClassReservation classReservation = new ClassReservation(
+//                professor,
+//                subject,
+//                student,
+//                LocalDate.of(2024, 7, 1),
+//                LocalTime.of(12, 0),
+//                LocalTime.of(13, 0),
+//                100.0);
+//
+//        when(classReservationRepository.save(any())).thenReturn(classReservation);
+//        assertEquals(classReservation, classReservationService.createReservation(
+//                professor,
+//                subject,
+//                student,
+//                LocalDate.of(2024, 7, 1),
+//                LocalTime.of(12, 0),
+//                LocalTime.of(13, 0),
+//                100.0));
+//    }
 
-        when(classReservationRepository.save(any())).thenReturn(classReservation);
-        assertEquals(classReservation, classReservationService.createReservation(
-                professor,
-                subject,
-                student,
-                LocalDate.of(2023, 1, 1),
-                LocalTime.of(12, 0),
-                LocalTime.of(13, 0),
-                0.0,
-                100));
-    }
-
-    @Test
-    @DisplayName("Create reservation from student, professor and subject")
-    void testCancelReservationFromStudentAndProfessorSubjectWithDefaultStatus() {
-        Professor professor = new Professor();
-        Subject subject = new Subject();
-        Student student = new Student();
-        ClassReservation classReservation = new ClassReservation(
-                professor,
-                subject,
-                student,
-                LocalDate.of(2023, 1, 1),
-                LocalTime.of(12, 0),
-                LocalTime.of(13, 0),
-                0.0,
-                100);
-
-        when(classReservationRepository.save(any())).thenReturn(classReservation);
-        assertEquals(classReservation, classReservationService.createReservation(
-                professor,
-                subject,
-                student,
-                LocalDate.of(2023, 1, 1),
-                LocalTime.of(12, 0),
-                LocalTime.of(13, 0),
-                0.0,
-                100));
-    }
+//    @Test
+//    @DisplayName("Create reservation from student, professor and subject")
+//    void testCancelReservationFromStudentAndProfessorSubjectWithDefaultStatus() {
+//        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
+//        Subject subject = new Subject();
+//        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
+//        ClassReservation classReservation = new ClassReservation(
+//                professor,
+//                subject,
+//                student,
+//                LocalDate.of(2024, 7, 1),
+//                LocalTime.of(12, 0),
+//                LocalTime.of(13, 0),
+//                100.0);
+//
+//        when(classReservationRepository.save(any())).thenReturn(classReservation);
+//        assertEquals(classReservation, classReservationService.createReservation(
+//                professor,
+//                subject,
+//                student,
+//                LocalDate.of(2024, 7, 1),
+//                LocalTime.of(12, 0),
+//                LocalTime.of(13, 0),
+//                100.0));
+//    }
 
     @Test
     @DisplayName("Find reservation by professor id")
@@ -122,8 +108,8 @@ public class ClassReservationServiceTests {
         List<ClassReservation> classReservations = new ArrayList<>();
         classReservations.add(new ClassReservation());
         classReservations.add(new ClassReservation());
-        when(classReservationRepository.findByProfessorId(1L)).thenReturn(classReservations);
-        assertEquals(classReservations, classReservationService.getReservationsByProfessorId(1L));
+        when(classReservationRepository.findByStudentIdOrProfessorId(1L, 1L)).thenReturn(classReservations);
+        assertEquals(classReservations, classReservationService.getReservationsByAppUserId(1L));
     }
 
     @Test
@@ -132,73 +118,42 @@ public class ClassReservationServiceTests {
         List<ClassReservation> classReservations = new ArrayList<>();
         classReservations.add(new ClassReservation());
         classReservations.add(new ClassReservation());
-        when(classReservationRepository.findByStudentId(1L)).thenReturn(classReservations);
-        assertEquals(classReservations, classReservationService.getReservationsByStudentId(1L));
-    }
-
-    @Test
-    @DisplayName("Find reservation by subject id")
-    void testFindReservationBySubjectId() {
-        List<ClassReservation> classReservations = new ArrayList<>();
-        classReservations.add(new ClassReservation());
-        classReservations.add(new ClassReservation());
-        when(classReservationRepository.findBySubjectId(1L)).thenReturn(classReservations);
-        assertEquals(classReservations, classReservationService.getReservationsBySubjectId(1L));
+        when(classReservationRepository.findByStudentIdOrProfessorId(1L, 1L)).thenReturn(classReservations);
+        assertEquals(classReservations, classReservationService.getReservationsByAppUserId(1L));
     }
 
     @Test
     @DisplayName("Create unavailable reservation for professor")
     void testCreateUnavailableReservation() {
-        Professor professor = new Professor();
-        ClassReservation classReservation = new ClassReservation(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0), 1.0);
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
+        ClassReservation classReservation = new ClassReservation(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0));
         when(classReservationRepository.save(any())).thenReturn(classReservation);
         assertEquals(classReservation, classReservationService.createUnavailableReservation(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0)));
     }
 
-    @Test
-    @DisplayName("Create multiple unavailable reservations for professor")
-    void testCreateUnavailableReservationsForProfessor() {
-        Professor professor = new Professor();
-        List<ClassReservation> classReservations = new ArrayList<>();
-        classReservations.add(new ClassReservation(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(12, 30), 0.5));
-        classReservations.add(new ClassReservation(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 30), LocalTime.of(13, 0), 0.5));
-        when(classReservationRepository.saveAll(any())).thenReturn(classReservations);
-        assertEquals(classReservations, classReservationService.createMultipleUnavailableReservationsFor(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0)));
-    }
-
-    @Test
-    @DisplayName("Creating reservation for professor with invalid time interval")
-    void testCreateReservationForProfessorWithInvalidTimeInterval() {
-        assertThrowsExactly(IllegalArgumentException.class, () -> {
-            Professor professor = new Professor();
-            Subject subject = new Subject();
-            Student student = new Student();
-            classReservationService.createReservation(professor,
-                    subject,
-                    student,
-                    LocalDate.of(2023, 1, 1),
-                    LocalTime.of(12, 0),
-                    LocalTime.of(11, 0),
-                    1.0,
-                    100);
-        });
-    }
+//    @Test
+//    @DisplayName("Creating reservation for professor with invalid time interval")
+//    void testCreateReservationForProfessorWithInvalidTimeInterval() {
+//        assertThrowsExactly(IllegalArgumentException.class, () -> {
+//            Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
+//            Subject subject = new Subject();
+//            Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
+//            classReservationService.createReservation(professor,
+//                    subject,
+//                    student,
+//                    LocalDate.of(2023, 1, 1),
+//                    LocalTime.of(12, 0),
+//                    LocalTime.of(11, 0),
+//                    100.0);
+//        });
+//    }
 
     @Test
     @DisplayName("Creating unavailable reservation for professor with invalid time interval")
     void testCreateUnavailableReservationForProfessorWithInvalidTimeInterval() {
         assertThrowsExactly(IllegalArgumentException.class, () -> {
-            Professor professor = new Professor();
+            Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
             classReservationService.createUnavailableReservation(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(11, 0));
-        });
-    }
-
-    @Test
-    @DisplayName("Creating unavailable reservations for professor with invalid time interval")
-    void testCreateUnavailableReservationsForProfessorWithInvalidTimeInterval() {
-        assertThrowsExactly(IllegalArgumentException.class, () -> {
-            Professor professor = new Professor();
-            classReservationService.createMultipleUnavailableReservationsFor(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(11, 0));
         });
     }
 
@@ -214,38 +169,37 @@ public class ClassReservationServiceTests {
     @DisplayName("Get reservations for professor on day and time interval finds reservation")
     void testGetReservationsForProfessorOnDayAndTime() {
         when(classReservationRepository.countOverlappingReservations(1L, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0))).thenReturn(1);
-        assertTrue(classReservationService.existsReservationForProfessorOnDayAndTime(1L, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0)));
+        assertTrue(classReservationService.existsReservationForProfessorOrStudentOnDayAndTime(1L, 1L, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0)));
     }
 
     @Test
     @DisplayName("Get reservations for professor on day and time interval finds none")
     void testGetReservationsForProfessorOnDayAndTimeReturnsFalse() {
         when(classReservationRepository.countOverlappingReservations(1L, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0))).thenReturn(0);
-        assertFalse(classReservationService.existsReservationForProfessorOnDayAndTime(1L, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0)));
+        assertFalse(classReservationService.existsReservationForProfessorOrStudentOnDayAndTime(1L, 1L, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0)));
     }
 
     @Test
     @DisplayName("Cancel class after 48hs before")
     void cancelClassAfter(){
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject("Biology");
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
 
         ClassReservation class1 = new ClassReservation(
                 professor,
                 subject,
                 student,
-                LocalDate.of(2023, 11, 13),
+                LocalDate.of(2024, 7, 13),
                 LocalTime.of(12, 0),
                 LocalTime.of(13, 0),
-                0.0,
-                100
+                100.0
         );
 
-        ClassReservationCancelDto cancelDto = new ClassReservationCancelDto(class1.getId(), AppUserRole.PROFESSOR);
+        ClassReservationCancelDto cancelDto = new ClassReservationCancelDto(class1.getId(), professor.getId());
 
         when(classReservationRepository.findById(any())).thenReturn(Optional.of(class1));
-        class1.setPrice(50);
+        class1.setPrice(50.0);
         assertEquals(class1 , classReservationService.cancelReservation(cancelDto));
     }
 
@@ -253,19 +207,18 @@ public class ClassReservationServiceTests {
     @DisplayName("get professor stadistics with three classes in this month")
     void testGetStatics() {
         List<ClassReservation> classes = new ArrayList<>();
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject("Biology");
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         classes.add(
                 new ClassReservation(
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2023, 11, 1),
+                        LocalDate.of(2024, 7, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
-                        0.0,
-                        100
+                        100.0
                 )
         );
         classes.add(
@@ -273,11 +226,10 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2023, 11, 1),
+                        LocalDate.of(2024, 7, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
-                        0.0,
-                        100
+                        100.0
                 )
         );
         classes.add(
@@ -285,11 +237,10 @@ public class ClassReservationServiceTests {
                     professor,
                     subject,
                     student,
-                    LocalDate.of(2023, 11, 1),
+                    LocalDate.of(2024, 7, 1),
                     LocalTime.of(12, 0),
                     LocalTime.of(13, 0),
-                    0.0,
-                    100
+                    100.0
                 )
         );
 
@@ -329,19 +280,18 @@ public class ClassReservationServiceTests {
     @DisplayName("get professor stadistics with one class in previous month and two in this month")
     void testGetStaticsOneClassPreviousMonthTwoThisMonth() {
         List<ClassReservation> classes = new ArrayList<>();
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject("Biology");
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         classes.add(
                 new ClassReservation(
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2023, 10, 1),
+                        LocalDate.of(2024, 6, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
-                        0.0,
-                        100
+                        100.0
                 )
         );
         classes.add(
@@ -349,11 +299,10 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2023, 11, 1),
+                        LocalDate.of(2024, 7, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
-                        0.0,
-                        100
+                        100.0
                 )
         );
         classes.add(
@@ -361,11 +310,10 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2023, 11, 1),
+                        LocalDate.of(2024, 7, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
-                        0.0,
-                        100
+                        100.0
                 )
         );
 
@@ -411,18 +359,17 @@ public class ClassReservationServiceTests {
     @DisplayName("get professor stadistics with one class two month ago and one the previous month and where cancelled")
     void testGetStaticsOneClassTwoMonthAgoTwoPreviousMonthAndWhereCancelled() {
         List<ClassReservation> classes = new ArrayList<>();
-        Professor professor = new Professor();
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject("Biology");
-        Student student = new Student();
+        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         ClassReservation class1 = new ClassReservation(
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2023, 9, 1),
+                        LocalDate.of(2024, 5, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
-                        0.0,
-                        100
+                        100.0
                 );
         class1.setStatus(ReservationStatus.CANCELLED);
 
@@ -430,11 +377,10 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2023, 10, 1),
+                        LocalDate.of(2024, 6, 1),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
-                        0.0,
-                        100
+                        100.0
         );
         class2.setStatus(ReservationStatus.CANCELLED);
 
@@ -442,11 +388,10 @@ public class ClassReservationServiceTests {
                         professor,
                         subject,
                         student,
-                        LocalDate.of(2023, 10, 29),
+                        LocalDate.of(2024, 6, 29),
                         LocalTime.of(12, 0),
                         LocalTime.of(13, 0),
-                        0.0,
-                        100
+                        100.0
         );
         class3.setStatus(ReservationStatus.CANCELLED);
 

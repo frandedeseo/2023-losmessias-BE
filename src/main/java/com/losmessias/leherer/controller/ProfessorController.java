@@ -41,30 +41,9 @@ public class ProfessorController {
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(professor));
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerProfessor(@RequestBody Professor professor) throws JsonProcessingException {
-        if (professor.getId() != null) {
-            return ResponseEntity.badRequest().body("Professor ID must be null");
-        }
-        Professor professorSaved = professorService.saveProfessor(professor);
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(professorSaved), HttpStatus.CREATED);
-    }
     @PostMapping("/removeFeedback/professor={professorId}&student={studentId}")
     public void removeFeedbackFromConcludedClass(@PathVariable Long professorId, @PathVariable Long studentId) {
         classReservationService.removeFeedbackFromConcludedClass(professorId, studentId);
-    }
-
-    @PatchMapping("/update/{id}")
-    public ResponseEntity<String> updateProfessor(@PathVariable Long id, @RequestBody Professor professor) throws JsonProcessingException {
-        if (id == null) {
-            return ResponseEntity.badRequest().body("Professor ID not registered");
-        } else if (professorService.getProfessorById(id) == null) {
-            return ResponseEntity.badRequest().body("Professor not found");
-        }
-        Professor professorSaved = professorService.updateProfessor(id, professor);
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(professorSaved));
     }
 
 }

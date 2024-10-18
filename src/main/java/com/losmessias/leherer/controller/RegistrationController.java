@@ -3,19 +3,25 @@ package com.losmessias.leherer.controller;
 import com.losmessias.leherer.dto.*;
 import com.losmessias.leherer.service.JwtService;
 import com.losmessias.leherer.service.RegistrationService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.token.TokenService;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 
 
-@CrossOrigin(origins = "*")
 @RequestMapping("/api")
 @RestController
 @AllArgsConstructor
+@CrossOrigin
 public class RegistrationController {
 
     private final RegistrationService registrationService;
@@ -33,7 +39,11 @@ public class RegistrationController {
 
     @PostMapping(path = "/registration-professor")
     public ResponseEntity<String> registerProfessor(@RequestBody RegistrationProfessorRequest request) {
-        return ResponseEntity.ok(registrationService.registerProfessor(request));
+        try {
+            return ResponseEntity.ok(registrationService.registerProfessor(request));
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping(path = "/registration/confirm")
@@ -56,13 +66,6 @@ public class RegistrationController {
         return ResponseEntity.ok(registrationService.validateEmailNotTaken(email));
     }
 
-    @PostMapping(path = "/changePassword")
-    public ResponseEntity<String> changePassword(@RequestBody ForgotPasswordDto request) {
-        String message = "{\"message\":" +
-                "\"" + registrationService.changePassword(request)
-                + "\"}";
-        return new ResponseEntity<>(message, HttpStatus.OK);
-    }
     @GetMapping(path = "/is-token-expired")
     public ResponseEntity<String> isTokenExpired(@RequestParam String token) {
         if (jwtService.isTokenExpired(token)){

@@ -3,6 +3,7 @@ package com.losmessias.leherer.service_tests;
 import com.losmessias.leherer.domain.Feedback;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.domain.Student;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.dto.FeedbackDto;
 import com.losmessias.leherer.repository.FeedbackRepository;
@@ -48,15 +49,11 @@ public class FeedbackServiceTests {
 
     @BeforeEach
     void setUp() {
-        studentTest = new Student();
+        studentTest = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         studentTest.setId(1L);
         studentTest.setPendingClassesFeedbacks(new ArrayList<>());
-        studentTest.setAvgRating(0.0);
-        studentTest.setAmountOfRatings(0);
-        professorTest = new Professor();
-        professorTest.setId(1L);
-        professorTest.setAvgRating(0.0);
-        professorTest.setAmountOfRatings(0);
+        professorTest = new Professor("frandedeseo@gmail.com", "pass123", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);
+        professorTest.setId(2L);
         professorTest.setPendingClassesFeedbacks(new ArrayList<>());
     }
 
@@ -70,15 +67,15 @@ public class FeedbackServiceTests {
 
     @Test
     @DisplayName("Give feedback from dto returns created feedback to professor")
-    void testGiveFeedbackFromDtoReturnsCreatedFeedbackToProfessor() {
-        Feedback feedback = new Feedback(studentTest, professorTest, AppUserRole.PROFESSOR, new HashSet<>(), 2.0);
-        FeedbackDto feedbackDto = new FeedbackDto(1L, 1L, AppUserRole.PROFESSOR, 1L, 2.0, null, null, null);
-        when(studentService.getStudentById(feedbackDto.getStudentId())).thenReturn(studentTest);
-        when(professorService.getProfessorById(feedbackDto.getProfessorId())).thenReturn(professorTest);
+    void testGiveFeedbackFromDtoReturnsCreatedFeedbackToProfessor() throws InstantiationException {
+        Feedback feedback = new Feedback(studentTest, professorTest, new HashSet<>(), 2.0);
+        FeedbackDto feedbackDto = new FeedbackDto(1L, 2L, 1L, 2.0, null, null, null);
+        when(studentService.getStudentById(feedbackDto.getSenderId())).thenReturn(studentTest);
+        when(professorService.getProfessorById(feedbackDto.getReceiverId())).thenReturn(professorTest);
 
         Feedback feedbackResult = feedbackService.giveFeedback(feedbackDto);
-        assert (feedback.getProfessor().equals(feedbackResult.getProfessor()));
-        assert (feedback.getStudent().equals(feedbackResult.getStudent()));
+        assert (feedback.getReceiver().equals(feedbackResult.getReceiver()));
+        assert (feedback.getSender().equals(feedbackResult.getSender()));
         assert (feedback.getRating().equals(feedbackResult.getRating()));
         assert (feedback.getFeedbackOptions().equals(feedbackResult.getFeedbackOptions()));
         assert (feedback.getReceptorRole().equals(feedbackResult.getReceptorRole()));
@@ -86,15 +83,15 @@ public class FeedbackServiceTests {
 
     @Test
     @DisplayName("Give feedback from dto returns created feedback to student")
-    void testGiveFeedbackFromDtoReturnsCreatedFeedbackToStudent() {
-        Feedback feedback = new Feedback(studentTest, professorTest, AppUserRole.STUDENT, new HashSet<>(), 2.0);
-        FeedbackDto feedbackDto = new FeedbackDto(1L, 1L, AppUserRole.STUDENT, 1L, 2.0, null, null, null);
-        when(studentService.getStudentById(feedbackDto.getStudentId())).thenReturn(studentTest);
-        when(professorService.getProfessorById(feedbackDto.getProfessorId())).thenReturn(professorTest);
+    void testGiveFeedbackFromDtoReturnsCreatedFeedbackToStudent() throws InstantiationException {
+        Feedback feedback = new Feedback(professorTest, studentTest , new HashSet<>(), 2.0);
+        FeedbackDto feedbackDto = new FeedbackDto(2L, 1L, 1L, 2.0, null, null, null);
+        when(studentService.getStudentById(feedbackDto.getReceiverId())).thenReturn(studentTest);
+        when(professorService.getProfessorById(feedbackDto.getSenderId())).thenReturn(professorTest);
 
         Feedback feedbackResult = feedbackService.giveFeedback(feedbackDto);
-        assert (feedback.getProfessor().equals(feedbackResult.getProfessor()));
-        assert (feedback.getStudent().equals(feedbackResult.getStudent()));
+        assert (feedback.getSender().equals(feedbackResult.getSender()));
+        assert (feedback.getReceiver().equals(feedbackResult.getReceiver()));
         assert (feedback.getRating().equals(feedbackResult.getRating()));
         assert (feedback.getFeedbackOptions().equals(feedbackResult.getFeedbackOptions()));
         assert (feedback.getReceptorRole().equals(feedbackResult.getReceptorRole()));

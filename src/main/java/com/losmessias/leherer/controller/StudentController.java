@@ -20,7 +20,6 @@ import java.util.List;
 public class StudentController {
 
     private final StudentService studentService;
-    private final ClassReservationService classReservationService;
 
     @GetMapping("/all")
     public ResponseEntity<String> getAllStudents() throws JsonProcessingException {
@@ -42,36 +41,4 @@ public class StudentController {
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(student));
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<String> addStudent(@RequestBody Student student) throws JsonProcessingException {
-        if (student.getId() != null) {
-            return ResponseEntity.badRequest().body("Student ID must be null");
-        }
-        Student studentSaved = studentService.create(student);
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(studentSaved), HttpStatus.CREATED);
-    }
-
-    @PostMapping("/addReservation")
-    public ResponseEntity<String> addReservationToStudent(Long studentId, Long reservationId) throws JsonProcessingException {
-        Student student = studentService.getStudentById(studentId);
-        if (student == null) return ResponseEntity.badRequest().body("Student not found");
-        ClassReservation reservation = classReservationService.getReservationById(reservationId);
-        if (reservation == null) return ResponseEntity.badRequest().body("Reservation not found");
-        Student studentSaved = studentService.addReservationTo(student, reservation);
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(studentSaved));
-    }
-
-    @PatchMapping("/update/{id}")
-    public ResponseEntity<String> updateStudent(@PathVariable Long id, @RequestBody Student student) {
-        if (id == null) {
-            return ResponseEntity.badRequest().body("Student ID not registered");
-        } else if (studentService.getStudentById(id) == null) {
-            return ResponseEntity.badRequest().body("Student not found");
-        }
-        Student studentSaved = studentService.updateStudent(id, student);
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        return ResponseEntity.ok(converter.getObjectMapper().valueToTree(studentSaved).toString());
-    }
 }

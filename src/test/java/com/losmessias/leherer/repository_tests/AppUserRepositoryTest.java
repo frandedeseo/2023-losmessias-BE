@@ -1,8 +1,10 @@
 package com.losmessias.leherer.repository_tests;
 
 import com.losmessias.leherer.domain.AppUser;
+import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.repository.AppUserRepository;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,14 +21,17 @@ public class AppUserRepositoryTest {
     @Autowired
     private AppUserRepository appUserRepository;
 
-    private AppUser appUser;
+    private Student student;
     @BeforeEach
     public void setupData() {
-        appUser = new AppUser(
+        student = new Student(
                 "fran@gmail.com",
-                "fran123",
-                AppUserRole.USER,
-                1L
+                "fran12345",
+                "Francisco",
+                "de Deseo",
+                "Ayacucho 1822",
+                "+54 3462 663707",
+                AppUserSex.MALE
         );
     }
     @Test
@@ -35,8 +40,8 @@ public class AppUserRepositoryTest {
     @DisplayName("Find by email returns the AppUser")
     void testThatFindByEmailReturnsTheAppUser() {
 
-        appUserRepository.save(appUser);
+        appUserRepository.save(student);
         AppUser appUser1 = appUserRepository.findByEmail("fran@gmail.com");
-        assertEquals(appUser, appUser1);
+        assertEquals(student, appUser1);
     }
 }

@@ -16,11 +16,8 @@ import java.util.List;
 
 @Repository
 public interface ClassReservationRepository extends JpaRepository<ClassReservation, Long> {
-    List<ClassReservation> findByProfessorId(Long id);
 
-    List<ClassReservation> findByStudentId(Long id);
-
-    List<ClassReservation> findBySubjectId(Long id);
+    List<ClassReservation> findByStudentIdOrProfessorId(Long studentId, Long professorId);
 
     @Query("SELECT  c.professor AS professor, c.subject AS subject,  SUM(c.price) AS totalIncome, SUM(c.duration) AS totalHours " +
             "FROM ClassReservation c " +
@@ -38,10 +35,23 @@ public interface ClassReservationRepository extends JpaRepository<ClassReservati
     @Query("SELECT COUNT(c) FROM ClassReservation c " +
             "WHERE c.professor.id = :professorId " +
             "AND c.date = :day " +
+            "AND c.status != 'CANCELLED' " +
             "AND ((c.startingHour >= :startingTime AND c.startingHour < :endingTime) " +
             "OR (c.endingHour > :startingTime AND c.endingHour <= :endingTime) " +
             "OR (c.startingHour <= :startingTime AND c.endingHour >= :endingTime))")
     int countOverlappingReservations(@Param("professorId") Long professorId,
+                                     @Param("day") LocalDate day,
+                                     @Param("startingTime") LocalTime startingTime,
+                                     @Param("endingTime") LocalTime endingTime);
+
+    @Query("SELECT COUNT(c) FROM ClassReservation c " +
+            "WHERE c.student.id = :studentId " +
+            "AND c.date = :day " +
+            "AND c.status != 'CANCELLED' " +
+            "AND ((c.startingHour >= :startingTime AND c.startingHour < :endingTime) " +
+            "OR (c.endingHour > :startingTime AND c.endingHour <= :endingTime) " +
+            "OR (c.startingHour <= :startingTime AND c.endingHour >= :endingTime))")
+    int countOverlappingReservationsForStudent(@Param("studentId") Long studentId,
                                      @Param("day") LocalDate day,
                                      @Param("startingTime") LocalTime startingTime,
                                      @Param("endingTime") LocalTime endingTime);

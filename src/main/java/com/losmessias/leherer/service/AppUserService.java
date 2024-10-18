@@ -1,6 +1,7 @@
 package com.losmessias.leherer.service;
 
 import com.losmessias.leherer.domain.AppUser;
+import com.losmessias.leherer.dto.AppUserUpdateDto;
 import com.losmessias.leherer.repository.AppUserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,25 +31,15 @@ public class AppUserService implements UserDetailsService {
         return appUserRepository.findByEmail(email);
     }
 
+    public AppUser getAppUserById(Long id) {
+        return appUserRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("app user not found"));
+    }
+
     public void validateEmailNotTaken(String email){
 
         if (getAppUser(email) != null) {
             throw new IllegalStateException("email already taken");
         }
-    }
-
-    public void signUpUser(AppUser appUser) {
-
-        validateEmailNotTaken(appUser.getEmail());
-
-        String encodedPassword = encodePassword(appUser.getPassword());
-        appUser.setPassword(encodedPassword);
-
-        appUserRepository.save(appUser);
-    }
-
-    public String encodePassword(String password){
-        return bCryptPasswordEncoder.encode(password);
     }
 
     public void enableAppUser(String email) {
@@ -57,12 +48,21 @@ public class AppUserService implements UserDetailsService {
         appUserRepository.save(appUser);
     }
 
-    public void changePassword(String email, String password) {
+    public String changePassword(String email, String password) {
         AppUser appUser = getAppUser(email);
 
-        String encodedPassword = encodePassword(password);
+        String encodedPassword = bCryptPasswordEncoder.encode(password);
         appUser.setPassword(encodedPassword);
 
         appUserRepository.save(appUser);
+        return "Password changed successfully";
+    }
+
+    public AppUser update(Long id, AppUserUpdateDto appUserUpdateDto) {
+        AppUser appUserToUpdate = getAppUserById(id);
+        appUserToUpdate.setEmail(appUserUpdateDto.getEmail() != null ? appUserUpdateDto.getEmail() : appUserToUpdate.getEmail());
+        appUserToUpdate.setLocation(appUserUpdateDto.getLocation() != null ? appUserUpdateDto.getLocation() : appUserToUpdate.getLocation());
+        appUserToUpdate.setPhone(appUserUpdateDto.getPhone() != null ? appUserUpdateDto.getPhone() : appUserToUpdate.getPhone());
+        return appUserRepository.save(appUserToUpdate);
     }
 }

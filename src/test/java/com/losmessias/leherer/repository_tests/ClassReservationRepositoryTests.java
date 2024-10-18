@@ -4,6 +4,7 @@ import com.losmessias.leherer.domain.ClassReservation;
 import com.losmessias.leherer.domain.Professor;
 import com.losmessias.leherer.domain.Student;
 import com.losmessias.leherer.domain.Subject;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import com.losmessias.leherer.domain.enumeration.ReservationStatus;
 import com.losmessias.leherer.repository.ClassReservationRepository;
 import com.losmessias.leherer.repository.ProfessorRepository;
@@ -42,32 +43,23 @@ public class ClassReservationRepositoryTests {
 
     @BeforeEach
     public void setupData() {
-        professor = Professor.builder()
-                .firstName("John")
-                .lastName("Doe")
-                .build();
+        professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);
         subject = Subject.builder()
                 .name("Math")
                 .build();
-        student = Student.builder()
-                .firstName("Jane")
-                .lastName("Doe")
-                .build();
-
+        student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
         professorRepository.save(professor);
         subjectRepository.save(subject);
         studentRepository.save(student);
-        classReservation = ClassReservation.builder()
-                .professor(professor)
-                .subject(subject)
-                .student(student)
-                .date(LocalDate.of(2023, 1, 1))
-                .startingHour(LocalTime.of(9, 0))
-                .endingHour(LocalTime.of(14, 0))
-                .duration(1.0)
-                .price(100)
-                .status(ReservationStatus.CONFIRMED)
-                .build();
+        classReservation = new ClassReservation (
+                professor,
+                subject,
+                student,
+                LocalDate.of(2023, 1, 1),
+                LocalTime.of(9, 0),
+                LocalTime.of(14, 0),
+                100.0
+        );
     }
 
     @Test
@@ -85,7 +77,7 @@ public class ClassReservationRepositoryTests {
     @DisplayName("Should find by professorId")
     public void shouldFindByProfessorId() {
         classReservationRepository.save(classReservation);
-        assertEquals(1, classReservationRepository.findByProfessorId(professor.getId()).size());
+        assertEquals(1, classReservationRepository.findByStudentIdOrProfessorId(student.getId(), professor.getId()).size());
     }
 
     @Test
@@ -94,16 +86,7 @@ public class ClassReservationRepositoryTests {
     @DisplayName("Should find by studentId")
     public void shouldFindByStudentId() {
         classReservationRepository.save(classReservation);
-        assertEquals(1, classReservationRepository.findByStudentId(student.getId()).size());
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    @DisplayName("Should find by subjectId")
-    public void shouldFindBySubjectId() {
-        classReservationRepository.save(classReservation);
-        assertEquals(1, classReservationRepository.findBySubjectId(subject.getId()).size());
+        assertEquals(1, classReservationRepository.findByStudentIdOrProfessorId(student.getId(), professor.getId()).size());
     }
 
     @Test
@@ -124,17 +107,16 @@ public class ClassReservationRepositoryTests {
                 .name("Portuguese")
                 .build();
         subjectRepository.save(subject2);
-        ClassReservation classReservation2 = ClassReservation.builder()
-                .professor(professor)
-                .subject(subject2)
-                .student(student)
-                .date(LocalDate.of(2023, 1, 1))
-                .startingHour(LocalTime.of(10, 0))
-                .endingHour(LocalTime.of(11, 0))
-                .duration(1.0)
-                .price(100)
-                .status(ReservationStatus.CONFIRMED)
-                .build();
+
+        ClassReservation classReservation2 = new ClassReservation (
+                professor,
+                subject2,
+                student,
+                LocalDate.of(2023, 1, 1),
+                LocalTime.of(9, 0),
+                LocalTime.of(14, 0),
+                100.0
+        );
         classReservationRepository.save(classReservation);
         classReservationRepository.save(classReservation2);
         assertEquals(2, classReservationRepository.getProfessorDailySummaryByDay(classReservation.getDate()).size());
@@ -155,17 +137,15 @@ public class ClassReservationRepositoryTests {
     @DisplayName("Find by overlapping reservations")
     public void shouldCountOverlappingReservations() {
         classReservationRepository.save(classReservation);
-        ClassReservation classReservation2 = ClassReservation.builder()
-                .professor(professor)
-                .subject(subject)
-                .student(student)
-                .date(LocalDate.of(2023, 1, 1))
-                .startingHour(LocalTime.of(10, 0))
-                .endingHour(LocalTime.of(11, 0))
-                .duration(1.0)
-                .price(100)
-                .status(ReservationStatus.CONFIRMED)
-                .build();
+        ClassReservation classReservation2 = new ClassReservation (
+                professor,
+                subject,
+                student,
+                LocalDate.of(2023, 1, 1),
+                LocalTime.of(9, 0),
+                LocalTime.of(14, 0),
+                100.0
+        );
         classReservationRepository.save(classReservation2);
         assertEquals(2, classReservationRepository.countOverlappingReservations(
                 professor.getId(),

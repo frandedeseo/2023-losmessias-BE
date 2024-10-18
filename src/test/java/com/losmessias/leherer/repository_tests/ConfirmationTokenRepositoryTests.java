@@ -2,6 +2,8 @@ package com.losmessias.leherer.repository_tests;
 
 import com.losmessias.leherer.domain.AppUser;
 import com.losmessias.leherer.domain.ConfirmationToken;
+import com.losmessias.leherer.domain.Student;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import com.losmessias.leherer.repository.AppUserRepository;
 import com.losmessias.leherer.repository.ConfirmationTokenRepository;
 import com.losmessias.leherer.domain.enumeration.AppUserRole;
@@ -24,21 +26,22 @@ public class ConfirmationTokenRepositoryTests {
     @Autowired
     private AppUserRepository appUserRepository;
 
-    private AppUser appUser;
+    private Student student;
     private ConfirmationToken confirmationToken;
     @BeforeEach
     public void setupData() {
-        appUser = new AppUser(
+        student = new Student(
                 "fran@gmail.com",
-                "fran123",
-                AppUserRole.USER,
-                1L
+                "fran1234",
+                "Francisco",
+                "de Deseo",
+                "Ayacucho 1822",
+                "+54 3462 663707",
+                AppUserSex.MALE
         );
         confirmationToken = new ConfirmationToken(
                 "token",
-                LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(15),
-                appUser
+                student
         );
     }
     @Test
@@ -47,7 +50,7 @@ public class ConfirmationTokenRepositoryTests {
     @DisplayName("Find the Token Object")
     void testFindByToken() {
 
-        appUserRepository.save(appUser);
+        appUserRepository.save(student);
         confirmationTokenRepository.save(confirmationToken);
 
         ConfirmationToken token_result = confirmationTokenRepository.findByToken("token");

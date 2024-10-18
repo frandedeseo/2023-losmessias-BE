@@ -7,7 +7,7 @@ import com.losmessias.leherer.domain.enumeration.SubjectStatus;
 import com.losmessias.leherer.repository.ProfessorRepository;
 import com.losmessias.leherer.repository.ProfessorSubjectRepository;
 import com.losmessias.leherer.repository.SubjectRepository;
-import com.losmessias.leherer.role.AppUserSex;
+import com.losmessias.leherer.domain.enumeration.AppUserSex;
 import com.losmessias.leherer.service.ProfessorService;
 import com.losmessias.leherer.service.ProfessorSubjectService;
 import com.losmessias.leherer.service.SubjectService;
@@ -34,43 +34,25 @@ public class ProfessorSubjectServiceTests {
     private ProfessorSubjectService professorSubjectService;
 
     @Test
-    @DisplayName("Get all professor subjects")
-    void testGetAllProfessorSubjects() {
-        List<ProfessorSubject> professorSubjects = new ArrayList<>();
-        professorSubjects.add(new ProfessorSubject());
-        professorSubjects.add(new ProfessorSubject());
-        when(professorSubjectRepository.findAll()).thenReturn(professorSubjects);
-        assertEquals(professorSubjects, professorSubjectService.getAllProfessorSubjects());
-    }
-
-    @Test
-    @DisplayName("Find by id")
-    void testFindById() {
-        ProfessorSubject professorSubject = new ProfessorSubject();
-        when(professorSubjectRepository.findById(any())).thenReturn(Optional.of(professorSubject));
-        assertEquals(professorSubject, professorSubjectService.findById(1L));
-    }
-
-    @Test
     @DisplayName("Create association between professor and subject")
     void testCreatingAnAssociationBetweenProfessorAndSubject() {
-        Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone", AppUserSex.MALE);
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject("Math");
-        ProfessorSubject professorSubject = new ProfessorSubject(professor, subject);
+        ProfessorSubject professorSubject = new ProfessorSubject(professor, subject, 23.00);
 
         when(professorSubjectRepository.save(any())).thenReturn(professorSubject);
-        assertEquals(professorSubject, professorSubjectService.createAssociation(professor,subject));
+        assertEquals(professorSubject, professorSubjectService.createAssociation(professor,subject, 23.00));
     }
 
     @Test
     @DisplayName("Change status of professor subject from pending to approved")
     void testChangingStatusOfProfessorSubjectFromPendingToApproved() {
-        Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone", AppUserSex.MALE);
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject("Math");
-        ProfessorSubject professorSubject = new ProfessorSubject(professor, subject);
+        ProfessorSubject professorSubject = new ProfessorSubject(professor, subject, 23.00);
 
         when(professorSubjectRepository.save(any())).thenReturn(professorSubject);
-        ProfessorSubject subjectCreated = professorSubjectService.createAssociation(professor,subject);
+        ProfessorSubject subjectCreated = professorSubjectService.createAssociation(professor,subject, 23.00);
         assertEquals(professorSubject, subjectCreated);
 
         when(professorSubjectRepository.findById(any())).thenReturn(Optional.ofNullable(subjectCreated));
@@ -81,12 +63,12 @@ public class ProfessorSubjectServiceTests {
     @Test
     @DisplayName("Change status of professor subject from pending to rejected")
     void testChangingStatusOfProfessorSubjectFromPendingToRejected() {
-        Professor professor = new Professor("John", "Doe", "mail", "ubication", "phone", AppUserSex.MALE);
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject = new Subject("Math");
-        ProfessorSubject professorSubject = new ProfessorSubject(professor, subject);
+        ProfessorSubject professorSubject = new ProfessorSubject(professor, subject, 23.00);
 
         when(professorSubjectRepository.save(any())).thenReturn(professorSubject);
-        ProfessorSubject subjectCreated = professorSubjectService.createAssociation(professor,subject);
+        ProfessorSubject subjectCreated = professorSubjectService.createAssociation(professor,subject, 23.00);
         assertEquals(professorSubject, subjectCreated);
 
         when(professorSubjectRepository.findById(any())).thenReturn(Optional.ofNullable(subjectCreated));
@@ -95,28 +77,11 @@ public class ProfessorSubjectServiceTests {
     }
 
     @Test
-    @DisplayName("Find by professor")
-    void testFindSubjectByProfessor(){
-        Professor professor1 = new Professor("John", "Doe", "mail", "ubication", "phone", AppUserSex.MALE);
-        Subject subject1 = new Subject("Math");
-        ProfessorSubject professorSubject1 = new ProfessorSubject(professor1, subject1);
-
-        Subject subject2 = new Subject("Math");
-        ProfessorSubject professorSubject2 = new ProfessorSubject(professor1, subject2);
-        List<ProfessorSubject> professorSubjects = new ArrayList<>();
-        professorSubjects.add(professorSubject1);
-        professorSubjects.add(professorSubject2);
-
-        when(professorSubjectRepository.findByProfessorId(any())).thenReturn(professorSubjects);
-        assertEquals(professorSubjects, professorSubjectService.findByProfessor(professor1));
-    }
-
-    @Test
     @DisplayName("Find by professor and subject")
     void testFindByProfessorAndSubject(){
-        Professor professor1 = new Professor("John", "Doe", "mail", "ubication", "phone", AppUserSex.MALE);
+        Professor professor1 = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject1 = new Subject("Math");
-        ProfessorSubject professorSubject = new ProfessorSubject(professor1, subject1);
+        ProfessorSubject professorSubject = new ProfessorSubject(professor1, subject1, 23.00);
 
         when(professorSubjectRepository.findByProfessorIdAndSubject_Id(any(), any())).thenReturn(professorSubject);
         assertEquals(professorSubject, professorSubjectService.findByProfessorAndSubject(professor1, subject1));
@@ -125,35 +90,18 @@ public class ProfessorSubjectServiceTests {
     @Test
     @DisplayName("Find by pending status")
     void testFindByPendingStatus(){
-        Professor professor1 = new Professor("John", "Doe", "mail", "ubication", "phone", AppUserSex.MALE);
+        Professor professor1 = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
         Subject subject1 = new Subject("Math");
-        ProfessorSubject professorSubject1 = new ProfessorSubject(professor1, subject1);
+        ProfessorSubject professorSubject1 = new ProfessorSubject(professor1, subject1, 23.00);
 
         Subject subject2 = new Subject("Math");
-        ProfessorSubject professorSubject2 = new ProfessorSubject(professor1, subject2);
+        ProfessorSubject professorSubject2 = new ProfessorSubject(professor1, subject2, 23.00);
         List<ProfessorSubject> professorSubjects = new ArrayList<>();
         professorSubjects.add(professorSubject1);
         professorSubjects.add(professorSubject2);
 
         when(professorSubjectRepository.findByStatus(any())).thenReturn(professorSubjects);
         assertEquals(professorSubjects, professorSubjectService.findByStatus(SubjectStatus.PENDING));
-    }
-
-    @Test
-    @DisplayName("Find by professor id and status")
-    void testFindByProfessorAndPendingStatus(){
-        Professor professor1 = new Professor("John", "Doe", "mail", "ubication", "phone", AppUserSex.MALE);
-        Subject subject1 = new Subject("Math");
-        ProfessorSubject professorSubject1 = new ProfessorSubject(professor1, subject1);
-
-        Subject subject2 = new Subject("Math");
-        ProfessorSubject professorSubject2 = new ProfessorSubject(professor1, subject2);
-        List<ProfessorSubject> professorSubjects = new ArrayList<>();
-        professorSubjects.add(professorSubject1);
-        professorSubjects.add(professorSubject2);
-
-        when(professorSubjectRepository.findByProfessorIdAndStatus(any(), any())).thenReturn(professorSubjects);
-        assertEquals(professorSubjects, professorSubjectService.findByProfessorIdAndStatus(professor1.getId(), SubjectStatus.PENDING));
     }
 
 }

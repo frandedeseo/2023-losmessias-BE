@@ -4,18 +4,21 @@ import com.losmessias.leherer.domain.enumeration.AppUserRole;
 import com.losmessias.leherer.domain.enumeration.FeedbackOptions;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Table(name = "feedback")
+@EntityListeners(AuditingEntityListener.class)
 public class Feedback {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
@@ -23,49 +26,60 @@ public class Feedback {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "student_id")
-    private Student student;
+    @JoinColumn(nullable = false, name = "sender_id")
+    private AppUser sender;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "professor_id")
-    private Professor professor;
+    @JoinColumn(nullable = false, name = "receiver_id")
+    private AppUser receiver;
 
     @Column
     private AppUserRole receptorRole;
+
     @ElementCollection
+    @Column(nullable = false)
     private Set<FeedbackOptions> feedbackOptions;
-    @Column
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
     private LocalDateTime dateTimeOfFeedback;
-    @Column
+
+    @Column(nullable = false)
     private Double rating;
 
-    public Feedback(Student student, Professor professor, AppUserRole role, Set<FeedbackOptions> feedbackOptions, Double rating) {
-        this.student = student;
-        this.professor = professor;
-        this.receptorRole = role;
+    public Feedback(AppUser sender, AppUser receiver, Set<FeedbackOptions> feedbackOptions, Double rating) throws InstantiationException {
+        verifySenderAndReceiverAreDifferentObjectsClasses(sender, receiver);
+        this.sender = sender;
+        this.receiver = receiver;
         this.feedbackOptions = feedbackOptions;
-        this.rating = verifyRating(rating);
         this.dateTimeOfFeedback = LocalDateTime.now();
+        this.rating = verifyRating(rating);
     }
 
-    private Double verifyRating(Double rating) {
-        if (rating < 0) return 0.0; // si es menor, determinamos el mínimo
-        if (rating > 3) return 3.0; // si es mayor, determinamos el máximo
-        if (rating % 0.5 != 0) return Math.round(rating * 2) / 2.0; // si no es múltiplo de 0.5, lo redondeamos
-        return rating; // si no, lo devolvemos tal cual
+    private Double verifyRating(Double rating) throws InstantiationException {
+        if (rating< 0 || rating > 3 || rating % 0.5 != 0){
+            throw new InstantiationException("Invalid rating");
+        }
+        return rating;
     }
 
-    @Override
-    public String toString() {
-        return "Feedback{" +
-                "id=" + id +
-                ", student=" + student +
-                ", professor=" + professor +
-                ", receptorRole=" + receptorRole +
-                ", feedbackOptions=" + feedbackOptions +
-                ", dateTimeOfFeedback=" + dateTimeOfFeedback +
-                ", rating=" + rating +
-                '}';
+    private void verifySenderAndReceiverAreDifferentObjectsClasses(AppUser sender, AppUser receiver) throws InstantiationException {
+        if ((sender instanceof Student && receiver instanceof Student) || (sender instanceof Professor && receiver instanceof Professor)){
+            throw new InstantiationException("Invalid feedback");
+        }
     }
+
+//    @Override
+//    public String toString() {
+//        return "Feedback{" +
+//                "id=" + id +
+//                ", student=" + student +
+//                ", professor=" + professor +
+//                ", receptorRole=" + receptorRole +
+//                ", feedbackOptions=" + feedbackOptions +
+//                ", dateTimeOfFeedback=" + dateTimeOfFeedback +
+//                ", rating=" + rating +
+//                '}';
+//    }
 
 }
