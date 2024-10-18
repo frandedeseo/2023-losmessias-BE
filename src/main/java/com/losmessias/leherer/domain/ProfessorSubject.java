@@ -51,7 +51,9 @@ public class ProfessorSubject {
         if (price != null && subject != null && subject.getPrice() != null) {
             double maxAllowedPrice = subject.getPrice() * 2;
             if (price > maxAllowedPrice) {
-                throw new IllegalArgumentException("Price cannot be more than double the price per half hour.");
+                throw new IllegalArgumentException("Price cannot be more than the double of the suggested price");
+            }else if(price < 0) {
+                throw new IllegalArgumentException("Price cannot be negative.");
             }
         }
         this.price = price;
@@ -62,6 +64,8 @@ public class ProfessorSubject {
             double maxAllowedPrice = subject.getPrice() * 2;
             if (new_price > maxAllowedPrice) {
                 throw new IllegalArgumentException("Price cannot be more than the double of the suggested price");
+            }else if(new_price < 0) {
+                throw new IllegalArgumentException("Price cannot be negative.");
             }else{
                 setPrice(new_price);
             }

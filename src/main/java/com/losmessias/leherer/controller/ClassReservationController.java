@@ -3,10 +3,7 @@ package com.losmessias.leherer.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
-import com.losmessias.leherer.domain.ClassReservation;
-import com.losmessias.leherer.domain.Professor;
-import com.losmessias.leherer.domain.Student;
-import com.losmessias.leherer.domain.Subject;
+import com.losmessias.leherer.domain.*;
 import com.losmessias.leherer.dto.ClassReservationCancelDto;
 import com.losmessias.leherer.dto.ClassReservationDto;
 import com.losmessias.leherer.dto.UnavailableClassReservationDto;
@@ -31,6 +28,7 @@ public class ClassReservationController {
     private final StudentService studentService;
     private final SubjectService subjectService;
     private final ProfessorService professorService;
+    private final ProfessorSubjectService professorSubjectService;
     private final CalendarService calendarService;
 
     @GetMapping("/{id}")
@@ -58,20 +56,30 @@ public class ClassReservationController {
             Professor professor = professorService.getProfessorById(classReservationDto.getProfessorId());
             Subject subject = subjectService.getSubjectById(classReservationDto.getSubjectId());
             Student student = studentService.getStudentById(classReservationDto.getStudentId());
-
+            ProfessorSubject professorSubject = professorSubjectService.findByProfessorAndSubject(professor, subject);
+            if (professorSubject == null)
+                return new ResponseEntity<>("This professor doesn't offer classes for this subject", HttpStatus.BAD_REQUEST);
+            double price;
+            if (professorSubject.getPrice() == null){
+                price = subject.getPrice() * classReservationDto.getTotalHours();
+            }else{
+                price = professorSubject.getPrice() * classReservationDto.getTotalHours();
+            }
             // Check if the student can make a reservation
             if (!student.canMakeAReservation())
                 return new ResponseEntity<>("Student must give feedback before making a reservation", HttpStatus.BAD_REQUEST);
 
             // Check for conflicting reservations
-            if (classReservationService.existsReservationForProfessorOnDayAndTime(
+            if (classReservationService.existsReservationForProfessorOrStudentOnDayAndTime(
                     classReservationDto.getProfessorId(),
+                    classReservationDto.getStudentId(),
                     classReservationDto.getDay(),
                     classReservationDto.getStartingHour(),
                     classReservationDto.getEndingHour()))
-                return ResponseEntity.badRequest().body("There is already a class reserved for this professor at this time");
+                return ResponseEntity.badRequest().body("There is already a class reserved for you or the professor at this time");
 
             // Create the reservation and pass the credential for Google Calendar access
+
             ClassReservation reservation = classReservationService.createReservation(
                     professor,
                     subject,
@@ -79,7 +87,7 @@ public class ClassReservationController {
                     classReservationDto.getDay(),
                     classReservationDto.getStartingHour(),
                     classReservationDto.getEndingHour(),
-                    classReservationDto.getPrice(),
+                    price,
                     accessToken // Pass the access token
             );
 

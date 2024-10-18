@@ -44,6 +44,18 @@ public interface ClassReservationRepository extends JpaRepository<ClassReservati
                                      @Param("startingTime") LocalTime startingTime,
                                      @Param("endingTime") LocalTime endingTime);
 
+    @Query("SELECT COUNT(c) FROM ClassReservation c " +
+            "WHERE c.student.id = :studentId " +
+            "AND c.date = :day " +
+            "AND c.status != 'CANCELLED' " +
+            "AND ((c.startingHour >= :startingTime AND c.startingHour < :endingTime) " +
+            "OR (c.endingHour > :startingTime AND c.endingHour <= :endingTime) " +
+            "OR (c.startingHour <= :startingTime AND c.endingHour >= :endingTime))")
+    int countOverlappingReservationsForStudent(@Param("studentId") Long studentId,
+                                     @Param("day") LocalDate day,
+                                     @Param("startingTime") LocalTime startingTime,
+                                     @Param("endingTime") LocalTime endingTime);
+
     List<ClassReservation> findByDateAndEndingHour(LocalDate date, LocalTime endingHour);
 
 }

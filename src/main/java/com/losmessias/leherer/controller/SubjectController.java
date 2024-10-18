@@ -33,4 +33,14 @@ public class SubjectController {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(subjectService.create(subject)), HttpStatus.CREATED);
     }
+
+    @PostMapping("/edit-price")
+    public ResponseEntity<String> editPrice(@RequestParam("id") Long id, @RequestParam("price") Double price) throws JsonProcessingException {
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        try {
+            return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(subjectService.editPrice(id, price)), HttpStatus.OK);
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

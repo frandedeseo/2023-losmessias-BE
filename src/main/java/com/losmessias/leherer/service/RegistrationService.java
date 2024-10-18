@@ -76,6 +76,7 @@ public class RegistrationService {
         return "Email not taken";
     }
 
+    @Transactional
     public String registerProfessor(RegistrationProfessorRequest request) {
 
         appUserService.validateEmailNotTaken(request.getEmail());

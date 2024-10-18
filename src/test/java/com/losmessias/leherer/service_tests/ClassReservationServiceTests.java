@@ -169,14 +169,14 @@ public class ClassReservationServiceTests {
     @DisplayName("Get reservations for professor on day and time interval finds reservation")
     void testGetReservationsForProfessorOnDayAndTime() {
         when(classReservationRepository.countOverlappingReservations(1L, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0))).thenReturn(1);
-        assertTrue(classReservationService.existsReservationForProfessorOnDayAndTime(1L, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0)));
+        assertTrue(classReservationService.existsReservationForProfessorOrStudentOnDayAndTime(1L, 1L, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0)));
     }
 
     @Test
     @DisplayName("Get reservations for professor on day and time interval finds none")
     void testGetReservationsForProfessorOnDayAndTimeReturnsFalse() {
         when(classReservationRepository.countOverlappingReservations(1L, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0))).thenReturn(0);
-        assertFalse(classReservationService.existsReservationForProfessorOnDayAndTime(1L, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0)));
+        assertFalse(classReservationService.existsReservationForProfessorOrStudentOnDayAndTime(1L, 1L, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0)));
     }
 
     @Test

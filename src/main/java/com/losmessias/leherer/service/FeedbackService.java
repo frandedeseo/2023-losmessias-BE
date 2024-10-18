@@ -10,6 +10,7 @@ import com.losmessias.leherer.repository.ProfessorRepository;
 import com.losmessias.leherer.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -26,15 +27,12 @@ public class FeedbackService {
     private final AppUserService appUserService;
     private final FeedbackReceivedService feedbackReceivedService;
 
+    @Transactional
     public Feedback giveFeedback(FeedbackDto feedbackDto) throws InstantiationException {
         AppUser sender = appUserService.getAppUserById(feedbackDto.getSenderId());
         AppUser receiver = appUserService.getAppUserById(feedbackDto.getReceiverId());
 
         sender.giveFeedbackFor(feedbackDto.getClassId());
-        Double avg = getAvgRating(receiver);
-        feedbackReceivedService.updateFeedbackReceived(feedbackDto, avg);
-
-        appUserRepository.save(sender);
 
         Set<FeedbackOptions> feedbackOptions = new HashSet<>();
         if (feedbackDto.getMaterial()) feedbackOptions.add(FeedbackOptions.MATERIAL);
@@ -43,6 +41,12 @@ public class FeedbackService {
 
         Feedback feedback = new Feedback(sender, receiver, feedbackOptions, feedbackDto.getRating());
         feedbackRepository.save(feedback);
+
+        Double avg = getAvgRating(receiver);
+        feedbackReceivedService.updateFeedbackReceived(feedbackDto, avg);
+
+        appUserRepository.save(sender);
+
         return feedback;
     }
 

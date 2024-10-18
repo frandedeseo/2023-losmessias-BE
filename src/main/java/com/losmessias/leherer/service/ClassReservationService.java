@@ -144,16 +144,22 @@ public class ClassReservationService {
         return new DateTime(zonedDateTime.toInstant().toString());
     }
 
-    public boolean existsReservationForProfessorOnDayAndTime(Long professor,
+    public boolean existsReservationForProfessorOrStudentOnDayAndTime(Long professor,
+                                                             Long student,
                                                              LocalDate day,
                                                              LocalTime startingTime,
                                                              LocalTime endingTime) {
-        int overlapping = classReservationRepository.countOverlappingReservations(
+        int overlappingProfessor = classReservationRepository.countOverlappingReservations(
                 professor,
                 day,
                 startingTime,
                 endingTime);
-        return overlapping > 0;
+        int overlappingStudent = classReservationRepository.countOverlappingReservationsForStudent(
+                student,
+                day,
+                startingTime,
+                endingTime);
+        return overlappingProfessor > 0 || overlappingStudent > 0;
     }
 
     public List<ClassReservation> getReservationsByAppUserId(Long id) {

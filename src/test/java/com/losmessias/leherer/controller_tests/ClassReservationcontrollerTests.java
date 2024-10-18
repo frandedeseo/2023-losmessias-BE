@@ -152,7 +152,7 @@ public class ClassReservationcontrollerTests {
         jsonContent.put("endingHour", LocalTime.of(14, 0));
         jsonContent.put("price", 100);
 
-        when(classReservationService.existsReservationForProfessorOnDayAndTime(any(), any(), any(), any())).thenReturn(true);
+        when(classReservationService.existsReservationForProfessorOrStudentOnDayAndTime(any(), any(), any(), any(), any())).thenReturn(true);
         when(studentService.getStudentById(1L)).thenReturn(studentTest);
         when(studentService.getStudentById(1L).canMakeAReservation()).thenReturn(true);
 

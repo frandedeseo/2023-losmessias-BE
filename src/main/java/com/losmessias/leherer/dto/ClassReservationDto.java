@@ -17,5 +17,5 @@ public class ClassReservationDto {
     private LocalDate day;
     private LocalTime startingHour;
     private LocalTime endingHour;
-    private Double price;
+    private Double totalHours;
 }
