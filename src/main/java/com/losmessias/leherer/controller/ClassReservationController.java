@@ -29,7 +29,6 @@ public class ClassReservationController {
     private final SubjectService subjectService;
     private final ProfessorService professorService;
     private final ProfessorSubjectService professorSubjectService;
-    private final CalendarService calendarService;
 
     @GetMapping("/{id}")
     public ResponseEntity<String> getReservationById(@PathVariable Long id) throws JsonProcessingException {
