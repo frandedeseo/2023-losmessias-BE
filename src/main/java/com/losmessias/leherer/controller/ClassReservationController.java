@@ -112,7 +112,15 @@ public class ClassReservationController {
     }
 
     @PostMapping("/cancel")
-    public ResponseEntity<String> cancelReservation(@RequestBody ClassReservationCancelDto classReservationCancelDto) throws JsonProcessingException {
+    public ResponseEntity<String> cancelReservation(HttpServletRequest request, @RequestBody ClassReservationCancelDto classReservationCancelDto) throws JsonProcessingException {
+        ResponseEntity<Long> userIdResponse = JwtUtil.extractUserIdFromRequest(request, jwtService);
+        if (!userIdResponse.getStatusCode().is2xxSuccessful()) {
+            return ResponseEntity.status(userIdResponse.getStatusCode()).body("Invalid token or user ID not found");
+        }
+        Long userId = userIdResponse.getBody();
+        if (!Objects.equals(userId, classReservationCancelDto.getIdCancelsUser())){
+            ResponseEntity.badRequest().body("This user can not cancel this class");
+        }
         if (classReservationCancelDto.getId() == null) return ResponseEntity.badRequest().body("Class Reservation id must be provided");
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         return ResponseEntity.ok(converter.getObjectMapper().writeValueAsString(classReservationService.cancelReservation(classReservationCancelDto)));

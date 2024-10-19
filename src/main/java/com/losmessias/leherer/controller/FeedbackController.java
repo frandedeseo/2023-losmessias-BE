@@ -9,6 +9,9 @@ import com.losmessias.leherer.domain.enumeration.ReservationStatus;
 import com.losmessias.leherer.dto.FeedbackDto;
 import com.losmessias.leherer.service.ClassReservationService;
 import com.losmessias.leherer.service.FeedbackService;
+import com.losmessias.leherer.service.JwtService;
+import com.losmessias.leherer.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +26,19 @@ public class FeedbackController {
 
     private final FeedbackService feedbackService;
     private final ClassReservationService classReservationService;
+    private final JwtService jwtService;
 
     @PostMapping("/giveFeedback")
-    public ResponseEntity<String> giveFeedback(@RequestBody FeedbackDto feedbackDto) throws JsonProcessingException, InstantiationException {
+    public ResponseEntity<String> giveFeedback(HttpServletRequest request, @RequestBody FeedbackDto feedbackDto) throws JsonProcessingException, InstantiationException {
+        ResponseEntity<Long> userIdResponse = JwtUtil.extractUserIdFromRequest(request, jwtService);
+        if (!userIdResponse.getStatusCode().is2xxSuccessful()) {
+            return ResponseEntity.status(userIdResponse.getStatusCode()).body("Invalid token or user ID not found");
+        }
+        Long userId = userIdResponse.getBody();
+        if (userId!=feedbackDto.getSenderId()){
+            return new ResponseEntity<>("This user has no permission to give this feedback", HttpStatus.BAD_REQUEST);
+        }
+
         ClassReservation classReservation = classReservationService.getReservationById(feedbackDto.getClassId());
         if (classReservation == null) return new ResponseEntity<>("Class not found", HttpStatus.NOT_FOUND);
         if (classReservation.getStatus() != ReservationStatus.CONCLUDED)

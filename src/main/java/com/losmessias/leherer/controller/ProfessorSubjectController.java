@@ -53,7 +53,7 @@ public class ProfessorSubjectController {
                 return ResponseEntity.status(userIdResponse.getStatusCode()).body("Invalid token or user ID not found");
             }
             Long userId = userIdResponse.getBody();
-            return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(professorSubjectService.editPrice(id, price)), HttpStatus.OK);
+            return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(professorSubjectService.editPrice(userId, id, price)), HttpStatus.OK);
         }catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

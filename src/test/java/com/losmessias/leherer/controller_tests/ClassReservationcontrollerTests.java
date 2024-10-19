@@ -11,15 +11,19 @@ import com.losmessias.leherer.repository.ProfessorSubjectRepository;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
 import com.losmessias.leherer.service.*;
 import com.losmessias.leherer.domain.enumeration.AppUserSex;
+import com.losmessias.leherer.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -30,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -214,34 +220,53 @@ public class ClassReservationcontrollerTests {
     @WithMockUser
     @DisplayName("Cancel a reservation with no Class Reservation id returns bad request")
     void testCancelAReservationReturnsBadRequest() throws Exception {
-        JSONObject jsonContent = new JSONObject();
-        jsonContent.put("id", null);
-        jsonContent.put("role", "STUDENT");
+        // Mocking JwtUtil static method
+        try (MockedStatic<JwtUtil> jwtUtilMock = mockStatic(JwtUtil.class)) {
+            // Set up the mocked behavior for JwtUtil
+            jwtUtilMock.when(() -> JwtUtil.extractUserIdFromRequest(any(HttpServletRequest.class), any(JwtService.class)))
+                    .thenReturn(ResponseEntity.ok(1L)); // Mock userId as 1
 
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/api/reservation/cancel")
-                        .contentType("application/json")
-                        .content(jsonContent.toString())
-                        .with(csrf()))
-                .andExpect(status().isBadRequest());
+            // Building the request with missing class reservation id
+            JSONObject jsonContent = new JSONObject();
+            jsonContent.put("id", null);
+            jsonContent.put("role", "STUDENT");
+            jsonContent.put("idCancelsUser", 1); // Mock userId as 1 for test
+
+            // Perform the test and expect a Bad Request
+            mockMvc.perform(MockMvcRequestBuilders
+                            .post("/api/reservation/cancel")
+                            .contentType("application/json")
+                            .content(jsonContent.toString())
+                            .with(csrf()))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Test
     @WithMockUser
-    @DisplayName("Cancel a reservation return 200 OK")
+    @DisplayName("Cancel a reservation returns 200 OK")
     void testCancelAReservationReturnsOk() throws Exception {
-        JSONObject jsonContent = new JSONObject();
-        jsonContent.put("id", 1);
-        jsonContent.put("role", "STUDENT");
+        // Mocking JwtUtil static method
+        try (MockedStatic<JwtUtil> jwtUtilMock = mockStatic(JwtUtil.class)) {
+            // Set up the mocked behavior for JwtUtil
+            jwtUtilMock.when(() -> JwtUtil.extractUserIdFromRequest(any(HttpServletRequest.class), any(JwtService.class)))
+                    .thenReturn(ResponseEntity.ok(1L)); // Mock userId as 1
 
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/api/reservation/cancel")
-                        .contentType("application/json")
-                        .content(jsonContent.toString())
-                        .with(csrf()))
-                .andExpect(status().isOk());
+            // Building the request
+            JSONObject jsonContent = new JSONObject();
+            jsonContent.put("id", 1); // Class reservation ID
+            jsonContent.put("role", "STUDENT");
+            jsonContent.put("idCancelsUser", 1); // User id that cancels the reservation
+
+            // Perform the test and expect OK status
+            mockMvc.perform(MockMvcRequestBuilders
+                            .post("/api/reservation/cancel")
+                            .contentType("application/json")
+                            .content(jsonContent.toString())
+                            .with(csrf()))
+                    .andExpect(status().isOk());
+        }
     }
-
     @Test
     @WithMockUser
     @DisplayName("Create a reservation with no student id returns bad request")
@@ -266,25 +291,37 @@ public class ClassReservationcontrollerTests {
 
     @Test
     @WithMockUser
-    @DisplayName("Create unavailable reservation")
+    @DisplayName("Create unavailable reservation returns 200 OK")
     void testCreateUnavailableReservationReturnsOk() throws Exception {
-        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
-        JSONObject jsonContent = new JSONObject();
-        jsonContent.put("professorId", 1);
-        jsonContent.put("day", LocalDate.of(2023, 1, 1));
-        jsonContent.put("startingTime", LocalTime.of(12, 0));
-        jsonContent.put("endingHour", LocalTime.of(13, 0));
+        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);
 
-        when(professorService.getProfessorById(1L)).thenReturn(professor);
-        when(classReservationService.createUnavailableReservation(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0))).thenReturn(classReservationTest1);
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/api/reservation/createUnavailable")
-                        .contentType("application/json")
-                        .content(jsonContent.toString())
-                        .with(csrf()))
-                .andExpect(status().isOk());
+        // Mocking JwtUtil static method
+        try (MockedStatic<JwtUtil> jwtUtilMock = mockStatic(JwtUtil.class)) {
+            // Set up the mocked behavior for JwtUtil
+            jwtUtilMock.when(() -> JwtUtil.extractUserIdFromRequest(any(HttpServletRequest.class), any(JwtService.class)))
+                    .thenReturn(ResponseEntity.ok(1L)); // Mock userId as 1
+
+            // Mocking the professor service and class reservation service
+            when(professorService.getProfessorById(1L)).thenReturn(professor);
+            when(classReservationService.createUnavailableReservation(professor, LocalDate.of(2023, 1, 1), LocalTime.of(12, 0), LocalTime.of(13, 0)))
+                    .thenReturn(classReservationTest1);
+
+            // Building the request
+            JSONObject jsonContent = new JSONObject();
+            jsonContent.put("professorId", 1);
+            jsonContent.put("day", LocalDate.of(2023, 1, 1));
+            jsonContent.put("startingTime", LocalTime.of(12, 0));
+            jsonContent.put("endingHour", LocalTime.of(13, 0));
+
+            // Perform the test and expect OK status
+            mockMvc.perform(MockMvcRequestBuilders
+                            .post("/api/reservation/createUnavailable")
+                            .contentType("application/json")
+                            .content(jsonContent.toString())
+                            .with(csrf()))
+                    .andExpect(status().isOk());
+        }
     }
-
     @Test
     @DisplayName("Create a reservation without authentication")
     void testCreateAReservationReturnsUnauthorized() throws Exception {

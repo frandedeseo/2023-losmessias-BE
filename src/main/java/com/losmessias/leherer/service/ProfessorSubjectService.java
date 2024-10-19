@@ -39,10 +39,13 @@ public class ProfessorSubjectService {
         return professorSubjectRepository.save(professorSubject);
     }
 
-    public ProfessorSubject editPrice(Long id, Double price) {
+    public ProfessorSubject editPrice(Long userId, Long id, Double price) {
         ProfessorSubject professorSubject = professorSubjectRepository.findById(id).orElse(null);
         if (professorSubject == null) {
             throw new RuntimeException("ProfessorSubject with id " + id + " not found");
+        }
+        if (professorSubject.getProfessor().getId() != userId){
+            throw new RuntimeException("The user can not edit this subject professor");
         }
         professorSubject.editPrice(price);
         return professorSubjectRepository.save(professorSubject);
