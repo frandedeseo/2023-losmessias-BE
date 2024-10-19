@@ -50,7 +50,7 @@ public class GoogleAuthorizeUtil {
         // Get the authorization code flow
         GoogleAuthorizationCodeFlow flow = getFlow();
 
-        // Exchange the authorization code for a token
+        // Exchange the authorizati on code for a token
         GoogleTokenResponse tokenResponse = flow.newTokenRequest(authorizationCode)
                 .setRedirectUri(redirectUri)
                 .execute();

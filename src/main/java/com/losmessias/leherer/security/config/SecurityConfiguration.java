@@ -41,7 +41,8 @@ public class SecurityConfiguration {
             "/api/app-user/changePassword",
             "/api/forgot_password/**",
             "/api/is-token-expired",
-            "/oauth2callback/**"
+            "/oauth2callback",
+            "/authorize"
     };
     private static final String[] PROFESSOR_AUTHORITIES = {
             "/api/reservation/createUnavailable",
