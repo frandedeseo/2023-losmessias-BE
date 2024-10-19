@@ -11,7 +11,12 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.util.ByteArrayDataSource;
 
+import java.io.IOException;
 
 @Service
 @AllArgsConstructor
@@ -31,6 +36,25 @@ public class EmailService {
             helper.setSubject(subject);
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
+            LOGGER.error("failed to send email", e);
+            throw new IllegalStateException("failed to send email");
+        }
+    }
+    public void sendWithHTMLAndAttachment(String to, String subject, String body, String icsContent) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8"); // true for multipart message
+
+            helper.setText(body, true); // Set HTML body
+            helper.setTo(to);
+            helper.setSubject(subject);
+
+            // Attach the ICS file
+            ByteArrayDataSource dataSource = new ByteArrayDataSource(icsContent, "text/calendar; charset=UTF-8");
+            helper.addAttachment("invitation.ics", dataSource);
+
+            mailSender.send(mimeMessage);
+        } catch (MessagingException | IOException e) {
             LOGGER.error("failed to send email", e);
             throw new IllegalStateException("failed to send email");
         }

@@ -5,6 +5,8 @@ import com.losmessias.leherer.domain.*;
 import com.losmessias.leherer.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,26 +30,65 @@ public class NotificationService {
         notificationRepository.save(notification);
         return notification;
     }
-    public String generateClassReservedNotification(ClassReservation classReservation){
+    public String generateClassReservedNotification(ClassReservation classReservation) {
         Student student = classReservation.getStudent();
         Professor professor = classReservation.getProfessor();
 
-        String textStudent = "You have reserved a class of "+ classReservation.getSubject().getName() +" with " + professor.getFirstName() + " " + professor.getLastName()
-                + ".\n From: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour() + ".\n The date: " + classReservation.getDate() + ".\n  Enlace de Google Meet: " + classReservation.getGoogleMeetLink();
-        String textProfessor = "You have been reserved a class of "+ classReservation.getSubject().getName() +" with " + student.getFirstName() + " " + student.getLastName()
-                + ".\n From: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour() + ".\n The date: " + classReservation.getDate() + ".\n  Enlace de Google Meet: " + classReservation.getGoogleMeetLink();
+        String textStudent = "You have reserved a class of " + classReservation.getSubject().getName() + " with "
+                + professor.getFirstName() + " " + professor.getLastName()
+                + ".\n From: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour()
+                + ".\n The date: " + classReservation.getDate() + ".\n Google Meet Link: " + classReservation.getGoogleMeetLink();
 
-        Notification notificationStudent = new Notification(student, textStudent);
-        Notification notificationProfessor = new Notification(professor, textProfessor);
+        String textProfessor = "You have been reserved a class of " + classReservation.getSubject().getName() + " with "
+                + student.getFirstName() + " " + student.getLastName()
+                + ".\n From: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour()
+                + ".\n The date: " + classReservation.getDate() + ".\n Google Meet Link: " + classReservation.getGoogleMeetLink();
 
-        notificationRepository.save(notificationStudent);
-        notificationRepository.save(notificationProfessor);
+        // Build the iCalendar file content for the event invitation
+        String icsContent = generateICSFile(classReservation);
 
+        // Send notification to the student
         String studentBody = buildEmail(student.getFirstName(), "Class Reservation confirmed", textStudent);
-        emailService.sendWithHTML(student.getEmail(), "Class Reservation confirmed", studentBody);
+        emailService.sendWithHTMLAndAttachment(student.getEmail(), "Class Reservation confirmed", studentBody, icsContent);
+
+        // Send notification to the professor
         String professorBody = buildEmail(professor.getFirstName(), "Class Reservation confirmed", textProfessor);
-        emailService.sendWithHTML(professor.getEmail(), "Class Reservation confirmed", professorBody);
+        emailService.sendWithHTMLAndAttachment(professor.getEmail(), "Class Reservation confirmed", professorBody, icsContent);
+
         return "Notifications sent successfully";
+    }
+
+    // Method to generate iCalendar (ICS) content for the class reservation
+    private String generateICSFile(ClassReservation classReservation) {
+        String uuid = UUID.randomUUID().toString();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmmss");
+
+        String startDate = classReservation.getDate().format(dateFormatter);
+        String startTime = classReservation.getStartingHour().format(timeFormatter) + "Z"; // Assuming UTC time
+        String endTime = classReservation.getEndingHour().format(timeFormatter) + "Z"; // Assuming UTC time
+
+        StringBuilder icsContent = new StringBuilder();
+        icsContent.append("BEGIN:VCALENDAR\n")
+                .append("VERSION:2.0\n")
+                .append("PRODID:-//YourCompany//ClassReservation//EN\n")
+                .append("BEGIN:VEVENT\n")
+                .append("UID:").append(uuid).append("\n")
+                .append("DTSTAMP:").append(startDate).append("T").append(startTime).append("\n")
+                .append("DTSTART:").append(startDate).append("T").append(startTime).append("\n")
+                .append("DTEND:").append(startDate).append("T").append(endTime).append("\n")
+                .append("SUMMARY:Class Reservation - ").append(classReservation.getSubject().getName()).append("\n")
+                .append("DESCRIPTION:Google Meet Link: ").append(classReservation.getGoogleMeetLink()).append("\n")
+                .append("LOCATION:Google Meet\n")
+                .append("BEGIN:VALARM\n")
+                .append("TRIGGER:-PT10M\n")
+                .append("ACTION:DISPLAY\n")
+                .append("DESCRIPTION:Reminder\n")
+                .append("END:VALARM\n")
+                .append("END:VEVENT\n")
+                .append("END:VCALENDAR");
+
+        return icsContent.toString();
     }
 
     public String cancelClassReservedNotification(ClassReservation classReservation, AppUser appUser){
