@@ -9,12 +9,11 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 
-import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.Collections;
 
 public class GoogleAuthorizeUtil {
 
-    private static final String CLIENT_SECRET_JSON = "/client_secret.json";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
     private static GoogleAuthorizationCodeFlow flow;
@@ -22,10 +21,7 @@ public class GoogleAuthorizeUtil {
     // Initialize Google Authorization Flow
     private static GoogleAuthorizationCodeFlow getFlow() throws Exception {
         if (flow == null) {
-            GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(
-                    JSON_FACTORY,
-                    new InputStreamReader(GoogleAuthorizeUtil.class.getResourceAsStream(CLIENT_SECRET_JSON))
-            );
+            GoogleClientSecrets clientSecrets = getClientSecrets();  // Updated to use environment variables
 
             flow = new GoogleAuthorizationCodeFlow.Builder(
                     GoogleNetHttpTransport.newTrustedTransport(),
@@ -56,6 +52,16 @@ public class GoogleAuthorizeUtil {
                 .execute();
 
         // Now use the token response to create the Credential object
-        return flow.createAndStoreCredential(tokenResponse, "user"); // "user" can be replaced with a unique ID for each user if needed
+        return flow.createAndStoreCredential(tokenResponse, "user");  // "user" can be replaced with a unique ID for each user if needed
+    }
+
+    // New method to load client secrets from environment variables
+    private static GoogleClientSecrets getClientSecrets() throws IOException {
+        GoogleClientSecrets clientSecrets = new GoogleClientSecrets()
+                .setInstalled(new GoogleClientSecrets.Details()
+                        .setClientId(System.getenv("GOOGLE_CLIENT_ID"))
+                        .setClientSecret(System.getenv("GOOGLE_CLIENT_SECRET"))
+                );
+        return clientSecrets;
     }
 }
