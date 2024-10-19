@@ -125,14 +125,14 @@ public class ClassReservationService {
                 .setLocation("Google Meet")
                 .setDescription("Class with " + reservation.getProfessor().getFirstName());
 
-        // Set start and end time in local time zone
-        DateTime startDateTime = new DateTime(reservation.getDate() + "T" + reservation.getStartingHour());
+        // Use getDateTime method to get proper DateTime objects
+        DateTime startDateTime = getDateTime(reservation.getDate(), reservation.getStartingHour());
         EventDateTime start = new EventDateTime()
                 .setDateTime(startDateTime)
                 .setTimeZone("America/Argentina/Buenos_Aires"); // ART timezone
         event.setStart(start);
 
-        DateTime endDateTime = new DateTime(reservation.getDate() + "T" + reservation.getEndingHour());
+        DateTime endDateTime = getDateTime(reservation.getDate(), reservation.getEndingHour());
         EventDateTime end = new EventDateTime()
                 .setDateTime(endDateTime)
                 .setTimeZone("America/Argentina/Buenos_Aires"); // ART timezone
@@ -145,23 +145,28 @@ public class ClassReservationService {
         conferenceData.setCreateRequest(createConferenceRequest);
         event.setConferenceData(conferenceData);
 
+        // Add attendees
+        EventAttendee[] attendees = new EventAttendee[] {
+                new EventAttendee().setEmail(reservation.getProfessor().getEmail()),
+                new EventAttendee().setEmail(reservation.getStudent().getEmail())
+        };
+        event.setAttendees(Arrays.asList(attendees));
+
         // Insert the event into the user's calendar
-        Calendar.Events.Insert request = service.events().insert("primary", event);
-        request.setConferenceDataVersion(1); // Required to include conference data
+        Calendar.Events.Insert request = service.events().insert("primary", event)
+                .setConferenceDataVersion(1) // Required to include conference data
+                .setSendUpdates("all"); // Ensure that updates are sent to all attendees
         Event createdEvent = request.execute();
 
         return createdEvent;
     }
 
     private DateTime getDateTime(LocalDate date, LocalTime time) {
-        // Combine the date and time into a LocalDateTime
-        LocalDateTime localDateTime = LocalDateTime.of(date, time);
+        // Combine the date and time into a ZonedDateTime with the specified time zone
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(date, time, ZoneId.of("America/Argentina/Buenos_Aires"));
 
-        // Convert to ZonedDateTime with system default time zone or UTC if preferred
-        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());  // You can change to ZoneOffset.UTC if needed
-
-        // Return the DateTime in the proper ISO 8601 format
-        return new DateTime(zonedDateTime.toInstant().toString());
+        // Return the DateTime in ISO 8601 format with time zone offset
+        return new DateTime(zonedDateTime.toOffsetDateTime().toString());
     }
 
     public boolean existsReservationForProfessorOrStudentOnDayAndTime(Long professor,

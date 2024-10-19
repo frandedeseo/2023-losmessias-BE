@@ -36,24 +36,27 @@ public class NotificationService {
 
         String textStudent = "You have reserved a class of " + classReservation.getSubject().getName() + " with "
                 + professor.getFirstName() + " " + professor.getLastName()
-                + ".\n From: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour()
-                + ".\n The date: " + classReservation.getDate() + ".\n Google Meet Link: " + classReservation.getGoogleMeetLink();
+                + ".\nFrom: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour()
+                + ".\nThe date: " + classReservation.getDate() + ".\nGoogle Meet Link: " + classReservation.getGoogleMeetLink();
 
-        String textProfessor = "You have been reserved a class of " + classReservation.getSubject().getName() + " with "
+        String textProfessor = "A class has been reserved for " + classReservation.getSubject().getName() + " with "
                 + student.getFirstName() + " " + student.getLastName()
-                + ".\n From: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour()
-                + ".\n The date: " + classReservation.getDate() + ".\n Google Meet Link: " + classReservation.getGoogleMeetLink();
+                + ".\nFrom: " + classReservation.getStartingHour() + " to: " + classReservation.getEndingHour()
+                + ".\nThe date: " + classReservation.getDate() + ".\nGoogle Meet Link: " + classReservation.getGoogleMeetLink();
 
-        // Build the iCalendar file content for the event invitation
-        String icsContent = generateICSFile(classReservation);
+        Notification notificationStudent = new Notification(student, textStudent);
+        Notification notificationProfessor = new Notification(professor, textProfessor);
+
+        notificationRepository.save(notificationStudent);
+        notificationRepository.save(notificationProfessor);
 
         // Send notification to the student
-        String studentBody = buildEmail(student.getFirstName(), "Class Reservation confirmed", textStudent);
-        emailService.sendWithHTMLAndAttachment(student.getEmail(), "Class Reservation confirmed", studentBody, icsContent);
+        String studentBody = buildEmail(student.getFirstName(), "Class Reservation Confirmed", textStudent);
+        emailService.sendWithHTML(student.getEmail(), "Class Reservation Confirmed", studentBody);
 
         // Send notification to the professor
-        String professorBody = buildEmail(professor.getFirstName(), "Class Reservation confirmed", textProfessor);
-        emailService.sendWithHTMLAndAttachment(professor.getEmail(), "Class Reservation confirmed", professorBody, icsContent);
+        String professorBody = buildEmail(professor.getFirstName(), "Class Reservation Confirmed", textProfessor);
+        emailService.sendWithHTML(professor.getEmail(), "Class Reservation Confirmed", professorBody);
 
         return "Notifications sent successfully";
     }

@@ -34,6 +34,7 @@ public abstract class AppUser implements UserDetails {
     @NotEmpty(message = "Email cannot be empty")
     private String email;
 
+    @JsonIgnore
     @Column(nullable = false)
     @Size(min = 8, message = "Password must be longer than 8 characters")
     private String password;
