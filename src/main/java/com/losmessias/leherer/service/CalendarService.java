@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class CalendarService {
 
     private static final String APPLICATION_NAME = "LosMessias Application";
-    private static final String REDIRECT_URI = "http://localhost:8080/oauth2callback";
+    private static final String REDIRECT_URI = "https://two023-losmessias-be-7ic0.onrender.com/oauth2callback";
 
     // Get Calendar service with authorized credentials
     public Calendar getCalendarService(Credential credential) throws Exception {
