@@ -91,7 +91,7 @@ public class ClassReservationService {
             classReservation.setGoogleCalendarEventId(event.getId());
             classReservation.setGoogleMeetLink(event.getHangoutLink());
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace();//
             // Handle error as necessary
         }
         notificationService.generateClassReservedNotification(classReservation);
