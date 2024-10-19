@@ -9,6 +9,8 @@ import com.losmessias.leherer.dto.ClassReservationDto;
 import com.losmessias.leherer.dto.UnavailableClassReservationDto;
 import com.losmessias.leherer.repository.interfaces.ProfessorDailySummary;
 import com.losmessias.leherer.service.*;
+import com.losmessias.leherer.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/reservation")
@@ -29,6 +32,7 @@ public class ClassReservationController {
     private final SubjectService subjectService;
     private final ProfessorService professorService;
     private final ProfessorSubjectService professorSubjectService;
+    private final JwtService jwtService;
 
     @GetMapping("/{id}")
     public ResponseEntity<String> getReservationById(@PathVariable Long id) throws JsonProcessingException {
@@ -40,9 +44,18 @@ public class ClassReservationController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createReservation(@RequestBody ClassReservationDto classReservationDto,
+    public ResponseEntity<String> createReservation(HttpServletRequest request, @RequestBody ClassReservationDto classReservationDto,
                                                     @RequestParam("accessToken") String accessToken) { // Get the access toke
         try {
+            ResponseEntity<Long> userIdResponse = JwtUtil.extractUserIdFromRequest(request, jwtService);
+            if (!userIdResponse.getStatusCode().is2xxSuccessful()) {
+                return ResponseEntity.status(userIdResponse.getStatusCode()).body("Invalid token or user ID not found");
+            }
+            Long userId = userIdResponse.getBody();
+
+            if (!Objects.equals(userId, classReservationDto.getStudentId())){
+                return ResponseEntity.badRequest().body("The student doesn't match with the user");
+            }
             // Ensure required IDs are provided
             if (classReservationDto.getProfessorId() == null)
                 return ResponseEntity.badRequest().body("Professor id must be provided");
@@ -106,7 +119,14 @@ public class ClassReservationController {
     }
 
     @PostMapping("/createUnavailable")
-    public ResponseEntity<String> createUnavailableReservation(@RequestBody UnavailableClassReservationDto classReservationDto) throws JsonProcessingException {
+    public ResponseEntity<String> createUnavailableReservation(HttpServletRequest request,@RequestBody UnavailableClassReservationDto classReservationDto) throws JsonProcessingException {
+        ResponseEntity<Long> userIdResponse = JwtUtil.extractUserIdFromRequest(request, jwtService);
+        if (!userIdResponse.getStatusCode().is2xxSuccessful()) {
+            return ResponseEntity.status(userIdResponse.getStatusCode()).body("Invalid token or user ID not found");
+        }
+        Long userId = userIdResponse.getBody();
+        if (!Objects.equals(userId, classReservationDto.getProfessorId()))
+            return ResponseEntity.badRequest().body("User doesn't match with professor");
         if (classReservationDto.getProfessorId() == null)
             return ResponseEntity.badRequest().body("Professor id must be provided");
         Professor professor = professorService.getProfessorById(classReservationDto.getProfessorId());

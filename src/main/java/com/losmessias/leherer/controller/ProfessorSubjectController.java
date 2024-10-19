@@ -6,10 +6,9 @@ import com.losmessias.leherer.domain.ProfessorSubject;
 import com.losmessias.leherer.domain.Subject;
 import com.losmessias.leherer.domain.enumeration.SubjectStatus;
 import com.losmessias.leherer.dto.SubjectRequestDto;
-import com.losmessias.leherer.service.NotificationService;
-import com.losmessias.leherer.service.ProfessorService;
-import com.losmessias.leherer.service.ProfessorSubjectService;
-import com.losmessias.leherer.service.SubjectService;
+import com.losmessias.leherer.service.*;
+import com.losmessias.leherer.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +28,7 @@ public class ProfessorSubjectController {
     private final ProfessorService professorService;
     private final SubjectService subjectService;
     private final NotificationService notificationService;
+    private final JwtService jwtService;
 
     @PostMapping("/createAssociation")
     public ResponseEntity<String> createProfessorSubject(Long professorId, Long subjectId, Double price) {
@@ -45,9 +45,14 @@ public class ProfessorSubjectController {
     }
 
     @PostMapping("/edit-price")
-    public ResponseEntity<String> editPrice(@RequestParam("id") Long id, @RequestParam("price") Double price) throws JsonProcessingException {
+    public ResponseEntity<String> editPrice(HttpServletRequest request, @RequestParam("id") Long id, @RequestParam("price") Double price) throws JsonProcessingException {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         try {
+            ResponseEntity<Long> userIdResponse = JwtUtil.extractUserIdFromRequest(request, jwtService);
+            if (!userIdResponse.getStatusCode().is2xxSuccessful()) {
+                return ResponseEntity.status(userIdResponse.getStatusCode()).body("Invalid token or user ID not found");
+            }
+            Long userId = userIdResponse.getBody();
             return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(professorSubjectService.editPrice(id, price)), HttpStatus.OK);
         }catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

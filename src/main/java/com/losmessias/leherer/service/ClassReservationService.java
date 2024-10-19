@@ -68,7 +68,7 @@ public class ClassReservationService {
                 new EventAttendee().setEmail(student.getEmail())
         };
         event.setAttendees(Arrays.asList(attendees));
-
+        System.out.println("Attendees added: " + Arrays.toString(attendees));
         return event;
     }
 
@@ -79,7 +79,7 @@ public class ClassReservationService {
                                               LocalTime startingTime,
                                               LocalTime endingTime,
                                               Double price,
-                                              String accessToken) { // Pass OAuth Credential here
+                                              String accessToken) {
         ClassReservation classReservation = new ClassReservation(
                 professor,
                 subject,
@@ -93,15 +93,18 @@ public class ClassReservationService {
         try {
             // Pass the credential to create a Google Calendar event
             Event event = createGoogleCalendarEvent(classReservation, accessToken);
+
             // Add attendees (professor and student)
             event = addAttendeesToGoogleCalendarEvent(event, professor, student);
 
             // Store the Google Calendar event ID and Google Meet link
             classReservation.setGoogleCalendarEventId(event.getId());
             classReservation.setGoogleMeetLink(event.getHangoutLink());
+            System.out.println("Event created successfully with ID: " + event.getId());
+
         } catch (Exception e) {
+            System.err.println("Error creating the event: " + e.getMessage());
             e.printStackTrace();
-            // Handle error as necessary
         }
 
         notificationService.generateClassReservedNotification(classReservation);
@@ -116,7 +119,10 @@ public class ClassReservationService {
                 GoogleNetHttpTransport.newTrustedTransport(),
                 GsonFactory.getDefaultInstance(), null)
                 .setApplicationName("Lehrer")
-                .setHttpRequestInitializer(request -> request.getHeaders().setAuthorization("Bearer " + accessToken))
+                .setHttpRequestInitializer(request -> {
+                    request.getHeaders().setAuthorization("Bearer " + accessToken);
+                    System.out.println("Access token: " + accessToken); // Log the access token to verify
+                })
                 .build();
 
         // Configure the event
@@ -143,7 +149,14 @@ public class ClassReservationService {
         CreateConferenceRequest createConferenceRequest = new CreateConferenceRequest();
         createConferenceRequest.setRequestId("some-random-string-" + System.currentTimeMillis());
         conferenceData.setCreateRequest(createConferenceRequest);
-        event.setConferenceData(conferenceData);
+
+        // Check if conference data is created
+        if (conferenceData != null) {
+            event.setConferenceData(conferenceData);
+            System.out.println("Conference data set successfully.");
+        } else {
+            System.out.println("Failed to set conference data.");
+        }
 
         // Add attendees
         EventAttendee[] attendees = new EventAttendee[] {
@@ -151,12 +164,21 @@ public class ClassReservationService {
                 new EventAttendee().setEmail(reservation.getStudent().getEmail())
         };
         event.setAttendees(Arrays.asList(attendees));
+        System.out.println("Attendees added to the event: " + Arrays.toString(attendees));
 
         // Insert the event into the user's calendar
         Calendar.Events.Insert request = service.events().insert("primary", event)
                 .setConferenceDataVersion(1) // Required to include conference data
                 .setSendUpdates("all"); // Ensure that updates are sent to all attendees
-        Event createdEvent = request.execute();
+        Event createdEvent;
+
+        try {
+            createdEvent = request.execute();
+            System.out.println("Event created successfully with ID: " + createdEvent.getId());
+        } catch (Exception e) {
+            System.err.println("Failed to create event: " + e.getMessage());
+            throw e;
+        }
 
         return createdEvent;
     }
@@ -168,7 +190,6 @@ public class ClassReservationService {
         // Return the DateTime in ISO 8601 format with time zone offset
         return new DateTime(zonedDateTime.toOffsetDateTime().toString());
     }
-
     public boolean existsReservationForProfessorOrStudentOnDayAndTime(Long professor,
                                                              Long student,
                                                              LocalDate day,
