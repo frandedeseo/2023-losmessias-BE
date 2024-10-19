@@ -22,7 +22,7 @@ public class CalendarController {
         try {
             // Generate the authorization URL and send it to the frontend
             String authorizationUrl = calendarService.getAuthorizationUrl();
-            return ResponseEntity.ok(authorizationUrl);
+            return ResponseEntity.ok(authorizationUrl);//
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error generating authorization URL");
