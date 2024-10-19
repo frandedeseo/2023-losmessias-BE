@@ -6,10 +6,7 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
-import com.google.api.services.calendar.model.ConferenceData;
-import com.google.api.services.calendar.model.CreateConferenceRequest;
-import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.EventDateTime;
+import com.google.api.services.calendar.model.*;
 import com.losmessias.leherer.domain.*;
 import com.losmessias.leherer.domain.enumeration.ReservationStatus;
 import com.losmessias.leherer.dto.ClassReservationCancelDto;
@@ -65,6 +62,16 @@ public class ClassReservationService {
         return classReservation.getDate().minusDays(2).isBefore(LocalDate.now()) || classReservation.getDate().minusDays(2).isEqual(LocalDate.now()) && classReservation.getStartingHour().isBefore(LocalTime.now());
     }
 
+    private Event addAttendeesToGoogleCalendarEvent(Event event, Professor professor, Student student) {
+        EventAttendee[] attendees = new EventAttendee[] {
+                new EventAttendee().setEmail(professor.getEmail()),
+                new EventAttendee().setEmail(student.getEmail())
+        };
+        event.setAttendees(Arrays.asList(attendees));
+
+        return event;
+    }
+
     public ClassReservation createReservation(Professor professor,
                                               Subject subject,
                                               Student student,
@@ -83,10 +90,12 @@ public class ClassReservationService {
                 price
         );
 
-
         try {
             // Pass the credential to create a Google Calendar event
             Event event = createGoogleCalendarEvent(classReservation, accessToken);
+            // Add attendees (professor and student)
+            event = addAttendeesToGoogleCalendarEvent(event, professor, student);
+
             // Store the Google Calendar event ID and Google Meet link
             classReservation.setGoogleCalendarEventId(event.getId());
             classReservation.setGoogleMeetLink(event.getHangoutLink());
@@ -94,6 +103,7 @@ public class ClassReservationService {
             e.printStackTrace();
             // Handle error as necessary
         }
+
         notificationService.generateClassReservedNotification(classReservation);
 
         return classReservationRepository.save(classReservation);
@@ -111,12 +121,22 @@ public class ClassReservationService {
 
         // Configure the event
         Event event = new Event()
-                .setSummary("Clase con " + reservation.getProfessor().getFirstName() + " " + reservation.getProfessor().getLastName())
-                .setDescription("Clase de " + reservation.getSubject().getName())
-                .setStart(new EventDateTime()
-                        .setDateTime(getDateTime(reservation.getDate(), reservation.getStartingHour())))  // No time zone set
-                .setEnd(new EventDateTime()
-                        .setDateTime(getDateTime(reservation.getDate(), reservation.getEndingHour())));   // No time zone set
+                .setSummary("Class Reservation - " + reservation.getSubject().getName())
+                .setLocation("Google Meet")
+                .setDescription("Class with " + reservation.getProfessor().getFirstName());
+
+        // Set start and end time in local time zone
+        DateTime startDateTime = new DateTime(reservation.getDate() + "T" + reservation.getStartingHour());
+        EventDateTime start = new EventDateTime()
+                .setDateTime(startDateTime)
+                .setTimeZone("America/Argentina/Buenos_Aires"); // ART timezone
+        event.setStart(start);
+
+        DateTime endDateTime = new DateTime(reservation.getDate() + "T" + reservation.getEndingHour());
+        EventDateTime end = new EventDateTime()
+                .setDateTime(endDateTime)
+                .setTimeZone("America/Argentina/Buenos_Aires"); // ART timezone
+        event.setEnd(end);
 
         // Add Google Meet conference link
         ConferenceData conferenceData = new ConferenceData();
