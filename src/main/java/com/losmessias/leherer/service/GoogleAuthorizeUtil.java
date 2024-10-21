@@ -61,15 +61,10 @@ public class GoogleAuthorizeUtil {
 
     // New method to load client secrets from environment variables
     private static GoogleClientSecrets getClientSecrets() throws IOException {
-        // Check if the application is running on localhost
-        InetAddress localHost = InetAddress.getLocalHost();
-            // Load client_secret.json from resources when on localhost
-        InputStream in = GoogleAuthorizeUtil.class.getResourceAsStream("/client_secret.json");
-        if (in == null) {
-            throw new IOException("Resource not found: /client_secret.json");
-        }
-        try (InputStreamReader reader = new InputStreamReader(in)) {
-            return GoogleClientSecrets.load(JSON_FACTORY, reader);
-        }
-    }
+        GoogleClientSecrets clientSecrets = new GoogleClientSecrets()
+                .setInstalled(new GoogleClientSecrets.Details()
+                        .setClientId(System.getenv("GOOGLE_CLIENT_ID"))
+                        .setClientSecret(System.getenv("GOOGLE_CLIENT_SECRET"))
+                );
+        return clientSecrets;
 }

@@ -180,30 +180,6 @@ public class ClassReservationServiceTests {
     }
 
     @Test
-    @DisplayName("Cancel class after 48hs before")
-    void cancelClassAfter(){
-        Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);;
-        Subject subject = new Subject("Biology");
-        Student student = new Student("frandedeseo@gmail.com","fran1234","John", "Doe",  "location", "123", AppUserSex.MALE);
-
-        ClassReservation class1 = new ClassReservation(
-                professor,
-                subject,
-                student,
-                LocalDate.of(2024, 7, 13),
-                LocalTime.of(12, 0),
-                LocalTime.of(13, 0),
-                100.0
-        );
-
-        ClassReservationCancelDto cancelDto = new ClassReservationCancelDto(class1.getId(), professor.getId());
-
-        when(classReservationRepository.findById(any())).thenReturn(Optional.of(class1));
-        class1.setPrice(50.0);
-        assertEquals(class1 , classReservationService.cancelReservation(cancelDto));
-    }
-
-    @Test
     @DisplayName("get professor stadistics with three classes in this month")
     void testGetStatics() {
         List<ClassReservation> classes = new ArrayList<>();

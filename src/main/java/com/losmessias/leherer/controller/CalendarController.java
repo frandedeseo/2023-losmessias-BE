@@ -37,7 +37,7 @@ public class CalendarController {
 
             // Redirect the user to the frontend after successful authorization with the token in the URL
             String accessToken = credential.getAccessToken();  // Or use refresh token if needed
-            String redirectUrl = "http://localhost:3000/student-landing?token=" + accessToken;
+            String redirectUrl = "https://2023-losmessias.vercel.app/student-landing?token=" + accessToken;
 
             return ResponseEntity.status(HttpStatus.FOUND)
                     .header("Location", redirectUrl)
