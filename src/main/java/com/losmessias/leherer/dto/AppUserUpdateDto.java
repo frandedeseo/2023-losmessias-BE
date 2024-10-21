@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppUserUpdateDto {
-    private String email;
+    private String firstName;
+    private String lastName;
     private String location;
     private String phone;
 

@@ -34,8 +34,8 @@ public class FeedbackReceived {
 
         public void update(FeedbackDto feedbackDto, Double avg){
                 if (feedbackDto.getPunctuality()){setSumPunctuality(sumPunctuality+1);}
-                if (feedbackDto.getMaterial()){setSumPunctuality(sumMaterial+1);}
-                if (feedbackDto.getPolite()){setSumPunctuality(sumPolite+1);}
+                if (feedbackDto.getMaterial()){setSumMaterial(sumMaterial+1);}
+                if (feedbackDto.getPolite()){setSumPolite(sumPolite+1);}
                 setAvgRating(avg);
         }
 }

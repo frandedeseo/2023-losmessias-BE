@@ -107,7 +107,6 @@ public class NotificationService {
     }
 
     public String lecturedApprovedByAdminNotification(List<ProfessorSubject> approvedSubjects ){
-        //TODO no trabajar con listas si siempre se aprueba y se rechaza solo una subject
         ProfessorSubject approvedSubject = approvedSubjects.get(0);
         Professor professor = approvedSubject.getProfessor();
         String textProfessor = professor.getFirstName() + ", " + approvedSubject.getSubject().getName() + " has has been approved!";

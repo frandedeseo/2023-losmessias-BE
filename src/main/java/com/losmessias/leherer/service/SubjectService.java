@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,10 @@ public class SubjectService {
     }
 
     public Subject create(Subject subject) {
+        Optional<Subject> existingSubject = subjectRepository.findByName(subject.getName());
+        if (existingSubject.isPresent()) {
+            throw new IllegalArgumentException("Subject with this name already exists");
+        }
         return subjectRepository.save(subject);
     }
 

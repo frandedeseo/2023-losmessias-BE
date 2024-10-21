@@ -59,7 +59,6 @@ public class ProfessorSubjectController {
         }
     }
 
-    //TODO Hacer bienn las validaciones
     @PostMapping("/approve")
     public ResponseEntity<String> approve(@RequestBody SubjectRequestDto subjectRequestDto) throws JsonProcessingException {
         Professor professor = professorService.getProfessorById(subjectRequestDto.getProfessorId());

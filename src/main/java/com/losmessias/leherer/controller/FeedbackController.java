@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @RestController
 @RequestMapping("/api/feedback")
 @RequiredArgsConstructor
@@ -35,7 +37,7 @@ public class FeedbackController {
             return ResponseEntity.status(userIdResponse.getStatusCode()).body("Invalid token or user ID not found");
         }
         Long userId = userIdResponse.getBody();
-        if (userId!=feedbackDto.getSenderId()){
+        if (!Objects.equals(userId, feedbackDto.getSenderId())){
             return new ResponseEntity<>("This user has no permission to give this feedback", HttpStatus.BAD_REQUEST);
         }
 

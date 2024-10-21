@@ -33,9 +33,6 @@ public class Feedback {
     @JoinColumn(nullable = false, name = "receiver_id")
     private AppUser receiver;
 
-    @Column
-    private AppUserRole receptorRole;
-
     @ElementCollection
     @Column(nullable = false)
     private Set<FeedbackOptions> feedbackOptions;

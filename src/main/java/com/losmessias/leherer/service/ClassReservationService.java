@@ -3,6 +3,7 @@ package com.losmessias.leherer.service;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
@@ -18,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -38,6 +41,14 @@ public class ClassReservationService {
 
     public ClassReservation cancelReservation(ClassReservationCancelDto classReservationCancelDto) {
         ClassReservation classReservation = getReservationById(classReservationCancelDto.getId());
+
+            // Combine the reservation date and starting time into a LocalDateTime
+        LocalDateTime classStartDateTime = classReservation.getDate().atTime(classReservation.getStartingHour());
+
+        // Check if the current time is after the class's starting time
+        if (LocalDateTime.now().isAfter(classStartDateTime)) {
+            throw new IllegalStateException("Cannot cancel the class reservation. The class has already started.");
+        }
         classReservation.setStatus(ReservationStatus.CANCELLED);
         if (checkIfIsBetween48hsBefore(classReservation)) {
             classReservation.setPrice(classReservation.getPrice() / 2);
@@ -50,8 +61,6 @@ public class ClassReservationService {
             notificationService.cancelClassReservedNotification(classReservation, professor);
         }else if(Objects.equals(classReservationCancelDto.getIdCancelsUser(), professor.getId())){
             notificationService.cancelClassReservedNotification(classReservation, student);
-        }else{
-            //TODO throw exception
         }
         classReservationRepository.save(classReservation);
         return classReservation;
@@ -128,7 +137,7 @@ public class ClassReservationService {
         // Configure the event
         Event event = new Event()
                 .setSummary("Class Reservation - " + reservation.getSubject().getName())
-                .setLocation("Google Meet")
+                .setLocation("Google Meet") // Optional if you want a location
                 .setDescription("Class with " + reservation.getProfessor().getFirstName());
 
         // Use getDateTime method to get proper DateTime objects
@@ -144,19 +153,20 @@ public class ClassReservationService {
                 .setTimeZone("America/Argentina/Buenos_Aires"); // ART timezone
         event.setEnd(end);
 
-        // Add Google Meet conference link
+        // Add Google Meet conference link (optional)
         ConferenceData conferenceData = new ConferenceData();
         CreateConferenceRequest createConferenceRequest = new CreateConferenceRequest();
-        createConferenceRequest.setRequestId("some-random-string-" + System.currentTimeMillis());
-        conferenceData.setCreateRequest(createConferenceRequest);
 
-        // Check if conference data is created
-        if (conferenceData != null) {
-            event.setConferenceData(conferenceData);
-            System.out.println("Conference data set successfully.");
-        } else {
-            System.out.println("Failed to set conference data.");
-        }
+        // Add the conference solution key for Google Meet
+        ConferenceSolutionKey conferenceSolutionKey = new ConferenceSolutionKey();
+        conferenceSolutionKey.setType("hangoutsMeet"); // Specify Google Meet
+        createConferenceRequest.setConferenceSolutionKey(conferenceSolutionKey);
+        createConferenceRequest.setRequestId("some-random-string-" + System.currentTimeMillis());
+
+        conferenceData.setCreateRequest(createConferenceRequest);
+        event.setConferenceData(conferenceData);
+
+        System.out.println("Event details: " + event.toPrettyString()); // Log the event details
 
         // Add attendees
         EventAttendee[] attendees = new EventAttendee[] {
@@ -164,32 +174,46 @@ public class ClassReservationService {
                 new EventAttendee().setEmail(reservation.getStudent().getEmail())
         };
         event.setAttendees(Arrays.asList(attendees));
+
         System.out.println("Attendees added to the event: " + Arrays.toString(attendees));
 
         // Insert the event into the user's calendar
         Calendar.Events.Insert request = service.events().insert("primary", event)
                 .setConferenceDataVersion(1) // Required to include conference data
-                .setSendUpdates("all"); // Ensure that updates are sent to all attendees
-        Event createdEvent;
+                .setSendUpdates("all"); // Ensure that invitations are sent to all attendees
 
+        Event createdEvent;
         try {
             createdEvent = request.execute();
             System.out.println("Event created successfully with ID: " + createdEvent.getId());
+            System.out.println("Google Meet link: " + createdEvent.getHangoutLink());
+            return createdEvent;
+        } catch (GoogleJsonResponseException e) {
+            // Log Google API-specific error
+            System.err.println("Google API error: " + e.getDetails().getMessage());
+            System.err.println("Error details: " + e.getDetails().toPrettyString());
+            throw e;
         } catch (Exception e) {
+            // Log general errors
             System.err.println("Failed to create event: " + e.getMessage());
+            e.printStackTrace();
             throw e;
         }
-
-        return createdEvent;
     }
 
     private DateTime getDateTime(LocalDate date, LocalTime time) {
         // Combine the date and time into a ZonedDateTime with the specified time zone
         ZonedDateTime zonedDateTime = ZonedDateTime.of(date, time, ZoneId.of("America/Argentina/Buenos_Aires"));
 
-        // Return the DateTime in ISO 8601 format with time zone offset
-        return new DateTime(zonedDateTime.toOffsetDateTime().toString());
+        // Format the ZonedDateTime to an ISO 8601 string (RFC3339 compliant) for Google API
+        String formattedDateTime = zonedDateTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
+        System.out.println("Formatted DateTime: " + formattedDateTime); // Log the formatted DateTime
+
+        // Return the DateTime in ISO 8601 format
+        return new DateTime(formattedDateTime);
     }
+
     public boolean existsReservationForProfessorOrStudentOnDayAndTime(Long professor,
                                                              Long student,
                                                              LocalDate day,

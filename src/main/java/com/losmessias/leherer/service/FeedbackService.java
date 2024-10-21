@@ -45,7 +45,7 @@ public class FeedbackService {
         Double avg = getAvgRating(receiver);
         feedbackReceivedService.updateFeedbackReceived(feedbackDto, avg);
 
-        appUserRepository.save(sender);
+        //appUserRepository.save(sender);
 
         return feedback;
     }
@@ -64,5 +64,4 @@ public class FeedbackService {
     public List<Feedback> getAllFeedbacks() {
         return feedbackRepository.findAll();
     }
-    //TODO: get feedback by role
 }

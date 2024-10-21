@@ -69,7 +69,7 @@ public class ProfessorServiceTests {
     void testUpdateProfessor() {
         Professor professor = new Professor("frandedeseo@gmail.com", "password1234", "Francisco", "de Deseo", "Recoleta", "3462663707", AppUserSex.MALE);
         AppUserUpdateDto professorToUpdate = new AppUserUpdateDto();
-        professorToUpdate.setEmail("jane@gmail.com");
+        professorToUpdate.setFirstName("Franciscano");
 
         // Mock the repository methods
         when(appUserRepository.findById(1L)).thenReturn(Optional.of(professor));
@@ -79,7 +79,7 @@ public class ProfessorServiceTests {
         AppUser result = appUserService.update(1L, professorToUpdate);
 
         // Assert that the returned object matches the expected result
-        assertEquals(professor.getEmail(), professorToUpdate.getEmail());
-        assertEquals(professor.getEmail(), result.getEmail());
+        assertEquals(professor.getFirstName(), professorToUpdate.getFirstName());
+        assertEquals(professor.getFirstName(), result.getFirstName());
     }
 }

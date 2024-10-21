@@ -76,21 +76,18 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(req -> req
-                        // Public access
-                        .requestMatchers(PUBLIC).permitAll()
-                        // Role-based access control
-                        .requestMatchers(PROFESSOR_AUTHORITIES).hasAuthority("PROFESSOR")
-                        .requestMatchers(ADMIN_AUTHORITIES).hasAuthority("ADMIN")
-                        .requestMatchers(STUDENT_AUTHORITIES).hasAuthority("STUDENT")
-                        .requestMatchers(PROFESSOR_AND_ADMIN_AUTHORITIES).hasAnyAuthority("PROFESSOR", "ADMIN")
-                        .requestMatchers(PROFESSOR_AND_STUDENT_AUTHORITIES).hasAnyAuthority("PROFESSOR", "STUDENT")
-                        // Any other request needs authentication
-                        .anyRequest().authenticated()
-                )
+                .authorizeHttpRequests(req -> {
+                    req
+                            .requestMatchers(PUBLIC).permitAll()
+                            .requestMatchers(PROFESSOR_AUTHORITIES).hasAuthority("PROFESSOR")
+                            .requestMatchers(ADMIN_AUTHORITIES).hasAuthority("ADMIN")  // ADMIN role should now be matched correctly
+                            .requestMatchers(STUDENT_AUTHORITIES).hasAuthority("STUDENT")
+                            .requestMatchers(PROFESSOR_AND_ADMIN_AUTHORITIES).hasAnyAuthority("PROFESSOR", "ADMIN")
+                            .requestMatchers(PROFESSOR_AND_STUDENT_AUTHORITIES).hasAnyAuthority("PROFESSOR", "STUDENT")
+                            .anyRequest().authenticated();
+                })
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

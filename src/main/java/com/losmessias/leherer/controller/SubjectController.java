@@ -31,7 +31,11 @@ public class SubjectController {
     public ResponseEntity<String> createSubject(@RequestBody Subject subject) throws JsonProcessingException {
         if (subject.getId() != null) return ResponseEntity.badRequest().body("Subject ID must be null");
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(subjectService.create(subject)), HttpStatus.CREATED);
+        try {
+            return new ResponseEntity<>(converter.getObjectMapper().writeValueAsString(subjectService.create(subject)), HttpStatus.CREATED);
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/edit-price")

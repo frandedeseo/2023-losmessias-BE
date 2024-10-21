@@ -60,7 +60,8 @@ public class AppUserService implements UserDetailsService {
 
     public AppUser update(Long id, AppUserUpdateDto appUserUpdateDto) {
         AppUser appUserToUpdate = getAppUserById(id);
-        appUserToUpdate.setEmail(appUserUpdateDto.getEmail() != null ? appUserUpdateDto.getEmail() : appUserToUpdate.getEmail());
+        appUserToUpdate.setFirstName(appUserUpdateDto.getFirstName() != null ? appUserUpdateDto.getFirstName() : appUserToUpdate.getFirstName());
+        appUserToUpdate.setLastName(appUserUpdateDto.getLastName() != null ? appUserUpdateDto.getLastName() : appUserToUpdate.getLastName());
         appUserToUpdate.setLocation(appUserUpdateDto.getLocation() != null ? appUserUpdateDto.getLocation() : appUserToUpdate.getLocation());
         appUserToUpdate.setPhone(appUserUpdateDto.getPhone() != null ? appUserUpdateDto.getPhone() : appUserToUpdate.getPhone());
         return appUserRepository.save(appUserToUpdate);

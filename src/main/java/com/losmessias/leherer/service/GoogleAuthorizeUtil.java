@@ -10,7 +10,11 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.util.Collections;
+import java.util.Objects;
 
 public class GoogleAuthorizeUtil {
 
@@ -57,11 +61,15 @@ public class GoogleAuthorizeUtil {
 
     // New method to load client secrets from environment variables
     private static GoogleClientSecrets getClientSecrets() throws IOException {
-        GoogleClientSecrets clientSecrets = new GoogleClientSecrets()
-                .setInstalled(new GoogleClientSecrets.Details()
-                        .setClientId(System.getenv("GOOGLE_CLIENT_ID"))
-                        .setClientSecret(System.getenv("GOOGLE_CLIENT_SECRET"))
-                );
-        return clientSecrets;
+        // Check if the application is running on localhost
+        InetAddress localHost = InetAddress.getLocalHost();
+            // Load client_secret.json from resources when on localhost
+        InputStream in = GoogleAuthorizeUtil.class.getResourceAsStream("/client_secret.json");
+        if (in == null) {
+            throw new IOException("Resource not found: /client_secret.json");
+        }
+        try (InputStreamReader reader = new InputStreamReader(in)) {
+            return GoogleClientSecrets.load(JSON_FACTORY, reader);
+        }
     }
 }

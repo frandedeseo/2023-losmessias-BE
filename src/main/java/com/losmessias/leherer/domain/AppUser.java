@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +20,7 @@ import java.util.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "app_user")
 public abstract class AppUser implements UserDetails {
@@ -148,8 +150,6 @@ public abstract class AppUser implements UserDetails {
         return Collections.singletonList(authority);
     }
 
-
-    //TODO: Change this functions
     @Override
     public String toString() {
         return "Student{" +
