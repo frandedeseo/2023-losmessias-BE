@@ -23,15 +23,6 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private static final String[] PUBLIC = {
-            "/v2/api-docs",
-            "/v3/api-docs/**",
-            "/swagger-resources",
-            "/swagger-resources/**",
-            "/configuration/ui",
-            "/configuration/security",
-            "/doc/swagger-ui.html",
-            "/doc/swagger-ui/**",
-            "/webjars/**",
             "/api/registration/**",
             "/api/registration-professor/**",
             "/api/authentication",
