@@ -67,4 +67,5 @@ public class GoogleAuthorizeUtil {
                         .setClientSecret(System.getenv("GOOGLE_CLIENT_SECRET"))
                 );
         return clientSecrets;
+    }
 }
