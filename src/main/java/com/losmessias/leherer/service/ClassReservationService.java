@@ -22,6 +22,8 @@ import java.time.*;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -45,8 +47,15 @@ public class ClassReservationService {
             // Combine the reservation date and starting time into a LocalDateTime
         LocalDateTime classStartDateTime = classReservation.getDate().atTime(classReservation.getStartingHour());
 
+        ZoneId zoneId = ZoneId.of("America/Argentina/Buenos_Aires");
+        // Get the current time in the specified timezone
+        ZonedDateTime now = ZonedDateTime.now(zoneId);
+
+        // Convert the class start time to ZonedDateTime
+        ZonedDateTime classStartZonedDateTime = classStartDateTime.atZone(zoneId);
+
         // Check if the current time is after the class's starting time
-        if (LocalDateTime.now().isAfter(classStartDateTime)) {
+        if (now.isAfter(classStartZonedDateTime)) {
             throw new IllegalStateException("Cannot cancel the class reservation. The class has already started.");
         }
         classReservation.setStatus(ReservationStatus.CANCELLED);
